@@ -3,22 +3,6 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-class numPad{
-    GridLayout grid;
-
-    numPad() {
-        grid = new GridLayout(3, 4, 10, 10);
-
-        for (int i = 0; i < 10; i++) {
-            JButton button = new JButton(Integer.toString(i));
-        }
-    }
-
-    public GridLayout grid(){
-        return this.grid;
-    }
-}
-
 class startScreen {
     startScreen() {
         // Create Frame
@@ -39,20 +23,34 @@ class startScreen {
         tellerButton.setBounds(left_x, height, 200, 200);
         userButton.setBounds(right_x, height, 200, 200);
 
+				tellerButton.addActionListener((ActionListener) new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e){
+						frame.getContentPane().removeAll();
+						frame.repaint();						
+					}
+				});
+
         //Set grid to get pin
         userButton.addActionListener((ActionListener) new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
 
+								//frame.repaint();
+
                 JPanel pinPanel = new JPanel();
                 JFormattedTextField pinTextField= new JFormattedTextField();
 
                 pinPanel.add(pinTextField);
 
-                frame.add(pinPanel);
+                //frame.add(pinPanel);
+								frame.add(pinTextField);
+								frame.add(new JButton());
 
                 frame.revalidate();
+								frame.repaint();
+								frame.setVisible(true);
 
             }
         });
