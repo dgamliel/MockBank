@@ -12,7 +12,7 @@ class startScreen {
 
         // Define new buttons
         JButton tellerButton = new JButton("Teller");
-        JButton userButton = new JButton("Client");
+        JButton clientButton = new JButton("Client");
 
         int height = 720 / 3;
 
@@ -21,45 +21,32 @@ class startScreen {
 
         // Create the bounds of each button... x,y,width,height
         tellerButton.setBounds(left_x, height, 200, 200);
-        userButton.setBounds(right_x, height, 200, 200);
+        clientButton.setBounds(right_x, height, 200, 200);
 
 				tellerButton.addActionListener((ActionListener) new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e){
 						frame.getContentPane().removeAll();
-						frame.repaint();						
+						frame.repaint();
+            BankTellerScreen BT = new BankTellerScreen();
+            // cs.setVisible(true);
 					}
 				});
 
         //Set grid to get pin
-        userButton.addActionListener((ActionListener) new ActionListener() {
+        clientButton.addActionListener((ActionListener) new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-
-								//frame.repaint();
-
-                JPanel pinPanel = new JPanel();
-                JFormattedTextField pinTextField= new JFormattedTextField();
-
-                pinPanel.add(pinTextField);
-
-                //frame.add(pinPanel);
-								frame.add(pinTextField);
-								frame.add(new JButton());
-
-                frame.revalidate();
-								frame.repaint();
-								frame.setVisible(true);
+                // ClientLogin CL = new ClientLogin();
+							ClientScreen CS = new ClientScreen();
 
             }
         });
 
-
-
         //Add buttons to the GUI
         frame.add(tellerButton);
-        frame.add(userButton);
+        frame.add(clientButton);
 
         frame.setLayout(null);
         frame.setVisible(true);
@@ -71,6 +58,6 @@ class startScreen {
 class gui{
 
     public static void main(String args[]){
-        startScreen s = new startScreen();
+      startScreen s = new startScreen();
     }
 }
