@@ -1,64 +1,90 @@
-// import javax.swing.*;
-// import java.awt.*;
-// import java.awt.event.*;
-//
-// public class ClientLogin extends JFrame {
-//
-// public static void main(String[] args) {
-// ClientLogin frameTabel = new ClientLogin();
-// }
-//
-// JButton blogin = new JButton("Login");
-// JPanel panel = new JPanel();
-// JTextField txuser = new JTextField(15);
-// JPasswordField pass = new JPasswordField(15);
-//
-// ClientLogin(){
-// super("Login Autentification");
-// setSize(300,200);
-// setLocation(500,280);
-// panel.setLayout (null);
-//
-//
-// txuser.setBounds(70,30,150,20);
-// pass.setBounds(70,65,150,20);
-// blogin.setBounds(110,100,80,20);
-//
-// panel.add(blogin);
-// panel.add(txuser);
-// panel.add(pass);
-//
-// getContentPane().add(panel);
-// setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-// setVisible(true);
-// actionlogin();
-// }
-//
-// public void actionlogin(){
-// blogin.addActionListener(new ActionListener() {
-// public void actionPerformed(ActionEvent ae) {
-// String puname = txuser.getText();
-// String ppaswd = pass.getText();
-// if(puname.equals("test") && ppaswd.equals("12345")) {
-// newframe regFace =new newframe();
-// regFace.setVisible(true);
-// dispose();
-// } else {
-//
-// JOptionPane.showMessageDialog(null,"Wrong Password / Username");
-// txuser.setText("");
-// pass.setText("");
-// txuser.requestFocus();
-// }
-//
-// }
-// });
-// }
-// }
-//
-// class ClientLogingui{
-//
-//     public static void main(String args[]){
-//       ClientLogin CL = new ClientLogin();
-//     }
-// }
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+class ClientLogin {
+
+    ClientLogin() {
+        // Create Frame
+        JFrame frame = new JFrame("Welcome to the Client Login!");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1024, 720);
+
+        // Define new buttons
+        JButton submitButton = new JButton("Submit");
+        JButton gobackButton = new JButton("Go Back");
+
+        JTextField textField = new JTextField("Enter Tax ID", 20);
+        JLabel taxidLabel = new JLabel("Enter Tax ID");
+
+
+        int button_height = 720 / 2;
+        int text_height = 720/4;
+        int left_x = 200;
+        int right_x = 600;
+        int padding = 150;
+
+        // Create the bounds of each button... x,y,width,height
+        taxidLabel.setBounds(200, 100, 200, 100);
+        submitButton.setBounds(left_x, button_height, 200, 100);
+        gobackButton.setBounds(right_x, button_height, 200, 100);
+
+
+
+				submitButton.addActionListener((ActionListener) new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e){
+						frame.getContentPane().removeAll();
+						frame.repaint();
+            System.out.println("Before text field");
+            String text = textField.getText();
+            System.out.println("After text field");
+            ClientScreen CS = new ClientScreen();
+					}
+				});
+
+        //
+        // public void close() {
+        //   this.setVisible(false);
+        //   this.dispose();
+        // }
+
+
+        gobackButton.addActionListener((ActionListener) new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e){
+						frame.getContentPane().removeAll();
+						frame.repaint();
+            // ClientScreen cs = new ClientScreen();
+            // ClientLogin.close();
+            //   this.setVisible(false);
+            //   this.dispose();
+            startScreen s = new startScreen();
+					}
+				});
+
+
+
+        //Add buttons to the GUI
+        frame.add(submitButton);
+        frame.add(textField);
+        frame.add(gobackButton);
+        frame.add(taxidLabel);
+
+
+
+        // frame.setLayout(null);
+        frame.setVisible(true);
+
+    }
+
+}
+
+class Clientlogingui{
+
+    public static void main(String args[]){
+      ClientLogin CL = new ClientLogin();
+    }
+}

@@ -13,15 +13,22 @@ class startScreen {
         // Define new buttons
         JButton tellerButton = new JButton("Teller");
         JButton clientButton = new JButton("Client");
+        JButton exitButton = new JButton("Exit Program");
 
         int height = 720 / 3;
 
-        int left_x = 1024 / 3 - 165; // Makes it look nice
-        int right_x = 1024 - (1024 / 3); // Makes it look nice lol
+        // int left_x = 1024 / 3 - 165; // Makes it look nice
+        // int right_x = 1024 - (1024 / 4); // Makes it look nice lol
+        // int far_right = 1024 - (1024/ 9);
+
+        int left_x = 200;
+        int middle_x = 400;
+        int right_x = 600;
 
         // Create the bounds of each button... x,y,width,height
         tellerButton.setBounds(left_x, height, 200, 200);
-        clientButton.setBounds(right_x, height, 200, 200);
+        clientButton.setBounds(middle_x, height, 200, 200);
+        exitButton.setBounds(right_x, height, 200, 200);
 
 				tellerButton.addActionListener((ActionListener) new ActionListener() {
 					@Override
@@ -38,8 +45,18 @@ class startScreen {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-                // ClientLogin CL = new ClientLogin();
-							ClientScreen CS = new ClientScreen();
+                ClientLogin CL = new ClientLogin();
+							  // ClientScreen CS = new ClientScreen();
+
+            }
+        });
+
+        exitButton.addActionListener((ActionListener) new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.getContentPane().removeAll();
+                System.out.println("Ending program");
+                System.exit(0);
 
             }
         });
@@ -47,6 +64,7 @@ class startScreen {
         //Add buttons to the GUI
         frame.add(tellerButton);
         frame.add(clientButton);
+        frame.add(exitButton);
 
         frame.setLayout(null);
         frame.setVisible(true);
