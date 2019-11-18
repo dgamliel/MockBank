@@ -122,6 +122,6 @@ class ClientScreen {
 class Clientgui{
 
     public static void main(String args[]){
-      ClientScreen cs = new ClientScreen();
+      // ClientScreen cs = new ClientScreen();
     }
 }
