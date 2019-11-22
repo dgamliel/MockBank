@@ -127,6 +127,7 @@ public class App implements Testable
 			statement.executeQuery("drop table Owns cascade constraints");
 			statement.executeQuery("drop table Accounts cascade constraints");
 			statement.executeQuery("drop table Transactions cascade constraints");
+			statement.executeQuery("drop table Has_Interest");
 			return "0";
 		}
 		catch(Exception e){
@@ -175,8 +176,8 @@ public class App implements Testable
 							"aid integer," + 
 							"cid integer," + 
 							"primary_owner integer," + // primary = 1 if owner is primary else: primary = 0
-							"foreign key (cid) references clients," + 
-							"foreign key (aid) references accounts," + 
+							"foreign key (cid) references Clients," + 
+							"foreign key (aid) references Accounts," + 
 							"primary key (cid, aid)" + 
 							")" 
 
@@ -188,9 +189,31 @@ public class App implements Testable
 							"aid1 integer," + 
 							"aid2 integer," + 
 							"check_num integer," + // primary = 1 if owner is primary else: primary = 0
-							"foreign key (aid1) references accounts," + 
-							"foreign key (aid2) references accounts," + 
+							"foreign key (aid1) references Accounts," + 
+							"foreign key (aid2) references Accounts," + 
 							"primary key (aid1, aid2)" + 
+							")" 
+
+			); 
+
+			/* INTEREST TABLE */
+			statement.executeQuery(
+				"create table Interest(" +
+							"intr real," + 
+							"type char(10)," + 
+							"primary key (type)" + //Only need the aid to correctly identify a row 
+							")" 
+
+			); 
+
+			/* HAS_INTEREST TABLE */
+			statement.executeQuery(
+				"create table Has_Interest(" +
+							"aid integer," + 
+							"type char(10)," + 
+							"foreign key (aid) references Accounts," + 
+							"foreign key (type) references Interest," + 
+							"primary key (aid)" + //Only need the aid to correctly identify a row 
 							")" 
 
 			); 
