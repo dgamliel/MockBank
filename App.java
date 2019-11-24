@@ -1,13 +1,23 @@
 package cs174a;                                             // THE BASE PACKAGE FOR YOUR APP MUST BE THIS ONE.  But you may add subpackages.
 
 // You may have as many imports as you need.
+import java.util.concurrent.ThreadLocalRandom; //Random number
+
+import javax.management.RuntimeErrorException;
+
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
+import java.util.Random;
+
 import oracle.jdbc.pool.OracleDataSource;
 import oracle.jdbc.OracleConnection;
+
+import java.math.BigInteger; 
+import java.security.MessageDigest; 
+import java.security.NoSuchAlgorithmException; 
 
 /**
  * The most important class for your application.
@@ -107,12 +117,42 @@ public class App implements Testable
 	}
 
 	/**
-	 * Another example.
+	 * Create a new checking or savings account.
+	 * If customer is new, then their name and address should be provided.
+	 * @param accountType New account's checking or savings type.
+	 * @param id New account's ID.
+	 * @param initialBalance Initial account balance.
+	 * @param tin Account's owner Tax ID number - it may belong to an existing or new customer.
+	 * @param name [Optional] If customer is new, this is the customer's name.
+	 * @param address [Optional] If customer is new, this is the customer's address.
+	 * @return a string "r aid type balance tin", where
+	 *         r = 0 for success, 1 for error;
+	 *         aid is the new account id;
+	 *         type is the new account's type (see the enum codes above, e.g. INTEREST_CHECKING);
+	 *         balance is the account's initial balance with 2 decimal places (e.g. 1000.34, as with %.2f); and
+	 *         tin is the Tax ID of account's primary owner.
 	 */
 	@Override
 	public String createCheckingSavingsAccount( AccountType accountType, String id, double initialBalance, String tin, String name, String address )
 	{
-		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;
+		int random = ThreadLocalRandom.current().nextInt(1000, 9999 + 1); //Pick num between 1000 and 9999
+		String encryptedPin = hashPin(random);
+
+		String insertAccounts = "INSERT INTO Accounts" + 
+								"VALUES (" + id + ", " + accountType + ", " + name + ", " + initialBalance + ")";
+
+		
+		String insertOwns = "INSERT INTO Owns" + 
+							"VALUES (" + id + ", " + tin + ", 1" + ")";	//prinmary owner (1) cause they created the account
+							
+		String insertCustomer = "INSERT INTO Customers" +
+								"VALUES (" + tin + ", " + name + ", " + address + ", " + encryptedPin + ")";	//prinmary owner (1) cause they created the account
+
+
+		
+
+		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;		
+
 	}
 
 	/**
@@ -127,7 +167,13 @@ public class App implements Testable
 			statement.executeQuery("drop table Owns cascade constraints");
 			statement.executeQuery("drop table Accounts cascade constraints");
 			statement.executeQuery("drop table Transactions cascade constraints");
-			statement.executeQuery("drop table Has_Interest");
+			statement.executeQuery("drop table Has_Interest cascade constraints");
+			statement.executeQuery("drop table Interest cascade constraints");
+			statement.executeQuery("drop table Links cascade constraints");
+			statement.executeQuery("drop table Checkings cascade constraints");
+			statement.executeQuery("drop table Savings cascade constraints");
+			statement.executeQuery("drop table Pockets cascade constraints");
+
 			return "0";
 		}
 		catch(Exception e){
@@ -146,14 +192,14 @@ public class App implements Testable
 
 			//Create customer table
 			
+			/* CLIENTS TABLE */
 			statement.executeQuery(
 				"create table Clients(" +
+							"cid integer," + 
 							"name char(20)," + 
 							"addr char(20) not null," + 
-							"cid integer," + 
 							"pin char(32)," + 
-							"primary key (cid)," + 
-							"unique (pin)" + 
+							"primary key (cid)" +  
 							")" 
 
 			);
@@ -218,6 +264,48 @@ public class App implements Testable
 
 			); 
 
+			/* LINKS TABLE */
+			statement.executeQuery(
+				"create table Links(" +
+					"mainAid integer," +
+					"linkedAid integer," +
+					"isPocket integer," +
+					"primary key (mainAid)" +
+				")"
+			
+			);
+
+
+			/* CHECKING TABLE */
+			statement.executeQuery(
+				"create table Checkings(" +
+					"aid integer," +
+					"primary key (aid)," +
+					"foreign key (aid) references Accounts" +
+				")"
+			);
+
+			/* Savings TABLE */
+			statement.executeQuery(
+				"create table Savings(" +
+					"aid integer," +
+					"primary key (aid)," +
+					"foreign key (aid) references Accounts" +
+				")"
+			);
+
+			/* Pockets TABLE */
+			statement.executeQuery(
+				"create table Pockets(" +
+					"aid integer," +
+					"primary key (aid)," +
+					"foreign key (aid) references Accounts" +
+				")"
+			);
+
+
+
+
 
 			return "0";
 		}
@@ -270,7 +358,27 @@ public class App implements Testable
 	 */
 	@Override
 	public String createCustomer( String accountId, String tin, String name, String address ){
-		return "0";
+		try {
+
+			//TODO: Change this function when we can read input from the bank teller to determine the pin
+			int random = ThreadLocalRandom.current().nextInt(1000, 9999 + 1); //Pick num between 1000 and 9999
+			String encryptedPin = hashPin(random);
+
+			Statement statement = _connection.createStatement();
+			statement.executeQuery(
+				"INSTERT INTO Clients" +
+				"VALUES (" + tin + ", " + name + ", " + address + ", " + encryptedPin + ")"
+			);
+
+			statement.executeQuery(
+				"INSERT INTO Owns" +
+				"VALUES (" + accountId + ", " + tin + ", " + "0" + ")" //0 is to specify we are NOT the primary owner
+			);
+
+			return "0";
+		} catch (Exception e) {
+			return "1 " + e.getMessage(); 
+		}
 	}
 
 	/**
@@ -326,6 +434,31 @@ public class App implements Testable
 	@Override
 	public String payFriend( String from, String to, double amount ){
 		return "0";
+	}
+
+	private String hashPin(int pin){
+		try {
+			MessageDigest md = MessageDigest.getInstance(Integer.toString(pin)); 
+  
+			String strPin = Integer.toString(pin);
+
+			// digest() method is called 
+			// to calculate message digest of the input string 
+			// returned as array of byte 
+			byte[] messageDigest = md.digest(strPin.getBytes()); 
+	
+			// Convert byte array into signum representation 
+			BigInteger no = new BigInteger(1, messageDigest); 
+	
+			// Convert message digest into hex value 
+			String hashtext = no.toString(16); 
+	
+			return hashtext;
+		
+		} catch (Exception e) {
+			return "OWOWOWOWO";
+		}
+
 	}
 
 
