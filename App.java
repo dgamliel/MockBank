@@ -138,22 +138,45 @@ public class App implements Testable
 		int random = ThreadLocalRandom.current().nextInt(1000, 9999 + 1); //Pick num between 1000 and 9999
 		String encryptedPin = hashPin(random);
 
-		String insertAccounts = "INSERT INTO Accounts" + 
-								"VALUES (" + id + ", " + accountType + ", " + name + ", " + initialBalance + ")";
+		String insertAccounts = "INSERT INTO Accounts " +  
+														"VALUES (" + id + ", " + "1" + ", '" + name + "', " + initialBalance + ")";
 
+		System.out.println("INSERT ACCOUNT STATEMENT " + insertAccounts);
 		
-		String insertOwns = "INSERT INTO Owns" + 
-							"VALUES (" + id + ", " + tin + ", 1" + ")";	//prinmary owner (1) cause they created the account
+		String insertOwns = "INSERT INTO Owns " + 
+												"VALUES (" + id + ", " + tin + ", "+ 1 + ")";	//prinmary owner (1) cause they created the account
 							
-		String insertCustomer = "INSERT INTO Customers" +
-								"VALUES (" + tin + ", " + name + ", " + address + ", " + encryptedPin + ")";	//prinmary owner (1) cause they created the account
+		String insertCustomer = "INSERT INTO Customers " +
+														"VALUES (" + tin + ", " + name + ", " + address + ", " + encryptedPin + ")";	//prinmary owner (1) cause they created the account
+
+		try{
+			Statement statement = _connection.createStatement();
 
 
-		
+			ResultSet resAccs = statement.executeQuery(insertAccounts);				
+			System.out.println(insertAccounts);	
 
-		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;		
 
+			ResultSet res = statement.executeQuery(insertCustomer);				
+			System.out.println(insertCustomer);
+
+
+			ResultSet resOwns = statement.executeQuery(insertOwns);				
+			System.out.println(insertOwns);
+
+
+
+			return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;		
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "1 " + e.getMessage();
+		}
 	}
+
+
+
+	
 
 	/**
 	 * Destroy all of the tables in your DB.
@@ -208,12 +231,11 @@ public class App implements Testable
 			statement.executeQuery(
 				"create table Accounts(" +
 							"aid integer," + 
-							"type char(10) not null," + 
+							"type char(20)," + 
 							"bname char(32)," + // primary = 1 if owner is primary else: primary = 0
 							"balance real," + 
 							"primary key (aid)" + 
 							")" 
-
 			 ); 
 
 			/* OWNS TABLE */
@@ -461,7 +483,25 @@ public class App implements Testable
 
 	}
 
+	private int ResSize(ResultSet res){
 
+		int resSize = 0;
+		try{
+			while(res.next()){
+				resSize++;
+			}
+		}catch(Exception e){
+			return -1;
+		}
+
+
+		return resSize;
+	}
 
 
 }
+
+
+
+
+

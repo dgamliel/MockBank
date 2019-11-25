@@ -32,14 +32,16 @@ public class Main
 			r = app.listClosedAccounts();
 			System.out.println( r );
 
-			// Another example test.
-			r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "account1", 1234.56, "theTaxID", "Im YoungMing", "Known" );
-			System.out.println( r );
-
 			r = app.createTables();
 			System.out.println("CREATE TABLES " + r);
 			
-			r = app.dropTables();
+
+			// Another example test.
+			//r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "1", 1234.56, "1", "Im YoungMing", "Known" );
+			System.out.println( r );
+
+
+			//r = app.dropTables();
 			System.out.println("DROP TABLES " + r);
 
 			//StartScreen s = new StartScreen();
