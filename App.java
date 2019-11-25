@@ -138,33 +138,31 @@ public class App implements Testable
 		int random = ThreadLocalRandom.current().nextInt(1000, 9999 + 1); //Pick num between 1000 and 9999
 		String encryptedPin = hashPin(random);
 
-		String insertAccounts = "INSERT INTO Accounts " +  
-														"VALUES (" + id + ", " + "1" + ", '" + name + "', " + initialBalance + ")";
-
-		System.out.println("INSERT ACCOUNT STATEMENT " + insertAccounts);
-		
+		String insertAccounts = "INSERT INTO Accounts " +
+														"(aid, type, balance) " +  
+														"VALUES (" + id + ", \'" + accountType + "\', " + initialBalance + ")";
+	
 		String insertOwns = "INSERT INTO Owns " + 
 												"VALUES (" + id + ", " + tin + ", "+ 1 + ")";	//prinmary owner (1) cause they created the account
 							
-		String insertCustomer = "INSERT INTO Customers " +
-														"VALUES (" + tin + ", " + name + ", " + address + ", " + encryptedPin + ")";	//prinmary owner (1) cause they created the account
+		String insertCustomer = "INSERT INTO Clients " +
+														"(cid, name, addr, pin) " + 
+														"VALUES (" + tin + ", \'" + name + "\', \'" + address + "\', \'" + encryptedPin + "\')";	//primary owner (1) cause they created the account
 
 		try{
 			Statement statement = _connection.createStatement();
 
-
+			//Insert into accounts
 			ResultSet resAccs = statement.executeQuery(insertAccounts);				
 			System.out.println(insertAccounts);	
 
-
+			//Insert into customer
 			ResultSet res = statement.executeQuery(insertCustomer);				
 			System.out.println(insertCustomer);
 
-
+			//Insert into owns, linking accounts, customer
 			ResultSet resOwns = statement.executeQuery(insertOwns);				
 			System.out.println(insertOwns);
-
-
 
 			return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;		
 
@@ -174,9 +172,6 @@ public class App implements Testable
 		}
 	}
 
-
-
-	
 
 	/**
 	 * Destroy all of the tables in your DB.
@@ -220,11 +215,10 @@ public class App implements Testable
 				"create table Clients(" +
 							"cid integer," + 
 							"name char(20)," + 
-							"addr char(20) not null," + 
+							"addr char(20)," + 
 							"pin char(32)," + 
 							"primary key (cid)" +  
 							")" 
-
 			);
 
 			/* ACCOUNTS TABLE */
@@ -460,7 +454,7 @@ public class App implements Testable
 
 	private String hashPin(int pin){
 		try {
-			MessageDigest md = MessageDigest.getInstance(Integer.toString(pin)); 
+			MessageDigest md = MessageDigest.getInstance("MD5"); 
   
 			String strPin = Integer.toString(pin);
 
@@ -475,9 +469,10 @@ public class App implements Testable
 			// Convert message digest into hex value 
 			String hashtext = no.toString(16); 
 	
-			return hashtext;
+			return hashtext.substring(0,10);
 		
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "OWOWOWOWO";
 		}
 

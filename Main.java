@@ -35,13 +35,11 @@ public class Main
 			r = app.createTables();
 			System.out.println("CREATE TABLES " + r);
 			
-
 			// Another example test.
-			//r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "1", 1234.56, "1", "Im YoungMing", "Known" );
+			r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "1", 1234.56, "1", "Im YoungMing", "Known" );
 			System.out.println( r );
 
-
-			//r = app.dropTables();
+			r = app.dropTables();
 			System.out.println("DROP TABLES " + r);
 
 			//StartScreen s = new StartScreen();
