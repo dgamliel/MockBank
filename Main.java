@@ -1,8 +1,8 @@
-package cs174a;                         // THE BASE PACKAGE FOR YOUR APP MUST BE THIS ONE.  But you may add subpackages.
+package cs174a; // THE BASE PACKAGE FOR YOUR APP MUST BE THIS ONE.  But you may add subpackages.
 
 // DO NOT REMOVE THIS IMPORT.
 import cs174a.Testable.*;
-
+import cs174a.*;
 /**
  * This is the class that launches your application.
  * DO NOT CHANGE ITS NAME.
@@ -42,7 +42,8 @@ public class Main
 			r = app.dropTables();
 			System.out.println("DROP TABLES " + r);
 
-			//StartScreen s = new StartScreen();
+			StartScreen s = new StartScreen(app);
+			
 
 		}
 	}

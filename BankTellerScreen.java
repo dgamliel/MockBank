@@ -1,10 +1,13 @@
+package cs174a;
+import cs174a.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 class BankTellerScreen {
-    BankTellerScreen() {
+    BankTellerScreen(App app) {
         // Create Frame
         JFrame frame = new JFrame("Welcome to the Bank Teller Portal!");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -117,11 +120,4 @@ class BankTellerScreen {
 
     }
 
-}
-
-class BankTellergui{
-
-    public static void main(String args[]){
-      BankTellerScreen BTS = new BankTellerScreen();
-    }
 }
