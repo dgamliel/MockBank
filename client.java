@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 
+
 class Client{
 
     private int my_aid;
@@ -26,36 +27,32 @@ class Client{
         // }
     }
 
-    //COMMENTING OUT CAUSE NO ACCESS TO DB FOR ME
     public boolean VerifyPin(int taxId, int pin){
-        // try(
-        //     ResultSet res = DB.query('SELECT C.pin FROM Client WHERE C.taxId = ' + Integer.toString(taxId) + 'AND C.pin = ' + Integer.toString(pin) )
-        // )
-        // {
-        //     //one or more rows but IC should ensure that there will only be one;
-        //     if (res.next()){
-        //         return true;
-        //     }
-        // }
+        try(
+            ResultSet res = DB.query('SELECT C.pin FROM Client WHERE C.taxId = ' + Integer.toString(taxId) + 'AND C.pin = ' + Integer.toString(pin) )
+        )
+        {
+            //one or more rows but IC should ensure that there will only be one;
+            if (res.next()){
+                return true;
+            }
+        }
         
-        // return false;
-        System.out.println("Entered Verify Pin");
-        return true;
+        return false;
     }
 
-    //COMMENTING OUT CAUSE NO ACCESS TO DB FOR ME
     public boolean SetPin(int taxId, int pin){
-        // try(
-        //     ResultSet res = DB.query('UPDATE Clients C SET C.pin = ' + Integer.toString(taxId) + ' WHERE C.taxId = ' + Integer.toString(taxId))
-        // )
-        // {
-        //     //one or more rows but IC should ensure that there will only be one;
-        //     if (res.next()){
-        //         return true;
-        //     }
-        // }
+        try(
+            ResultSet res = DB.query('UPDATE Clients C SET C.pin = ' + Integer.toString(taxId) + ' WHERE C.taxId = ' + Integer.toString(taxId))
+        )
+        {
+            //one or more rows but IC should ensure that there will only be one;
+            if (res.next()){
+                return true;
+            }
+        }
         
-        return true;
+        return false;
     }
     
 
@@ -94,3 +91,4 @@ class Client{
 
     }
 }
+

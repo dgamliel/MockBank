@@ -4,64 +4,46 @@ import java.awt.event.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-
-class ClientLogin extends JFrame implements ActionListener{
-  JPanel panel;
-  JLabel user_label, password_label, message;
-  JTextField userName_text;
-  JPasswordField password_text;
-  JButton submit, cancel;
+class ClientLogin {
 
     ClientLogin() {
-        // User Label
-        user_label = new JLabel();
-        user_label.setText("User Name :");
-        userName_text = new JTextField();
+        // Create Frame
+        JFrame frame = new JFrame("Welcome to the Client Login!");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1024, 720);
 
-        // Password
+        // Define new buttons
+        JButton submitButton = new JButton("Submit");
+        JButton gobackButton = new JButton("Go Back");
 
-        password_label = new JLabel();
-        password_label.setText("Password :");
-        password_text = new JPasswordField();
+        JTextField textField = new JTextField("Enter Tax ID", 20);
+        JLabel taxidLabel = new JLabel("Enter Tax ID");
 
-        // Submit
 
-        submit = new JButton("SUBMIT");
+        int button_height = 720 / 2;
+        int text_height = 720/4;
+        int left_x = 200;
+        int right_x = 600;
+        int padding = 150;
 
-        panel = new JPanel(new GridLayout(3, 1));
+        // Create the bounds of each button... x,y,width,height
+        taxidLabel.setBounds(200, 100, 200, 100);
+        submitButton.setBounds(left_x, button_height, 200, 100);
+        gobackButton.setBounds(right_x, button_height, 200, 100);
 
-        panel.add(user_label);
-        panel.add(userName_text);
-        panel.add(password_label);
-        panel.add(password_text);
 
-        message = new JLabel();
-        panel.add(message);
-        panel.add(submit);
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Adding the listeners to components..
-        submit.addActionListener(this);
-        add(panel, BorderLayout.CENTER);
-        setTitle("Please Login Here !");
-        setSize(300, 100);
-        setVisible(true);
-
-    }
+				submitButton.addActionListener((ActionListener) new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e){
+						frame.getContentPane().removeAll();
+						frame.repaint();
+            System.out.println("Before text field");
+            String text = textField.getText();
+            System.out.println("After text field");
+            ClientScreen CS = new ClientScreen();
+					}
+				});
 
     @Override
     public void actionPerformed(ActionEvent ae) {
@@ -93,6 +75,7 @@ class ClientLogin extends JFrame implements ActionListener{
         }
     }
 }
+
 
 class Clientlogingui{
 
