@@ -7,7 +7,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 
-/*
+
 class Client{
 
     private int my_aid;
@@ -54,7 +54,7 @@ class Client{
         
         return false;
     }
-    }
+    
 
 
 
@@ -91,4 +91,4 @@ class Client{
 
     }
 }
-*/
+

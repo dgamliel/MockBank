@@ -45,42 +45,37 @@ class ClientLogin {
 					}
 				});
 
-        //
-        // public void close() {
-        //   this.setVisible(false);
-        //   this.dispose();
-        // }
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        String userName = userName_text.getText();
+        String password = password_text.getText();
 
+        userName = userName.trim();
+        int tid = Integer.parseInt(userName);
+        password = password.trim();
+        int pin = Integer.parseInt(password);
 
-        gobackButton.addActionListener((ActionListener) new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e){
-						frame.getContentPane().removeAll();
-						frame.repaint();
-            // ClientScreen cs = new ClientScreen();
-            // ClientLogin.close();
-            //   this.setVisible(false);
-            //   this.dispose();
-            startScreen s = new startScreen();
-					}
-				});
+        //GOING TO KEEP THIS UNTIL DB CAN VERIFY PIN ITSELF
+        if (tid == 12345 && pin == 12345)
+        {
+            message.setText(" Hello " + userName + "");
+            Client c = new Client();
+            boolean isVerify = c.VerifyPin(tid, pin);
+            
+            if (isVerify == true)
+            {
+                System.out.println("Conditional checking pin");
+                ClientScreen cs = new ClientScreen();
 
-
-
-        //Add buttons to the GUI
-        frame.add(submitButton);
-        frame.add(textField);
-        frame.add(gobackButton);
-        frame.add(taxidLabel);
-
-
-
-        // frame.setLayout(null);
-        frame.setVisible(true);
-
+            }
+        }
+        else
+        {
+            message.setText(" Invalid user.. ");
+        }
     }
-
 }
+
 
 class Clientlogingui{
 
