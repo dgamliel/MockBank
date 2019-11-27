@@ -2,6 +2,8 @@ package cs174a;                                             // THE BASE PACKAGE 
 
 // You may have as many imports as you need.
 import java.util.concurrent.ThreadLocalRandom; //Random number
+import java.util.*;
+import java.text.SimpleDateFormat;
 
 import javax.management.RuntimeErrorException;
 
@@ -139,8 +141,8 @@ public class App implements Testable
 		String encryptedPin = hashPin(random);
 
 		String insertAccounts = "INSERT INTO Accounts " +
-														"(aid, type, balance) " +  
-														"VALUES (" + id + ", \'" + accountType + "\', " + initialBalance + ")";
+														"(aid, type, balance, closed) " +  
+														"VALUES (" + id + ", \'" + accountType + "\', " + initialBalance + ", 0" + ")";
 	
 		String insertOwns = "INSERT INTO Owns " + 
 												"VALUES (" + id + ", " + tin + ", "+ 1 + ")";	//prinmary owner (1) cause they created the account
@@ -148,6 +150,18 @@ public class App implements Testable
 		String insertCustomer = "INSERT INTO Clients " +
 														"(cid, name, addr, pin) " + 
 														"VALUES (" + tin + ", \'" + name + "\', \'" + address + "\', \'" + encryptedPin + "\')";	//primary owner (1) cause they created the account
+
+		String insertAccType;
+
+
+		if (accountType == AccountType.SAVINGS){
+			insertAccType = "INSERT INTO Savings VALUES (" + id + ")";
+		}
+
+		else if (accountType == AccountType.INTEREST_CHECKING){	
+			insertAccType = "INSERT INTO Checkings VALUES (" + id + ")";
+		}
+
 
 		try{
 			Statement statement = _connection.createStatement();
@@ -191,6 +205,7 @@ public class App implements Testable
 			statement.executeQuery("drop table Checkings cascade constraints");
 			statement.executeQuery("drop table Savings cascade constraints");
 			statement.executeQuery("drop table Pockets cascade constraints");
+			statement.executeQuery("drop table SysMetaData cascade constraints");
 
 			return "0";
 		}
@@ -228,6 +243,7 @@ public class App implements Testable
 							"type char(20)," + 
 							"bname char(32)," + // primary = 1 if owner is primary else: primary = 0
 							"balance real," + 
+							"closed integer, " + //closed = 1 if account closed else: primary = 0
 							"primary key (aid)" + 
 							")" 
 			 ); 
@@ -287,8 +303,7 @@ public class App implements Testable
 					"linkedAid integer," +
 					"isPocket integer," +
 					"primary key (mainAid)" +
-				")"
-			
+				")"			
 			);
 
 
@@ -320,17 +335,31 @@ public class App implements Testable
 			);
 
 
+			statement.executeQuery(
+				"create table SysMetaData(" +
+					"year integer,"  +
+					"month integer," +
+					"day integer, "  +
+					"interestAccrued integer," +
+					"primary key (year)" + 
+				")"
+			);
 
+			////////// ASSERTIONS //////////
+			/* Assertions don't work right now - come back to later
+			statement.executeQuery(
+				"create assertion ONLY_ONE_DATE as CHECK("  +
+					"(select count(*) from SysMetaData) <= 1" + 
+				")"
+			);
 
+			*/
 
 			return "0";
 		}
 		catch(Exception e){
 			return "1 " + e.getMessage();
 		}
-
-
-
 	}
 
 	/**
@@ -342,7 +371,45 @@ public class App implements Testable
 	 */
 	@Override
 	public String setDate( int year, int month, int day ){
-		return "0";
+
+		//Set the format of the date and cast our date to a string
+		String strDate = year + "-" + month + "-" + day;
+		SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-mm-dd");
+
+		try{
+
+			//Create date object to see if the date is valid, else we will throw an error
+			Date setDateTo = dateFmt.parse(strDate);
+
+			Statement statement = _connection.createStatement();
+
+			ResultSet resultSet = statement.executeQuery(
+				"select interestAccrued from SysMetaData"
+			);
+
+			//If the date has yet to be set then we set the default to Jan 15th, 2019
+			//Also state that we have yet to accrue interest 
+			if (ResSize(resultSet) == 0)
+			{
+				statement.executeQuery("INSERT INTO SysMetaData " +
+															 "VALUES (1, 15, 2019, 0)"
+				);
+			}
+
+			else {	
+				statement.executeQuery("update SysMetaData  " +
+															 "set year = " + year + ", " +
+															 		"month = " + month + ", " +
+																	  "day = " + day +
+																"where year = " + year
+				);
+			}
+
+			return "0 " + strDate;
+		}catch(Exception e){
+			e.printStackTrace();
+			return "1 " + strDate;
+		}	
 	}
 
 
@@ -473,9 +540,8 @@ public class App implements Testable
 		
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "OWOWOWOWO";
+			return "ERROR - UNABLE TO HASH PIN";
 		}
-
 	}
 
 	private int ResSize(ResultSet res){
@@ -488,12 +554,8 @@ public class App implements Testable
 		}catch(Exception e){
 			return -1;
 		}
-
-
 		return resSize;
 	}
-
-
 }
 
 
