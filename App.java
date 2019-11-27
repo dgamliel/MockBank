@@ -346,13 +346,12 @@ public class App implements Testable
 			);
 
 			////////// ASSERTIONS //////////
-			/* Assertions don't work right now - come back to later
+			/* I'll come back to this later  
 			statement.executeQuery(
 				"create assertion ONLY_ONE_DATE as CHECK("  +
-					"(select count(*) from SysMetaData) <= 1" + 
+					"select count(*) from SysMetaData <= 1" + 
 				")"
 			);
-
 			*/
 
 			return "0";
@@ -394,6 +393,8 @@ public class App implements Testable
 				statement.executeQuery("INSERT INTO SysMetaData " +
 															 "VALUES (1, 15, 2019, 0)"
 				);
+
+				return "0 2019-1-15";
 			}
 
 			else {	
@@ -403,9 +404,10 @@ public class App implements Testable
 																	  "day = " + day +
 																"where year = " + year
 				);
+				return "0 " + strDate;
 			}
 
-			return "0 " + strDate;
+
 		}catch(Exception e){
 			e.printStackTrace();
 			return "1 " + strDate;
