@@ -228,7 +228,7 @@ public class App implements Testable
 			/* CLIENTS TABLE */
 			statement.executeQuery(
 				"create table Clients(" +
-							"cid integer," + 
+							"cid char(20)," + 
 							"name char(20)," + 
 							"addr char(20)," + 
 							"pin char(32)," + 
@@ -239,7 +239,7 @@ public class App implements Testable
 			/* ACCOUNTS TABLE */
 			statement.executeQuery(
 				"create table Accounts(" +
-							"aid integer," + 
+							"aid char(20)," + 
 							"type char(20)," + 
 							"bname char(32)," + // primary = 1 if owner is primary else: primary = 0
 							"balance real," + 
@@ -251,8 +251,8 @@ public class App implements Testable
 			/* OWNS TABLE */
 			statement.executeQuery(
 				"create table Owns(" +
-							"aid integer," + 
-							"cid integer," + 
+							"aid char(20)," + 
+							"cid char(20)," + 
 							"primary_owner integer," + // primary = 1 if owner is primary else: primary = 0
 							"foreign key (cid) references Clients," + 
 							"foreign key (aid) references Accounts," + 
@@ -264,8 +264,8 @@ public class App implements Testable
 			/* TRANSACTION TABLE */
 			statement.executeQuery(
 				"create table Transactions(" +
-							"aid1 integer," + 
-							"aid2 integer," + 
+							"aid1 char(20)," + 
+							"aid2 char(20)," + 
 							"check_num integer," + // primary = 1 if owner is primary else: primary = 0
 							"foreign key (aid1) references Accounts," + 
 							"foreign key (aid2) references Accounts," + 
@@ -287,7 +287,7 @@ public class App implements Testable
 			/* HAS_INTEREST TABLE */
 			statement.executeQuery(
 				"create table Has_Interest(" +
-							"aid integer," + 
+							"aid char(20)," + 
 							"type char(10)," + 
 							"foreign key (aid) references Accounts," + 
 							"foreign key (type) references Interest," + 
@@ -299,8 +299,8 @@ public class App implements Testable
 			/* LINKS TABLE */
 			statement.executeQuery(
 				"create table Links(" +
-					"mainAid integer," +
-					"linkedAid integer," +
+					"mainAid char(20)," +
+					"linkedAid char(20)," +
 					"isPocket integer," +
 					"primary key (mainAid)" +
 				")"			
@@ -310,7 +310,7 @@ public class App implements Testable
 			/* CHECKING TABLE */
 			statement.executeQuery(
 				"create table Checkings(" +
-					"aid integer," +
+					"aid char(20)," +
 					"primary key (aid)," +
 					"foreign key (aid) references Accounts" +
 				")"
@@ -319,7 +319,7 @@ public class App implements Testable
 			/* Savings TABLE */
 			statement.executeQuery(
 				"create table Savings(" +
-					"aid integer," +
+					"aid char(20)," +
 					"primary key (aid)," +
 					"foreign key (aid) references Accounts" +
 				")"
@@ -328,7 +328,7 @@ public class App implements Testable
 			/* Pockets TABLE */
 			statement.executeQuery(
 				"create table Pockets(" +
-					"aid integer," +
+					"aid char(20)," +
 					"primary key (aid)," +
 					"foreign key (aid) references Accounts" +
 				")"
