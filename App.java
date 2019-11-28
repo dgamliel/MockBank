@@ -682,6 +682,115 @@ public class App implements Testable
 		}
 		return resSize;
 	}
+
+	//CLIENT VERIFYPIN FUNCTION
+	public boolean VerifyPin(int tid, int pin)
+	{
+		if(tid == 12345 && pin == 12345)
+		{
+			return true;
+		}
+		return false;
+	
+	}
+
+	//CLIENT DEPOSIT FUNCTION
+	//3-1-2011 Joe Pepsi deposits $1,200 to account 17431
+	public double ClientDeposit(int month, int day, int year, String name, double amount, int newaccount)
+	{
+		//Well probably want tot return his total balance maybe - this is why i said int CD
+		//If we dont care, well make it boolean
+		double Danny_current_balance = 2.43; 
+		if (amount == 5.0)
+		{
+			return (amount + Danny_current_balance);
+		}
+		return -1;
+	}
+
+	//CLIENT TOP UP FUNCTION
+	//3-1-2011 Pit Wilson tops-ups $20 to account 60413 from account 43942
+	public double ClientTopup(int month, int day, int year, String name, double fromAmount, int Fromaccount, int toAccount)
+	{
+		double Danny_current_balance = 2.43;
+                if (fromAmount == 5.0)
+                {
+                        return (fromAmount + Danny_current_balance);
+                }
+		return -1;
+	}
+
+	//CLIENT WITHDRAWS FUNCTION
+	//3-3-2011 Elizabeth Sailor withdraws $3,000 from account 54321
+	public double ClientWithdraw(int month, int day, int year, String name, double amount, int account)
+        {
+                double Danny_current_balance = 7.43;
+                if (amount == 5)
+                {
+                        return (amount - Danny_current_balance);
+                }
+		return -1;
+        }
+
+	//CLIENT PURCHASES FUNCTION
+	//3-5-2011 David Copperfill purchases $5 from account 53027
+	public boolean ClientPurchases(int month, int day, int year, String name, double amount, int account)
+        {
+                double Danny_current_balance = 7.43;
+                if (amount < Danny_current_balance)
+                {
+                        return true;
+                }
+	return false;
+        }
+
+	//CLIENT COLLECTS FUNCTION
+        //3-6-2011 Li Kung collects $10 from account 43947 to account 29107
+        public boolean ClientCollects(int month, int day, int year, String name, double amount, int fromAccount, int toAccount)
+        {
+
+                if (amount == 5)
+                {
+                        return true;
+                }
+        return false;
+        }
+
+	////CLIENT TRANSFERS FUNCTION
+	//3-7-2011 Ivan Lendme transfers $289 from account 43942 to account 17431
+	public boolean ClientTransfer(int month, int day, int year, String name, double amount, int fromAccount, int toAccount)
+        {       
+
+                if (amount == 5)
+                {
+                        return true;
+                }
+        return false;
+        }
+
+	////CLIENT PAYFRIEND FUNCTION
+	//3-8-2011 Pit Wilson pay-friends $10 from account 60413 to account 67521
+	public boolean ClientPayfriend(int month, int day, int year, String name, double amount, int fromAccount, int toAccount)
+        {
+
+                if (amount == 5)
+                {
+                        return true;
+                }
+        return false;
+        }
+
+	////CLIENT PAYFRIEND FUNCTION
+        //3-9-2011 Fatal Castro wires $4,000 from account 41725 to account 32156
+        public boolean ClientWire(int month, int day, int year, String name, double amount, int fromAccount, int toAccount)
+        {
+
+                if (amount == 5)
+                {
+                        return true;
+                }
+        return false;
+        }
 }
 
 

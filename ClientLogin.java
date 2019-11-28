@@ -78,20 +78,14 @@ class ClientLogin extends JFrame implements ActionListener{
         password = password.trim();
         int pin = Integer.parseInt(password);
 
+
+	boolean isVerify = app.VerifyPin(tid, pin);
         //GOING TO KEEP THIS UNTIL DB CAN VERIFY PIN ITSELF
-        if (tid == 12345 && pin == 12345)
+        if (isVerify == true)
         {
             message.setText(" Hello " + userName + "");
-            //app a = new app();
-            //boolean isVerify = a.VerifyPin(tid, pin);
-            boolean isVerify = true;
-
-            if (isVerify == true)
-            {
-                System.out.println("Conditional checking pin");
-                ClientScreen cs = new ClientScreen(this.app);
-
-            }
+            System.out.println("Conditional checking pin");
+            ClientScreen cs = new ClientScreen(this.app);
         }
         else
         {
