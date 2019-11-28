@@ -430,6 +430,53 @@ public class App implements Testable
 	 */
 	@Override
 	public String createPocketAccount( String id, String linkedId, double initialTopUp, String tin ){
+		try{
+
+			Statement statement = _connection.createStatement();
+
+			String fmtAmount = String.format("%.2f", initialTopUp);
+
+			//Insert into pockets
+			String insertPocket = "INSERT INTO Pockets " +
+														"VALUES (" + id + " )";
+		
+			String insertPocketToAccountTable = "INSERT INTO Accounts " +
+																					"(aid, type, balance, closed)" + 
+																					"VALUES (" + id + ", " + 
+AccountType.POCKET + ", " + fmtAmount + ", 0)";
+			//Now insert the account into the linked table to link the accounts
+			
+			String insertLinks = "INSERT INTO Links " + 
+													 "(mainAid, linkedAid, isPocket)" + 
+													 "VALUES (" + linkedId + "," + id + "," + "1" + ")";
+
+			statement.executeQuery(insertPocket);
+			statement.executeQuery(insertPocketToAccountTable);
+			statement.executeQuery(insertLinks);
+
+			//Check if the tin passed in is the primary owner of the account
+			
+			int isPrimary;
+
+			ResultSet res = statement.executeQuery(
+				"SELECT * "  +
+				"FROM Owns " +
+				"WHERE cid=" + tin + " AND " + "aid=" + linkedId +  " AND primary_owner=1"
+			);
+
+			if (ResSize(res) == 0){
+				isPrimary = 0;
+			}
+			else{
+				isPrimary = 1;
+			}
+
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "1 " + id + " " + AccountType.POCKET + " " + initialTopUp + " " + tin; 
+		}
 		return "0";
 	}
 
