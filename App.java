@@ -109,13 +109,40 @@ public class App implements Testable
 		}
 	}
 
+
 	/**
-	 * Example of one of the testable functions.
-	 */
+	 * Generate list of closed accounts.
+	 * @return a string "r id1 id2 ... idn", where
+	 *         r = 0 for success, 1 for error; and
+	 *         id1 id2 ... idn is a list of space-separated closed account IDs.
+	 */	
 	@Override
 	public String listClosedAccounts()
 	{
-		return "0 it works!";
+
+		try{
+
+			//Query all accounts where closed = true
+			String queryClosedAccounts = "SELECT A.aid " + 
+																	 "FROM Accounts A " + 
+																	 "WHERE A.closed=1";
+
+		
+			Statement statement	= _connection.createStatement();
+
+			
+			ResultSet res = statement.executeQuery(queryClosedAccounts);
+
+			String idString = "";
+
+			while(res.next()){
+				idString = idString + " " + res.getString(1); 
+			}
+
+			return "0 " + idString;
+		}catch(Exception e){
+			return "1";
+		}
 	}
 
 	/**
@@ -142,14 +169,14 @@ public class App implements Testable
 
 		String insertAccounts = "INSERT INTO Accounts " +
 														"(aid, type, balance, closed) " +  
-														"VALUES (" + id + ", \'" + accountType + "\', " + initialBalance + ", 0" + ")";
+														"VALUES (\'" + id + "\', \'" + accountType + "\', " + initialBalance + ", 0" + ")";
 	
 		String insertOwns = "INSERT INTO Owns " + 
-												"VALUES (" + id + ", " + tin + ", "+ 1 + ")";	//prinmary owner (1) cause they created the account
+												"VALUES (\'" + id + "\', \'" + tin + "\', "+ 1 + ")";	//prinmary owner (1) cause they created the account
 							
 		String insertCustomer = "INSERT INTO Clients " +
 														"(cid, name, addr, pin) " + 
-														"VALUES (" + tin + ", \'" + name + "\', \'" + address + "\', \'" + encryptedPin + "\')";	//primary owner (1) cause they created the account
+														"VALUES (\'" + tin + "\', \'" + name + "\', \'" + address + "\', \'" + encryptedPin + "\')";	//primary owner (1) cause they created the account
 
 		String insertAccType;
 
@@ -502,12 +529,12 @@ public class App implements Testable
 			Statement statement = _connection.createStatement();
 			statement.executeQuery(
 				"INSTERT INTO Clients" +
-				"VALUES (" + tin + ", " + name + ", " + address + ", " + encryptedPin + ")"
+				"VALUES (\'" + tin + "\', \'" + name + "\', \'" + address + "\', \'" + encryptedPin + "\')"
 			);
 
 			statement.executeQuery(
 				"INSERT INTO Owns" +
-				"VALUES (" + accountId + ", " + tin + ", " + "0" + ")" //0 is to specify we are NOT the primary owner
+				"VALUES (\'" + accountId + "\', \'" + tin + "\', " + "0" + ")" //0 is to specify we are NOT the primary owner
 			);
 
 			return "0";
