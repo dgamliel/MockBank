@@ -442,20 +442,19 @@ public class App implements Testable
 		
 			String insertPocketToAccountTable = "INSERT INTO Accounts " +
 																					"(aid, type, balance, closed)" + 
-																					"VALUES (" + id + ", " + 
-AccountType.POCKET + ", " + fmtAmount + ", 0)";
+																					"VALUES (" + id + ", " + AccountType.POCKET + ", " + fmtAmount + ", 0)";
+
 			//Now insert the account into the linked table to link the accounts
-			
 			String insertLinks = "INSERT INTO Links " + 
 													 "(mainAid, linkedAid, isPocket)" + 
 													 "VALUES (" + linkedId + "," + id + "," + "1" + ")";
 
+			//Execute the crafted queries
 			statement.executeQuery(insertPocket);
 			statement.executeQuery(insertPocketToAccountTable);
 			statement.executeQuery(insertLinks);
 
 			//Check if the tin passed in is the primary owner of the account
-			
 			int isPrimary;
 
 			ResultSet res = statement.executeQuery(
@@ -471,13 +470,17 @@ AccountType.POCKET + ", " + fmtAmount + ", 0)";
 				isPrimary = 1;
 			}
 
+			//Finally insert the account into owns
+			String insertOwns = String.format("INSERT INTO Owns(aid, cid, primary_owner) VALUES (%s, %s, %d)", id, tin, isPrimary);
 
+			statement.executeQuery(insertOwns);
+
+			return "0 " + id +  " "  + linkedId + " " + initialTopUp + " " + tin;
 
 		}catch(Exception e){
 			e.printStackTrace();
 			return "1 " + id + " " + AccountType.POCKET + " " + initialTopUp + " " + tin; 
 		}
-		return "0";
 	}
 
 	/**
