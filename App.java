@@ -141,6 +141,7 @@ public class App implements Testable
 
 			return "0 " + idString;
 		}catch(Exception e){
+			e.printStackTrace();
 			return "1";
 		}
 	}
@@ -237,6 +238,7 @@ public class App implements Testable
 			return "0";
 		}
 		catch(Exception e){
+			e.printStackTrace();
 			return "1 " + e.getMessage(); 
 		}
 	}
@@ -384,6 +386,7 @@ public class App implements Testable
 			return "0";
 		}
 		catch(Exception e){
+			e.printStackTrace();
 			return "1 " + e.getMessage();
 		}
 	}
@@ -554,7 +557,47 @@ public class App implements Testable
 	 */
 	@Override
 	public String deposit( String accountId, double amount ){
-		return "0";
+
+		/*
+		 *	Basic Algorithm
+		 *	1) Fetch the account information
+		 *	2) From the account information grab the current amount
+		 *	3) Store the old account amount 
+		 *	4) Add the new amount to the old amount
+		 *	5) Update the account information with the new 
+		 */
+
+		try{
+			
+			//Init the statement
+			Statement statement = _connection.createStatement();
+
+			//Craft the query to be executed
+			String getOldAmount = "SELECT A.amount FROM Accounts A WHERE A.aid=" + accountId;
+
+			//Get the amount listed
+			ResultSet res = statement.executeQuery(getOldAmount);
+			double oldAmt = Double.parseDouble(res.getString(1));
+
+			//Add new amount to the old amount
+			double newAmount = oldAmt + amount;
+
+			//Format as a string
+			String fmtAmount = String.format("%.2f", amount);
+
+			//Update the database 
+			String updateNewAmount = "UPDATE A.amount FROM Accounts A WHERE A.aid=" + accountId;
+
+			//Execute the update query 
+			statement.executeQuery(updateNewAmount);
+
+			return "0 " + oldAmt + " " + newAmount;
+		}catch(Exception e){
+			e.printStackTrace();
+			return "1";
+		}
+
+
 	}
 
 	/**
@@ -566,6 +609,9 @@ public class App implements Testable
 	 */
 	@Override
 	public String showBalance( String accountId ){
+
+		//Query all accounts that are 
+
 		return "0";
 	}
 
@@ -631,6 +677,7 @@ public class App implements Testable
 				resSize++;
 			}
 		}catch(Exception e){
+			e.printStackTrace();
 			return -1;
 		}
 		return resSize;
