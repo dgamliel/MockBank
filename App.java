@@ -734,7 +734,7 @@ public class App implements Testable
 
 	//CLIENT PURCHASES FUNCTION
 	//3-5-2011 David Copperfill purchases $5 from account 53027
-	public boolean ClientPurchases(int month, int day, int year, String name, double amount, int account)
+	public boolean ClientPurchase(int month, int day, int year, String name, double amount, int account)
         {
                 double Danny_current_balance = 7.43;
                 if (amount < Danny_current_balance)

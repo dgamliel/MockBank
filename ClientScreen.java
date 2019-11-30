@@ -40,19 +40,21 @@ class ClientScreen {
         payfriendButton.setBounds(right_x, height + padding*2, 200, 100);
         collectButton.setBounds(right_x, height + padding*3, 200, 100);
 
-				wireButton.addActionListener((ActionListener) new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e){
-						frame.getContentPane().removeAll();
-						frame.repaint();
-					}
-				});
+	wireButton.addActionListener((ActionListener) new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e){
+			frame.getContentPane().removeAll();
+			frame.repaint();
+			AdvancedOperation so = new AdvancedOperation(app, 8);
+		}
+	});
 
         purchaseButton.addActionListener((ActionListener) new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-    						frame.repaint();
+    		frame.repaint();
+		SimpleOperation so = new SimpleOperation(app, 2);
             }
         });
 
@@ -61,6 +63,7 @@ class ClientScreen {
           public void actionPerformed(ActionEvent e){
             frame.getContentPane().removeAll();
             frame.repaint();
+	    SimpleOperation so = new SimpleOperation(app, 3);
           }
         });
 
@@ -69,6 +72,7 @@ class ClientScreen {
           public void actionPerformed(ActionEvent e){
             frame.getContentPane().removeAll();
             frame.repaint();
+	    AdvancedOperation so = new AdvancedOperation(app, 4);
           }
         });
 
@@ -77,6 +81,7 @@ class ClientScreen {
           public void actionPerformed(ActionEvent e){
             frame.getContentPane().removeAll();
             frame.repaint();
+	    SimpleOperation so = new SimpleOperation(app, 1);
           }
         });
 
@@ -85,6 +90,7 @@ class ClientScreen {
           public void actionPerformed(ActionEvent e){
             frame.getContentPane().removeAll();
             frame.repaint();
+	    AdvancedOperation so = new AdvancedOperation(app, 6);
           }
         });
 
@@ -93,6 +99,7 @@ class ClientScreen {
           public void actionPerformed(ActionEvent e){
             frame.getContentPane().removeAll();
             frame.repaint();
+	    AdvancedOperation so = new AdvancedOperation(app, 7);
           }
         });
 
@@ -101,6 +108,7 @@ class ClientScreen {
           public void actionPerformed(ActionEvent e){
             frame.getContentPane().removeAll();
             frame.repaint();
+	    AdvancedOperation so = new AdvancedOperation(app, 5);
           }
         });
 
