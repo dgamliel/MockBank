@@ -63,15 +63,15 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 
         panel = new JPanel(new GridLayout(5, 1));
 
+	panel.add(customerName_label);
+        panel.add(customerName_text);
         panel.add(amount_label);
         panel.add(amount_text);
         panel.add(Fromaccount_label);
 	panel.add(Toaccount_label);
         panel.add(Toaccount_text);
 	panel.add(Fromaccount_text);
-	panel.add(customerName_label);
-	panel.add(customerName_text);
-
+	
 
 
         message = new JLabel();
@@ -94,6 +94,7 @@ public class AdvancedOperation extends JFrame implements ActionListener{
         String amountValue = amount_text.getText();
 	String FromaccountValue = Fromaccount_text.getText();
         String ToaccountValue  = Toaccount_text.getText();
+	String CustomerNameValue = customerName_text.getText();
 
         amountValue = amountValue.trim();
         double amount = Double.parseDouble(amountValue);
@@ -101,6 +102,7 @@ public class AdvancedOperation extends JFrame implements ActionListener{
         int Toaccount = Integer.parseInt(ToaccountValue);
 	FromaccountValue = FromaccountValue.trim();
         int Fromaccount = Integer.parseInt(FromaccountValue);
+	CustomerNameValue = CustomerNameValue.trim();
 
 	//BASICALLY DO SWITCH STATEMENTS WITH IF CONDITIONALS TO SEE WHAT TYPE OF TRANSACTION WE DO WHEN WE SEND IT TO APP
 	//HARD CODING DATE VARIABLES RN
@@ -108,66 +110,46 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 	int day = 1;
 	int month = 1;
 	int year = 2020;
-	String name = "David";
-	double returnValue;
-	boolean returnValue1;
+	String returnValue;
 
 	//TOPUP TRANSACTION
 	if(this.selector == 4)
 	{
-		returnValue = app.ClientTopup(month, day, year, name, amount, Fromaccount, Toaccount);
-		if (returnValue != -1)
-		{
-			ClientScreen cs = new ClientScreen(this.app);
-		}
-		message.setText(" Invalid input.. ");
+		returnValue = app.ClientTopup(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+		System.out.println(returnValue);
+                ClientScreen cs = new ClientScreen(this.app);
 	}
 
 	//COLLECTS TRANSACTION
         if(this.selector == 5)
         {
-                returnValue1 = app.ClientCollects(month, day, year, name, amount, Fromaccount, Toaccount);
-                if (returnValue1 == true)
-                {
-                        ClientScreen cs = new ClientScreen(this.app);
-                }
-                message.setText(" Invalid input.. ");
+                returnValue = app.ClientCollects(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+                System.out.println(returnValue);
+                ClientScreen cs = new ClientScreen(this.app);
         }
 
 	//ClientTransfer FUNCTION
         if(this.selector == 6)
         {
-                returnValue1 = app.ClientTransfer(month, day, year, name, amount, Fromaccount, Toaccount);
-                if (returnValue1 == true)
-                {
-                        ClientScreen cs = new ClientScreen(this.app);
-                }
-
-                message.setText(" Invalid input.. ");
+                returnValue = app.ClientTransfer(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+                System.out.println(returnValue);
+                ClientScreen cs = new ClientScreen(this.app);
         }
 
 	//ClientPayfriend FUNCTION
         if(this.selector == 7)
         {
-                returnValue1 = app.ClientPayfriend(month, day, year, name, amount, Fromaccount, Toaccount);
-                if (returnValue1 == true)
-                {
-                        ClientScreen cs = new ClientScreen(this.app);
-                }
-
-                message.setText(" Invalid input.. ");
+                returnValue = app.ClientPayfriend(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+                System.out.println(returnValue);
+                ClientScreen cs = new ClientScreen(this.app);
         }
 
 	//WIRE FUNCTION
         if(this.selector == 8)
         {
-                returnValue1 = app.ClientWire(month, day, year, name, amount, Fromaccount, Toaccount);
-                if (returnValue1== true)
-                {
-                        ClientScreen cs = new ClientScreen(this.app);
-                }
-
-                message.setText(" Invalid input.. ");
+                returnValue = app.ClientWire(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+                System.out.println(returnValue);
+                ClientScreen cs = new ClientScreen(this.app);
         }
 
 
