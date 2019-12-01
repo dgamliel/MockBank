@@ -802,6 +802,48 @@ public class App implements Testable
                 }
                 return ("The request for client " + name + " did not go through. Please try again");
         }
+
+	public String GenerateMonthlyStatement()
+	{
+		String returnValue = ("NAME	AMOUNT      AID     TRANSACTION TYPE");
+		return returnValue;			  	
+	}
+
+	public String AddInterest()
+        {
+                String returnValue = ("Added Interests to these accounts: 12398, 298332, 20939");
+                return returnValue;
+        }
+
+	public String GenerateCustomerReport()
+        {
+                String returnValue = ("Created an account for Daniel cause hes a broke bitch");
+                return returnValue;
+        }
+
+	public String DTER()
+        {
+                String returnValue = ("DTER ACTION COMPLETED: IDK WHAT THIS EVEN STANDS FOR");
+                return returnValue;
+        }
+
+	public String CloseAccount(int aid, double balance, int avg, String accType, String isClosed)
+	{
+		String returnValue = ("Opened new " + accType + " account with aid " + aid + "and a balance of" + balance);
+	        return returnValue;	
+	}	
+
+	public String CreateAccount(int aid, double balance, int avg, String accType, String isClosed)
+        {
+                String returnValue = ("Closed " + accType + " account with aid " + aid + "and a balance of" + balance);
+        	return returnValue;
+	}
+
+	public String DeleteAccount(int aid, double balance, int avg, String accType, String isClosed)
+        {
+                String returnValue = ("Deleted " + accType + " account with aid " + aid + "and a balance of" + balance);
+        	return returnValue;
+	}
 }
 
 
