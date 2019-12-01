@@ -40,19 +40,23 @@ class BankTellerScreen {
         deleteaccountButton.setBounds(right_x, height + padding*2, 200, 100);
         deletetransactionButton.setBounds(right_x, height + padding*3, 200, 100);
 
-				monthlystatementButton.addActionListener((ActionListener) new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e){
-						frame.getContentPane().removeAll();
-						frame.repaint();
-					}
-				});
+	monthlystatementButton.addActionListener((ActionListener) new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e){
+			frame.getContentPane().removeAll();
+			frame.repaint();
+			String returnValue = app.GenerateMonthlyStatement();
+            		System.out.println(returnValue);
+            		BankTellerScreen bts = new BankTellerScreen(app);
+		}
+	});
 
         closedaccountButton.addActionListener((ActionListener) new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-    						frame.repaint();
+    		frame.repaint();
+		AccountManagement am = new AccountManagement(app, 2);
             }
         });
 
@@ -61,6 +65,9 @@ class BankTellerScreen {
           public void actionPerformed(ActionEvent e){
             frame.getContentPane().removeAll();
             frame.repaint();
+	    String returnValue = app.DTER();
+	    System.out.println(returnValue);
+	    BankTellerScreen bts = new BankTellerScreen(app);
           }
         });
 
@@ -69,6 +76,9 @@ class BankTellerScreen {
           public void actionPerformed(ActionEvent e){
             frame.getContentPane().removeAll();
             frame.repaint();
+	    String returnValue = app.GenerateCustomerReport();
+            System.out.println(returnValue);
+            BankTellerScreen bts = new BankTellerScreen(app);
           }
         });
 
@@ -77,6 +87,9 @@ class BankTellerScreen {
           public void actionPerformed(ActionEvent e){
             frame.getContentPane().removeAll();
             frame.repaint();
+	    String returnValue = app.AddInterest();
+            System.out.println(returnValue);
+            BankTellerScreen bts = new BankTellerScreen(app);
           }
         });
 
@@ -85,6 +98,7 @@ class BankTellerScreen {
           public void actionPerformed(ActionEvent e){
             frame.getContentPane().removeAll();
             frame.repaint();
+	    AccountManagement am = new AccountManagement(app, 1);
           }
         });
 
@@ -93,6 +107,7 @@ class BankTellerScreen {
           public void actionPerformed(ActionEvent e){
             frame.getContentPane().removeAll();
             frame.repaint();
+	    AccountManagement am = new AccountManagement(app, 3);
           }
         });
 
