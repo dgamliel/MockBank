@@ -56,12 +56,12 @@ public class SimpleOperation extends JFrame implements ActionListener{
 
         panel = new JPanel(new GridLayout(4, 1));
 
+	panel.add(customerName_label);
+        panel.add(customerName_text);
         panel.add(amount_label);
         panel.add(amount_text);
         panel.add(account_label);
         panel.add(account_text);
-	panel.add(customerName_label);
-	panel.add(customerName_text);
 
 
 
@@ -84,11 +84,13 @@ public class SimpleOperation extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent ae) {
         String amountValue = amount_text.getText();
         String accountValue  = account_text.getText();
+	String CustomerNameValue = customerName_text.getText();
 
         amountValue = amountValue.trim();
         double amount = Double.parseDouble(amountValue);
         accountValue = accountValue.trim();
         int account = Integer.parseInt(accountValue);
+	CustomerNameValue = CustomerNameValue.trim();
 
 	//BASICALLY DO SWITCH STATEMENTS WITH IF CONDITIONALS TO SEE WHAT TYPE OF TRANSACTION WE DO WHEN WE SEND IT TO APP
 	//HARD CODING DATE VARIABLES RN
@@ -96,41 +98,31 @@ public class SimpleOperation extends JFrame implements ActionListener{
 	int day = 1;
 	int month = 1;
 	int year = 2020;
-	String name = "David";
-	double returnValue;
+	String returnValue;
 
 	//DEPOSIT TRANSACTION
 	if(this.selector == 1)
 	{
-		returnValue = app.ClientDeposit(month, day, year, name, amount, account);
-		if (returnValue != -1)
-		{
-			ClientScreen cs = new ClientScreen(this.app);
-		}
-		message.setText(" Invalid input.. ");	
+		returnValue = app.ClientDeposit(month, day, year, CustomerNameValue, amount, account);
+		System.out.println(returnValue);
+                ClientScreen cs = new ClientScreen(this.app);
 	}
 
 	//PURCHASE TRANSACTION
         if(this.selector == 2)
         {
-                boolean returnValue1 = app.ClientPurchase(month, day, year, name, amount, account);
-                if (returnValue1 == true)
-                {
-                        ClientScreen cs = new ClientScreen(this.app);
-                }
-                message.setText(" Invalid input.. ");
+                returnValue = app.ClientPurchase(month, day, year, CustomerNameValue, amount, account);
+                System.out.println(returnValue);
+                ClientScreen cs = new ClientScreen(this.app);
         }
 
 	//WITHDRAW FUNCTION
         if(this.selector == 3)
         {
-                returnValue = app.ClientWithdraw(month, day, year, name, amount, account);
-                if (returnValue != -1)
-                {
-                        ClientScreen cs = new ClientScreen(this.app);
-                }
-               
-                message.setText(" Invalid input.. ");
+                returnValue = app.ClientWithdraw(month, day, year, CustomerNameValue, amount, account);
+    		System.out.println(returnValue);
+                ClientScreen cs = new ClientScreen(this.app);
+                //message.setText(" Invalid input.. ");
         }
 
 }
