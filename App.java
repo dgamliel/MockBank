@@ -333,7 +333,8 @@ public class App implements Testable
 					"mainAid char(20)," +
 					"linkedAid char(20)," +
 					"isPocket integer," +
-					"primary key (mainAid)" +
+					"primary key (mainAid)," +
+					"unique (linkedAid)" + 
 				")"			
 			);
 
@@ -471,20 +472,21 @@ public class App implements Testable
 
 			//Insert into pockets
 			String insertPocket = "INSERT INTO Pockets " +
-														"VALUES (" + id + " )";
+														"(aid) " +
+														"VALUES (\'" + id + "\')";
 		
 			String insertPocketToAccountTable = "INSERT INTO Accounts " +
-																					"(aid, type, balance, closed)" + 
-																					"VALUES (" + id + ", " + AccountType.POCKET + ", " + fmtAmount + ", 0)";
+																					"(aid, type, balance, closed) " + 
+																					"VALUES (\'" + id + "\', \'" + AccountType.POCKET + "\', " + fmtAmount + ", 0)";
 
 			//Now insert the account into the linked table to link the accounts
 			String insertLinks = "INSERT INTO Links " + 
 													 "(mainAid, linkedAid, isPocket)" + 
-													 "VALUES (" + linkedId + "," + id + "," + "1" + ")";
+													 "VALUES (\'" + linkedId + "\',\'" + id + "\'," + "1" + ")";
 
 			//Execute the crafted queries
-			statement.executeQuery(insertPocket);
 			statement.executeQuery(insertPocketToAccountTable);
+			statement.executeQuery(insertPocket);
 			statement.executeQuery(insertLinks);
 
 			//Check if the tin passed in is the primary owner of the account
@@ -493,7 +495,7 @@ public class App implements Testable
 			ResultSet res = statement.executeQuery(
 				"SELECT * "  +
 				"FROM Owns " +
-				"WHERE cid=" + tin + " AND " + "aid=" + linkedId +  " AND primary_owner=1"
+				"WHERE cid=\'" + tin + "\' AND " + "aid=\'" + linkedId +  "\' AND primary_owner=1"
 			);
 
 			if (ResSize(res) == 0){
@@ -616,8 +618,6 @@ public class App implements Testable
 			e.printStackTrace();
 			return "1";
 		}
-
-
 	}
 
 	/**
@@ -629,10 +629,28 @@ public class App implements Testable
 	 */
 	@Override
 	public String showBalance( String accountId ){
+	
+		String queryBalance = String.format("SELECT A.balance FROM Accounts A WHERE A.aid=\'%s\'",accountId);
 
-		//Query all accounts that are 
+		try{
+			Statement statement = _connection.createStatement();
+			ResultSet res = statement.executeQuery(queryBalance);
 
-		return "0";
+			if (res.next()){
+				double value     = Double.valueOf(res.getString(1));				
+				String formatVal = String.format("%.2f", value);
+
+				return "0 " + formatVal;
+			}
+
+			else{
+				return "1";
+			}
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "1 " + e.getMessage();
+		}
 	}
 
 	/**
@@ -646,7 +664,98 @@ public class App implements Testable
 	 */
 	@Override
 	public String topUp( String accountId, double amount ){
-		return "0";
+
+		try{
+
+			//Declare variables to be used in later queries
+			String mainAid;
+			double fetchedAmount, newMainAmount, newPockAmount, fetchedPockAmount;
+
+			Statement statement = _connection.createStatement();
+
+			//Craft query for main account linked to pocket
+			String queryLinkedForMain = String.format(
+				"SELECT L.mainAid FROM Links L WHERE L.linkedAid=\'%s\'", 
+				accountId
+			);
+
+			ResultSet res = statement.executeQuery(queryLinkedForMain);
+		
+			//Get main account linked to pocket
+			if (res.next()){
+				mainAid = res.getString(1);
+			}else{
+				System.out.println("Pocket account has no linked main account");
+				return "1";
+			}
+			
+			String getAmountFromMainAccounts = String.format(
+				"SELECT A.balance FROM Accounts A WHERE A.aid=\'%s\'",
+				mainAid
+			);
+
+			String getAmountFromPockAccounts = String.format(
+				"SELECT A.balance FROM Accounts A WHERE A.aid=\'%s\'",
+				accountId
+			);
+
+			res = statement.executeQuery(getAmountFromMainAccounts);
+
+			//Get balance of main account
+			if (res.next()){
+				fetchedAmount = res.getDouble(1);
+			}else{
+				return "1";
+			}
+
+			//Get Balance of pocket account
+			res = statement.executeQuery(getAmountFromPockAccounts);
+
+			if (res.next()){
+				fetchedPockAmount = res.getDouble(1);
+			}else{
+				return "1";
+			}
+
+			//The amount requested to be moved is more than is in the account
+			if (amount > fetchedAmount){
+				System.out.println("Error: Move requested more money than in account");
+				return "1";
+			}			
+
+			newMainAmount = fetchedAmount - amount;
+			newPockAmount = fetchedPockAmount + amount;
+
+			String subtractFromMain = String.format(
+				"UPDATE Accounts A SET A.balance=%.2f WHERE A.aid=\'%s\'",
+				newMainAmount,
+				mainAid
+			);
+
+			String addToPocket = String.format(
+				"UPDATE Accounts A SET A.balance=%.2f WHERE A.aid=\'%s\'",
+				newPockAmount,
+				accountId
+			);
+
+
+			////// ADD WITHDRAWL AND DEPOSIT TO TRANSACTION LIST //////
+			String addTransaction = String.format(
+				"INSERT INTO Transactions (aid1, aid2, amount) VALUES (\'%s\', \'%s\', %.2f)",
+				mainAid,
+				accountId,
+				amount
+			);
+
+			statement.executeQuery(addTransaction);
+
+
+			return "0 " + newMainAmount + " " + newPockAmount;
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "1 " + e.getMessage();
+		}
 	}
 
 	/**
