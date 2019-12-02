@@ -123,9 +123,9 @@ public class App implements Testable
 		try{
 
 			//Query all accounts where closed = true
-			String queryClosedAccounts = "SELECT A.aid " + 
-																	 "FROM Accounts A " + 
-																	 "WHERE A.closed=1";
+			String queryClosedAccounts = "SELECT aid " + 
+																	 "FROM Accounts " + 
+																	 "WHERE closed=1";
 
 		
 			Statement statement	= _connection.createStatement();
@@ -165,8 +165,9 @@ public class App implements Testable
 	@Override
 	public String createCheckingSavingsAccount( AccountType accountType, String id, double initialBalance, String tin, String name, String address )
 	{
-		int random = ThreadLocalRandom.current().nextInt(1000, 9999 + 1); //Pick num between 1000 and 9999
-		String encryptedPin = hashPin(random);
+		//int random = ThreadLocalRandom.current().nextInt(1000, 9999 + 1); //Pick num between 1000 and 9999
+		int defaultPin = 1717;
+		String encryptedPin = hashPin(defaultPin);
 
 		String insertAccounts = "INSERT INTO Accounts " +
 														"(aid, type, balance, closed) " +  
@@ -296,6 +297,7 @@ public class App implements Testable
 							"aid1 char(20)," + 
 							"aid2 char(20)," + 
 							"check_num integer," + // primary = 1 if owner is primary else: primary = 0
+							"amount real, " + 
 							"foreign key (aid1) references Accounts," + 
 							"foreign key (aid2) references Accounts," + 
 							"primary key (aid1, aid2)" + 
@@ -460,6 +462,7 @@ public class App implements Testable
 	 */
 	@Override
 	public String createPocketAccount( String id, String linkedId, double initialTopUp, String tin ){
+		/* TODO: INSERT ROW IN TRANSACTION ON CREATION OF THE POCKET ACCOUNT */
 		try{
 
 			Statement statement = _connection.createStatement();
@@ -501,7 +504,7 @@ public class App implements Testable
 			}
 
 			//Finally insert the account into owns
-			String insertOwns = String.format("INSERT INTO Owns(aid, cid, primary_owner) VALUES (%s, %s, %d)", id, tin, isPrimary);
+			String insertOwns = String.format("INSERT INTO Owns(aid, cid, primary_owner) VALUES (\'%s\', \'%s\', %d)", id, tin, isPrimary);
 
 			statement.executeQuery(insertOwns);
 
@@ -526,8 +529,9 @@ public class App implements Testable
 		try {
 
 			//TODO: Change this function when we can read input from the bank teller to determine the pin
-			int random = ThreadLocalRandom.current().nextInt(1000, 9999 + 1); //Pick num between 1000 and 9999
-			String encryptedPin = hashPin(random);
+			//int random = ThreadLocalRandom.current().nextInt(1000, 9999 + 1); //Pick num between 1000 and 9999
+			int defaultPin = 1717;
+			String encryptedPin = hashPin(defaultPin);
 
 			Statement statement = _connection.createStatement();
 			statement.executeQuery(
@@ -573,25 +577,41 @@ public class App implements Testable
 			Statement statement = _connection.createStatement();
 
 			//Craft the query to be executed
-			String getOldAmount = "SELECT A.amount FROM Accounts A WHERE A.aid=" + accountId;
+			String getOldAmount = "SELECT A.balance FROM Accounts A WHERE A.aid=\'" + accountId + "\'";
 
 			//Get the amount listed
 			ResultSet res = statement.executeQuery(getOldAmount);
-			double oldAmt = Double.parseDouble(res.getString(1));
 
-			//Add new amount to the old amount
-			double newAmount = oldAmt + amount;
 
-			//Format as a string
-			String fmtAmount = String.format("%.2f", amount);
+			//Check that resultant set not empty
+			if (res.next()){
+				double oldAmt = Double.parseDouble(res.getString(1));
 
-			//Update the database 
-			String updateNewAmount = "UPDATE A.amount FROM Accounts A WHERE A.aid=" + accountId;
+				//Add new amount to the old amount
+				double newAmount = oldAmt + amount;
 
-			//Execute the update query 
-			statement.executeQuery(updateNewAmount);
+				//Format as a string
+				String fmtAmount    = String.format("%.2f", amount);
+				String fmtNewAmount = String.format("%.2f", newAmount);
 
-			return "0 " + oldAmt + " " + newAmount;
+				//Update the database 
+				String updateNewAmount = "UPDATE Accounts A SET A.balance=" + fmtNewAmount + " WHERE A.aid=\'" + accountId + "\'"; 
+
+				//Execute the update query 
+				statement.executeQuery(updateNewAmount);
+
+				////// Input into transactions /////
+				String insertTransaction = String.format("INSERT INTO Transactions (aid1, aid2, amount) VALUES (\'%s\', \'%s\', %f)", accountId, accountId, amount);
+				statement.executeQuery(insertTransaction); 
+
+				return "0 " + oldAmt + " " + newAmount;
+			}
+
+			//If we fetch no users in the DB we return an error
+			else{
+				return "1";
+			}
+		//General DB fuckery 
 		}catch(Exception e){
 			e.printStackTrace();
 			return "1";
