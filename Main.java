@@ -29,20 +29,68 @@ public class Main
 			app.exampleAccessToDB();                // Example on how to connect to the DB.
 
 			// Example tests.  We'll overwrite your Main.main() function with our final tests.
-			r = app.listClosedAccounts();
-			System.out.println( r );
 
+			System.out.println("\n\n///////////// MY TESTS /////////////\n");
+			// Create tables
 			r = app.createTables();
 			System.out.println("CREATE TABLES " + r);
 			
-			// Another example test.
-			r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "1", 1234.56, "1", "Im YoungMing", "Known" );
-			System.out.println( r );
+			//Create dummy checkings Savings Accounts
+			r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "acc1", 1000.00, "1", "Im YoungMing", "Known" );
+			System.out.println( "CREATE ACCOUNT ACC1 - " + r );
+			
+			//Create new seperate checking account
+			r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "acc2", 1000.00, "2", "Danny Dave", "Gangy Wangy Lane" );
+			System.out.println( "CREATE ACCOUNT ACC2 - " + r );
+
+			// Test create pocket account to link to acc1
+			r = app.createPocketAccount("pocket1", "acc1", 1000.00, "1");
+			System.out.println("CREATE POCKET ACCOUNT pocket1 - " + r );
+			
+			r = app.createPocketAccount("pocket2", "acc2", 1000.00, "2");
+			System.out.println("CREATE POCKET ACCOUNT pocket2 - " + r );
+
+			// Test Create customer to co-own account "acc1"
+			r = app.createCustomer("acc1", "customer1", "Chumbo Wumbo", "1919 Gang Lane");
+			System.out.println("CREATING NEW CUSTOMER TO CO-OWN ACCOUNT \"acc1\" - " + r);
+
+
+			// Test Show balance before deposit
+			r = app.showBalance("acc1");
+			System.out.println( "SHOW BALANCE ACC1 - " + r );
+
+
+			r = app.showBalance("acc2");
+			System.out.println( "SHOW BALANCE ACC2 - " + r );
+
+			// Test deposit
+			//System.out.println("DEPOSITING ADDITIONAL 200 INTO ACC1");
+			r = app.deposit("acc1", 200.00);
+			System.out.println( "DEPOSITING ADDITIONAL 200 INTO ACC1 - " + r );
+
+			// Test top up on account 1
+			r = app.topUp("acc1", 500.00);
+			System.out.println("Testing top up on acc1 -" + r );
+
+			// Test top up on account 2 
+			r = app.topUp("acc2", 500.00);
+			System.out.println("Testing top up on acc2 -" + r );
+			
+			// Test Show balance before deposit
+			r = app.showBalance("acc1");
+			System.out.println("Balance MAIN - " + r );
+
+			r = app.showBalance("acc2");
+			System.out.println("Balance POCKET - " + r );
+
+			//Should return null but who knows
+			r = app.listClosedAccounts();
+			System.out.println("LISTING CLOSED ACCOUNTS - " + r );
 
 			r = app.dropTables();
 			System.out.println("DROP TABLES " + r);
 
-			StartScreen s = new StartScreen(app);
+			//StartScreen s = new StartScreen(app);
 			
 
 		}

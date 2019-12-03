@@ -39,11 +39,13 @@ public class App implements Testable
 	}
 
 
+	/*
 	public ResultSet query(String s) throws SQLException{
 			Statement statement =_connection.createStatement();
 			ResultSet res = statement.executeQuery(s);
 			return res;
 	}
+	*/
 
 	/**
 	 * This is an example access operation to the DB.
@@ -197,15 +199,15 @@ public class App implements Testable
 
 			//Insert into accounts
 			ResultSet resAccs = statement.executeQuery(insertAccounts);				
-			System.out.println(insertAccounts);	
+			//System.out.println(insertAccounts);	
 
 			//Insert into customer
 			ResultSet res = statement.executeQuery(insertCustomer);				
-			System.out.println(insertCustomer);
+			//System.out.println(insertCustomer);
 
 			//Insert into owns, linking accounts, customer
 			ResultSet resOwns = statement.executeQuery(insertOwns);				
-			System.out.println(insertOwns);
+			//System.out.println(insertOwns);
 
 			return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;		
 
@@ -258,10 +260,10 @@ public class App implements Testable
 			/* CLIENTS TABLE */
 			statement.executeQuery(
 				"create table Clients(" +
-							"cid char(20)," + 
-							"name char(20)," + 
-							"addr char(20)," + 
-							"pin char(32)," + 
+							"cid varchar(20)," + 
+							"name varchar(20)," + 
+							"addr varchar(20)," + 
+							"pin varchar(32)," + 
 							"primary key (cid)" +  
 							")" 
 			);
@@ -269,9 +271,9 @@ public class App implements Testable
 			/* ACCOUNTS TABLE */
 			statement.executeQuery(
 				"create table Accounts(" +
-							"aid char(20)," + 
-							"type char(20)," + 
-							"bname char(32)," + // primary = 1 if owner is primary else: primary = 0
+							"aid varchar(20)," + 
+							"type varchar(20)," + 
+							"bname varchar(32)," + // primary = 1 if owner is primary else: primary = 0
 							"balance real," + 
 							"closed integer, " + //closed = 1 if account closed else: primary = 0
 							"primary key (aid)" + 
@@ -281,8 +283,8 @@ public class App implements Testable
 			/* OWNS TABLE */
 			statement.executeQuery(
 				"create table Owns(" +
-							"aid char(20)," + 
-							"cid char(20)," + 
+							"aid varchar(20)," + 
+							"cid varchar(20)," + 
 							"primary_owner integer," + // primary = 1 if owner is primary else: primary = 0
 							"foreign key (cid) references Clients," + 
 							"foreign key (aid) references Accounts," + 
@@ -294,8 +296,8 @@ public class App implements Testable
 			/* TRANSACTION TABLE */
 			statement.executeQuery(
 				"create table Transactions(" +
-							"aid1 char(20)," + 
-							"aid2 char(20)," + 
+							"aid1 varchar(20)," + 
+							"aid2 varchar(20)," + 
 							"check_num integer," + // primary = 1 if owner is primary else: primary = 0
 							"amount real, " + 
 							"foreign key (aid1) references Accounts," + 
@@ -309,7 +311,7 @@ public class App implements Testable
 			statement.executeQuery(
 				"create table Interest(" +
 							"intr real," + 
-							"type char(10)," + 
+							"type varchar(20)," + 
 							"primary key (type)" + //Only need the aid to correctly identify a row 
 							")" 
 
@@ -318,8 +320,8 @@ public class App implements Testable
 			/* HAS_INTEREST TABLE */
 			statement.executeQuery(
 				"create table Has_Interest(" +
-							"aid char(20)," + 
-							"type char(10)," + 
+							"aid varchar(20)," + 
+							"type varchar(20)," + 
 							"foreign key (aid) references Accounts," + 
 							"foreign key (type) references Interest," + 
 							"primary key (aid)" + //Only need the aid to correctly identify a row 
@@ -330,8 +332,8 @@ public class App implements Testable
 			/* LINKS TABLE */
 			statement.executeQuery(
 				"create table Links(" +
-					"mainAid char(20)," +
-					"linkedAid char(20)," +
+					"mainAid varchar(20)," +
+					"linkedAid varchar(20)," +
 					"isPocket integer," +
 					"primary key (mainAid)," +
 					"unique (linkedAid)" + 
@@ -342,7 +344,7 @@ public class App implements Testable
 			/* CHECKING TABLE */
 			statement.executeQuery(
 				"create table Checkings(" +
-					"aid char(20)," +
+					"aid varchar(20)," +
 					"primary key (aid)," +
 					"foreign key (aid) references Accounts" +
 				")"
@@ -351,7 +353,7 @@ public class App implements Testable
 			/* Savings TABLE */
 			statement.executeQuery(
 				"create table Savings(" +
-					"aid char(20)," +
+					"aid varchar(20)," +
 					"primary key (aid)," +
 					"foreign key (aid) references Accounts" +
 				")"
@@ -360,7 +362,7 @@ public class App implements Testable
 			/* Pockets TABLE */
 			statement.executeQuery(
 				"create table Pockets(" +
-					"aid char(20)," +
+					"aid varchar(20)," +
 					"primary key (aid)," +
 					"foreign key (aid) references Accounts" +
 				")"
@@ -537,17 +539,19 @@ public class App implements Testable
 
 			Statement statement = _connection.createStatement();
 			statement.executeQuery(
-				"INSTERT INTO Clients" +
+				"INSERT INTO Clients " +
 				"VALUES (\'" + tin + "\', \'" + name + "\', \'" + address + "\', \'" + encryptedPin + "\')"
 			);
 
+			////// ASSUME THAT IF ACCOUNTID DOES NOT EXIST IN FOREIGN KEY CONSTRAINT WILL THROW ERROR ////// 
 			statement.executeQuery(
-				"INSERT INTO Owns" +
+				"INSERT INTO Owns " +
 				"VALUES (\'" + accountId + "\', \'" + tin + "\', " + "0" + ")" //0 is to specify we are NOT the primary owner
 			);
 
 			return "0";
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "1 " + e.getMessage(); 
 		}
 	}
@@ -572,6 +576,11 @@ public class App implements Testable
 		 *	4) Add the new amount to the old amount
 		 *	5) Update the account information with the new 
 		 */
+
+		if (amount < 0.0){
+			System.out.println("app.deposit()::581 - Attempting to deposit a negative amount");
+			return "1";
+		}
 
 		try{
 			
@@ -667,7 +676,6 @@ public class App implements Testable
 
 		try{
 
-			//Declare variables to be used in later queries
 			String mainAid;
 			double fetchedAmount, newMainAmount, newPockAmount, fetchedPockAmount;
 
@@ -679,13 +687,15 @@ public class App implements Testable
 				accountId
 			);
 
+			System.out.println("App.topUp()::690 queryLinkedForMain - " + queryLinkedForMain);
 			ResultSet res = statement.executeQuery(queryLinkedForMain);
 		
 			//Get main account linked to pocket
 			if (res.next()){
 				mainAid = res.getString(1);
+				System.out.println("Found mainAid of " + mainAid + " from linked account " + accountId);
 			}else{
-				System.out.println("Pocket account has no linked main account");
+				System.out.println("App.topUp()::696 - Pocket account has no linked main account");
 				return "1";
 			}
 			
@@ -703,7 +713,8 @@ public class App implements Testable
 
 			//Get balance of main account
 			if (res.next()){
-				fetchedAmount = res.getDouble(1);
+				fetchedAmount = res.getDouble(1);	
+				System.out.println("Fetched amount in main account is " + fetchedAmount);
 			}else{
 				return "1";
 			}
@@ -713,6 +724,7 @@ public class App implements Testable
 
 			if (res.next()){
 				fetchedPockAmount = res.getDouble(1);
+				System.out.println("Fetched amount in pocket account is " + fetchedPockAmount);
 			}else{
 				return "1";
 			}
@@ -747,6 +759,8 @@ public class App implements Testable
 				amount
 			);
 
+			statement.executeQuery(subtractFromMain);
+			statement.executeQuery(addToPocket);
 			statement.executeQuery(addTransaction);
 
 
@@ -770,7 +784,99 @@ public class App implements Testable
 	 */
 	@Override
 	public String payFriend( String from, String to, double amount ){
-		return "0";
+
+		///////TODO: Determine if we need to verify that the accounts maintain 1 similar co-owner ///// 
+
+		/*
+		 *	Algorithm
+		 *	1) Ensure both accounts are pocket accounts
+		 *	2) Update from with balanceFrom - amount
+		 *	3) Update to with balanceTo + amount
+		 *	4) Record in transactions
+		 *		a) Withdrawl in from
+		 *		b) Deposit in to 
+		 *
+		 */
+
+		try{
+			double fromBalance, toBalance;
+
+			Statement statement = _connection.createStatement();
+
+			//printf("SELECT P.aid FROM Pockets P WHERE P.aid=%s OR P.aid=%s", from, to);
+			String ensurePockets = String.format(
+				"SELECT P.aid FROM Pockets P WHERE P.aid=\'%s\' OR P.aid=\'%s\'",
+				from,
+				to
+			);
+
+			ResultSet res = statement.executeQuery(ensurePockets);
+
+			if (ResSize(res) != 2)
+			{
+				//We have both AIDs
+				return "1";
+			}
+
+			String getToBalance= String.format(
+				"SELECT A.balance FROM Accounts A WHERE A.aid=\'%s\'",
+				to
+			);
+
+			String getFromBalance= String.format(
+				"SELECT A.balance FROM Accounts A WHERE A.aid=\'%s\'",
+				from
+			);
+
+			//////// Get the balance of to and from account ////////
+			res = statement.executeQuery(getToBalance);
+
+			if (res.next()){
+				toBalance = res.getDouble(1);
+			}
+			else {
+				return "1";
+			}
+
+			res = statement.executeQuery(getFromBalance);
+
+			if (res.next()){
+				fromBalance = res.getDouble(1);
+			}
+			else {
+				return "1";
+			}
+			//////// End logical block ////////
+
+
+			if (fromBalance < amount){
+				System.out.println("Insufficient funds from account " + from);
+				return "1";
+			}
+
+			double newFromBalance = fromBalance - amount;
+			double newToBalance = toBalance + amount;
+
+
+
+			String updateFrom= String.format(
+				"UPDATE Account A SET A.balance=%.2f WHERE A.aid=\'%s\'",
+				newFromBalance,
+				from
+			);
+
+			String updateTo = String.format(
+				"UPDATE Account A SET A.balance=%.2f WHERE A.aid=\'%s\'",
+				newToBalance,
+				to
+			);
+
+
+			return String.format("0 %.2f %.2f", newFromBalance, newToBalance);
+		}catch(Exception e){
+			e.printStackTrace();
+			return "1";
+		}
 	}
 
 	private String hashPin(int pin){
@@ -827,15 +933,27 @@ public class App implements Testable
 	//3-1-2011 Joe Pepsi deposits $1,200 to account 17431
 	public String ClientDeposit(int month, int day, int year, String name, double amount, int newaccount)
 	{
-		//Well probably want tot return his total balance maybe - this is why i said int CD
+		//Well probably want to return his total balance maybe - this is why i said int CD
 		//If we dont care, well make it boolean
+		
+
+		/*
+		 *			Algorithm
+		 *
+		 * 1) 
+		 *
+		 *
+		 *
+		 */
+
+
 		double Danny_current_balance = 100000; 
 		if (amount > 0)
 		{
 			Danny_current_balance = Danny_current_balance + amount;
-			return ("The client " + name + " has a current balance of " + Danny_current_balance + " after depositing " + amount);
+			return "The client " + name + " has a current balance of " + Danny_current_balance + " after depositing " + amount;
 		}
-		return ("The request for client " + name + " did not go through. Please try again");
+		return "The request for client " + name + " did not go through. Please try again";
 	}
 
 	//CLIENT TOP UP FUNCTION
@@ -857,8 +975,8 @@ public class App implements Testable
         	double Danny_current_balance = 1000000;
                 if (Danny_current_balance - amount > 0)
                 {
-			Danny_current_balance = Danny_current_balance - amount;
-                        return ("The client " + name + " has a current balance of " + Danny_current_balance + " after withdrawing " + amount);
+					Danny_current_balance = Danny_current_balance - amount;
+                    return ("The client " + name + " has a current balance of " + Danny_current_balance + " after withdrawing " + amount);
                 }
                 return ("The request for client " + name + " did not go through. Please try again");
         }
