@@ -863,7 +863,7 @@ public class App implements Testable
 
 
 			if (fromBalance < amount){
-				System.out.println("Insufficient funds from account " + from);
+				System.out.println("App.payFriend()::866 - Insufficient funds from account " + from);
 				return "1";
 			}
 
@@ -873,17 +873,28 @@ public class App implements Testable
 
 
 			String updateFrom= String.format(
-				"UPDATE Account A SET A.balance=%.2f WHERE A.aid=\'%s\'",
+				"UPDATE Accounts A SET A.balance=%.2f WHERE A.aid=\'%s\'",
 				newFromBalance,
 				from
 			);
 
 			String updateTo = String.format(
-				"UPDATE Account A SET A.balance=%.2f WHERE A.aid=\'%s\'",
+				"UPDATE Accounts A SET A.balance=%.2f WHERE A.aid=\'%s\'",
 				newToBalance,
 				to
 			);
 
+			statement.executeQuery(updateFrom);
+			statement.executeQuery(updateTo);
+
+			String insertTransaction = String.format(
+				"INSERT INTO Transactions (aid1, aid2, amount) VALUES (\'%s\', \'%s\', %.2f)",
+				from,
+				to,
+				amount
+			);
+
+			statement.executeQuery(insertTransaction);
 
 			return String.format("0 %.2f %.2f", newFromBalance, newToBalance);
 		}catch(Exception e){

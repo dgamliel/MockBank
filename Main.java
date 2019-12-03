@@ -92,6 +92,24 @@ public class Main
 			System.out.println("Balance POCKET 2 - " + r );
 
 
+			//Test payFriend
+			r = app.payFriend("pocket1", "pocket2", 1000.00);
+			System.out.println("PAY FRIEND FROM POCK 1 TO POCK 2 - " + r);
+
+			r = app.showBalance("acc1");
+			System.out.println("Balance MAIN 1 - " + r );
+
+			r = app.showBalance("pocket1");
+			System.out.println("Balance POCKET 1 - " + r );
+
+
+			// Test Show balance before deposit
+			r = app.showBalance("acc2");
+			System.out.println("Balance MAIN 2 - " + r );
+
+			r = app.showBalance("pocket2");
+			System.out.println("Balance POCKET 2 - " + r );
+
 			//Should return null but who knows
 			r = app.listClosedAccounts();
 			System.out.println("LISTING CLOSED ACCOUNTS - " + r );
