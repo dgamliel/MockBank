@@ -186,11 +186,16 @@ public class App implements Testable
 
 
 		if (accountType == AccountType.SAVINGS){
-			insertAccType = "INSERT INTO Savings VALUES (" + id + ")";
+			insertAccType = "INSERT INTO Savings VALUES (\'" + id + "\')";
 		}
 
 		else if (accountType == AccountType.INTEREST_CHECKING){	
-			insertAccType = "INSERT INTO Checkings VALUES (" + id + ")";
+			insertAccType = "INSERT INTO Checkings VALUES (\'" + id + "\')";
+		}
+
+		else{
+			System.out.println("App.createCheckingSavingsAccount()::197 - Improper account type");
+			return "1";
 		}
 
 
@@ -199,7 +204,9 @@ public class App implements Testable
 
 			//Insert into accounts
 			ResultSet resAccs = statement.executeQuery(insertAccounts);				
-			//System.out.println(insertAccounts);	
+
+
+			ResultSet resAccType = statement.executeQuery(insertAccType);
 
 			//Insert into customer
 			ResultSet res = statement.executeQuery(insertCustomer);				
@@ -207,7 +214,6 @@ public class App implements Testable
 
 			//Insert into owns, linking accounts, customer
 			ResultSet resOwns = statement.executeQuery(insertOwns);				
-			//System.out.println(insertOwns);
 
 			return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;		
 
@@ -302,7 +308,7 @@ public class App implements Testable
 							"amount real, " + 
 							"foreign key (aid1) references Accounts," + 
 							"foreign key (aid2) references Accounts," + 
-							"primary key (aid1, aid2)" + 
+							"primary key (aid1, aid2, amount)" + 
 							")" 
 
 			); 
@@ -687,13 +693,18 @@ public class App implements Testable
 				accountId
 			);
 
-			System.out.println("App.topUp()::690 queryLinkedForMain - " + queryLinkedForMain);
+			//String queryLinkedForMain = "SELECT * FROM Links";
+
+
+			//System.out.println("App.topUp()::690 queryLinkedForMain - " + queryLinkedForMain);
 			ResultSet res = statement.executeQuery(queryLinkedForMain);
 		
+
+
 			//Get main account linked to pocket
 			if (res.next()){
 				mainAid = res.getString(1);
-				System.out.println("Found mainAid of " + mainAid + " from linked account " + accountId);
+				//System.out.println("Found mainAid of " + mainAid + " from linked account " + accountId);
 			}else{
 				System.out.println("App.topUp()::696 - Pocket account has no linked main account");
 				return "1";
@@ -714,8 +725,9 @@ public class App implements Testable
 			//Get balance of main account
 			if (res.next()){
 				fetchedAmount = res.getDouble(1);	
-				System.out.println("Fetched amount in main account is " + fetchedAmount);
+				//System.out.println("Fetched amount in main account is " + fetchedAmount);
 			}else{
+				System.out.println("App.topUp()::724 - Could not find Checkings/Savings account");
 				return "1";
 			}
 
@@ -724,8 +736,9 @@ public class App implements Testable
 
 			if (res.next()){
 				fetchedPockAmount = res.getDouble(1);
-				System.out.println("Fetched amount in pocket account is " + fetchedPockAmount);
+				//System.out.println("Fetched amount in pocket account is " + fetchedPockAmount);
 			}else{
+				System.out.println("App.topUp()::735 - Could not find Pocket account");
 				return "1";
 			}
 

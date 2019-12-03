@@ -69,19 +69,28 @@ public class Main
 			System.out.println( "DEPOSITING ADDITIONAL 200 INTO ACC1 - " + r );
 
 			// Test top up on account 1
-			r = app.topUp("acc1", 500.00);
+			r = app.topUp("pocket1", 500.00);
 			System.out.println("Testing top up on acc1 -" + r );
 
 			// Test top up on account 2 
-			r = app.topUp("acc2", 500.00);
+			r = app.topUp("pocket2", 500.00);
 			System.out.println("Testing top up on acc2 -" + r );
 			
 			// Test Show balance before deposit
 			r = app.showBalance("acc1");
-			System.out.println("Balance MAIN - " + r );
+			System.out.println("Balance MAIN 1 - " + r );
 
+			r = app.showBalance("pocket1");
+			System.out.println("Balance POCKET 1 - " + r );
+
+
+			// Test Show balance before deposit
 			r = app.showBalance("acc2");
-			System.out.println("Balance POCKET - " + r );
+			System.out.println("Balance MAIN 2 - " + r );
+
+			r = app.showBalance("pocket2");
+			System.out.println("Balance POCKET 2 - " + r );
+
 
 			//Should return null but who knows
 			r = app.listClosedAccounts();
