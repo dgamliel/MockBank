@@ -114,6 +114,10 @@ public class Main
 			r = app.listClosedAccounts();
 			System.out.println("LISTING CLOSED ACCOUNTS - " + r );
 
+			//app.CreateAccount("acc1", 123.0, "Goleta", "Savings", "David");
+			// System.out.println("LISTING CREATED ACCOUNTS - " + r );
+
+
 
 			StartScreen s = new StartScreen(app);
 			
