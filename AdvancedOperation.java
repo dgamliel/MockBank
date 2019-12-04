@@ -115,13 +115,13 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 	int day = 1;
 	int month = 1;
 	int year = 2020;
-	String returnValue;
+	// String returnValue;
 
 	//TOPUP TRANSACTION
 	if(this.selector == 4)
 	{
-		returnValue = app.ClientTopup(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
-		System.out.println(returnValue);
+		app.ClientTopup(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
                 ClientScreen cs = new ClientScreen(this.app,  mainFrame);
@@ -130,8 +130,8 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 	//COLLECTS TRANSACTION
         if(this.selector == 5)
         {
-                returnValue = app.ClientCollects(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
-                System.out.println(returnValue);
+                app.ClientCollects(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+                //System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
                 ClientScreen cs = new ClientScreen(this.app,  mainFrame);
@@ -140,8 +140,8 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 	//ClientTransfer FUNCTION
         if(this.selector == 6)
         {
-                returnValue = app.ClientTransfer(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
-                System.out.println(returnValue);
+                app.ClientTransfer(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+                //System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
                 ClientScreen cs = new ClientScreen(this.app,  mainFrame);
@@ -150,8 +150,8 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 	//ClientPayfriend FUNCTION
         if(this.selector == 7)
         {
-                returnValue = app.ClientPayfriend(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
-                System.out.println(returnValue);
+                app.ClientPayfriend(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+                //System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
                 ClientScreen cs = new ClientScreen(this.app,  mainFrame);
@@ -160,8 +160,8 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 	//WIRE FUNCTION
         if(this.selector == 8)
         {
-                returnValue = app.ClientWire(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
-                System.out.println(returnValue);
+                app.ClientWire(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+                //System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
                 ClientScreen cs = new ClientScreen(this.app,  mainFrame);

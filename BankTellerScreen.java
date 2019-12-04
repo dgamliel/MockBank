@@ -47,9 +47,9 @@ class BankTellerScreen {
 		public void actionPerformed(ActionEvent e){
 			mainFrame.getContentPane().removeAll();
 			mainFrame.repaint();
-			String returnValue = app.GenerateMonthlyStatement();
-            		System.out.println(returnValue);
-            		BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
+			app.GenerateMonthlyStatement();
+      // System.out.println(returnValue);
+      BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
 		}
 	});
 
@@ -67,8 +67,8 @@ class BankTellerScreen {
           public void actionPerformed(ActionEvent e){
             mainFrame.getContentPane().removeAll();
             mainFrame.repaint();
-	    String returnValue = app.DTER();
-	    System.out.println(returnValue);
+	          app.DTER();
+	    // System.out.println(returnValue);
 	    BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
           }
         });
@@ -81,8 +81,8 @@ class BankTellerScreen {
 
             mainFrame.getContentPane().removeAll();
             mainFrame.repaint();
-	    			String returnValue = app.GenerateCustomerReport(accId);
-            System.out.println(returnValue);
+	    			app.GenerateCustomerReport(accId);
+            // System.out.println(returnValue);
             BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
           }
         });
@@ -92,8 +92,8 @@ class BankTellerScreen {
           public void actionPerformed(ActionEvent e){
             mainFrame.getContentPane().removeAll();
             mainFrame.repaint();
-	    String returnValue = app.AddInterest();
-            System.out.println(returnValue);
+	          app.AddInterest();
+            // System.out.println(returnValue);
             BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
           }
         });
@@ -103,7 +103,7 @@ class BankTellerScreen {
           public void actionPerformed(ActionEvent e){
             mainFrame.getContentPane().removeAll();
             mainFrame.repaint();
-	    AccountManagement am = new AccountManagement(app, 1, mainFrame);
+	          AccountManagement am = new AccountManagement(app, 1, mainFrame);
           }
         });
 
@@ -112,7 +112,7 @@ class BankTellerScreen {
           public void actionPerformed(ActionEvent e){
             mainFrame.getContentPane().removeAll();
             mainFrame.repaint();
-	    AccountManagement am = new AccountManagement(app, 3, mainFrame);
+	          AccountManagement am = new AccountManagement(app, 3, mainFrame);
           }
         });
 
@@ -129,7 +129,7 @@ class BankTellerScreen {
           public void actionPerformed(ActionEvent e){
             mainFrame.getContentPane().removeAll();
             mainFrame.repaint();
-	    StartScreen ss = new StartScreen(app);
+	          StartScreen ss = new StartScreen(app);
           }
         });
 
