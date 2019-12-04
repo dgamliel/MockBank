@@ -955,96 +955,182 @@ public class App implements Testable
 
 	//CLIENT DEPOSIT FUNCTION
 	//3-1-2011 Joe Pepsi deposits $1,200 to account 17431
-	public String ClientDeposit(int month, int day, int year, String name, double amount, int newaccount)
+	//TODO: CHECK IF OUR ACCOUNT IS A CHECKINGS OR SAVINGS
+	public String ClientDeposit(int month, int day, int year, String name, double amount, int account)
 	{
 		//Well probably want to return his total balance maybe - this is why i said int CD
 		//If we dont care, well make it boolean
+
+		double newAmount, fetchedAmount;
+
+		//Should be a string?
+		String accId = Integer.toString(account);
 		
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount) VALUES (\'%s\', \'%s\', %.2f)",
+			accId,
+			accId,
+			amount
+		);
 
-		/*
-		 *			Algorithm
-		 *
-		 * 1) 
-		 *
-		 *
-		 *
-		 */
+		String checkOwner = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid=\'(SELECT C.cid FROM Clients C WHERE C.name=\'%s\')\' AND O.aid=\'%s\'", 
+			name,
+			accId
+		);
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\'", 
+			accId
+		);
 
 
-		double Danny_current_balance = 100000; 
-		if (amount > 0)
-		{
-			Danny_current_balance = Danny_current_balance + amount;
-			return "The client " + name + " has a current balance of " + Danny_current_balance + " after depositing " + amount;
+		try{
+			Statement statement = _connection.createStatement();
+
+			//Check owner and see errors
+			ResultSet res = statement.executeQuery(checkOwner);
+			if(!(res.next() && res.getInt(1) == 1))
+				return "Customer " + name + " does not own account " + accId;
+
+			//Get old balance and see errors
+			res = statement.executeQuery(getOldBalance);
+			if (!res.next())
+				return "Unable to find balance of account " + accId;
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			newAmount = fetchedAmount + amount;
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET amount=%2.f WHERE aid=\'%s\'", 
+				accId,
+				newAmount
+			);
+
+			//Update amount and log transaction
+			statement.executeQuery(updateAmount);
+			statement.executeQuery(withdrawTransactions);
+
+			return "Owner " + name + " deposited amount " + amount + ". New Amount: " + updateAmount;
+		}catch(Exception e){
+			e.printStackTrace();
+			return "Error! " + e.getMessage();
 		}
 		return "The request for client " + name + " did not go through. Please try again";
 	}
 
 	//CLIENT TOP UP FUNCTION
 	//3-1-2011 Pit Wilson tops-ups $20 to account 60413 from account 43942
-	public String ClientTopup(int month, int day, int year, String name, double amount, int FromAccount, int toAccount)
-	{
-		double Danny_current_balance = 1000000;
-                if (amount > 0)
-                {
-                        return ("The client " + name + " topped up account: " + toAccount  + " with " + amount);
-                }
-                return ("The request for client " + name + " did not go through. Please try again");
+	public String ClientTopup(int month, int day, int year, String name, double amount, int FromAccount, int toAccount){
+
+		return "";
 	}
 
 	//CLIENT WITHDRAWS FUNCTION
 	//3-3-2011 Elizabeth Sailor withdraws $3,000 from account 54321
-	public String ClientWithdraw(int month, int day, int year, String name, double amount, int account)
-        {
-        	double Danny_current_balance = 1000000;
-                if (Danny_current_balance - amount > 0)
-                {
-					Danny_current_balance = Danny_current_balance - amount;
-                    return ("The client " + name + " has a current balance of " + Danny_current_balance + " after withdrawing " + amount);
-                }
-                return ("The request for client " + name + " did not go through. Please try again");
-        }
+	public String ClientWithdraw(int month, int day, int year, String name, double amount, int account){
+
+		/*
+		 *	Algorithm
+		 *	1) Check if name owns account
+		 *		a) if not return error
+		 *	TODO: CHECK IF OUR ACCOUNT IS A CHECKINGS OR SAVINGS
+		 *	2) Check if we have enough money to withdraw from account
+		 *		a) if not return error
+		 *	3) Get current amount 
+		 *	4) Update current amount with current amount - withdrawl amount
+		 *	5) Log transaction
+		 *
+		 *
+		 */
+
+		double newAmount, fetchedAmount;
+
+		//Should be a string?
+		String accId = Integer.toString(account);
+		
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount) VALUES (\'%s\', \'%s\', %.2f)",
+			accId,
+			accId,
+			-amount
+		);
+
+		String checkOwner = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid=\'(SELECT C.cid FROM Clients C WHERE C.name=\'%s\')\' AND O.aid=\'%s\'", 
+			name,
+			accId
+		);
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\'", 
+			accId
+		);
+
+
+		try{
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(checkOwner);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				return "Customer " + name + " does not own account " + accId;
+			}
+
+			res = statement.executeQuery(getOldBalance);
+				
+			if (!res.next())
+				return "Unable to find balance of account " + accId;
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			//Customer attemps to withdraw more money than is in their account	
+			if (fetchedAmount < amount)
+				return "Funds low, unable to fetch this amount of money";
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET amount=%2.f WHERE aid=\'%s\'", 
+				accId,
+				newAmount
+			);
+
+			//Update amount and log transaction
+			statement.executeQuery(updateAmount);
+			statement.executeQuery(withdrawTransactions);
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "Error! " + e.getMessage();
+		}
+
+		return "";
+	}
+		
 
 	//CLIENT PURCHASES FUNCTION
 	//3-5-2011 David Copperfill purchases $5 from account 53027
-	public String ClientPurchase(int month, int day, int year, String name, double amount, int account)
-        {
-                double Danny_current_balance = 2.43;
-                if (amount > 0)
-                {
-                        Danny_current_balance = Danny_current_balance + amount;
-                        return ("The client " + name + " has a current balance of " + Danny_current_balance + " after depositing " + amount);
-                }
-                return ("The request for client " + name + " did not go through. Please try again");
-        }
+	public String ClientPurchase(int month, int day, int year, String name, double amount, int account){
+		
+		return "";
+	}
 
 	//CLIENT COLLECTS FUNCTION
-        //3-6-2011 Li Kung collects $10 from account 43947 to account 29107
-        public String ClientCollects(int month, int day, int year, String name, double amount, int fromAccount, int toAccount)
-        {
+	//3-6-2011 Li Kung collects $10 from account 43947 to account 29107
+	public String ClientCollects(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){
 
-                double Danny_current_balance = 1000000;
-                if (Danny_current_balance - amount > 0)
-                {
-                        Danny_current_balance = Danny_current_balance - amount;
-                        return ("The client " + name + " has a current balance of " + Danny_current_balance + " after collecting " + amount);
-                }
-                return ("The request for client " + name + " did not go through. Please try again");
-        }
+		return "";
+	}
 
 	////CLIENT TRANSFERS FUNCTION
 	//3-7-2011 Ivan Lendme transfers $289 from account 43942 to account 17431
-	public String ClientTransfer(int month, int day, int year, String name, double amount, int fromAccount, int toAccount)
-        {       
+	public String ClientTransfer(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){       
 
-                double Danny_current_balance = 1000000;
-                if (Danny_current_balance - amount > 0)
-                {
-                        Danny_current_balance = Danny_current_balance - amount;
-                        return ("The client " + name + " has a current balance of " + Danny_current_balance + " after transferring " + amount);
-                }
-                return ("The request for client " + name + " did not go through. Please try again");
-        }
+
+	}
 
 	////CLIENT PAYFRIEND FUNCTION
 	//3-8-2011 Pit Wilson pay-friends $10 from account 60413 to account 67521
@@ -1080,28 +1166,33 @@ public class App implements Testable
 		return returnValue;			  	
 	}
 
-	public String AddInterest()
-        {
-                String returnValue = ("Added Interests to these accounts: 12398, 298332, 20939");
-                return returnValue;
-        }
+	//For all open accounts, add the appropriate amount of monthly interest to the balance. 
+	//Thereshould be a record in your database that interest has been added this month. 
+	//So a repeated “Add Interest”transaction would report a warning and do nothing else.
+	public String AddInterest(){
+		String returnValue = ("Added Interests to these accounts: 12398, 298332, 20939");
+		return returnValue;
+	}
 
-	public String GenerateCustomerReport()
-        {
-                String returnValue = ("Created an account for Daniel cause hes a broke bitch");
-                return returnValue;
-        }
+	//Generate a list of all accounts associated with a customer and indicate whether the accounts are opened or closed 
+	public String GenerateCustomerReport(String accId){
+		String getAllAccounts = String.format(
+			"SELECT A.aid, A.type, A.balance, A.closed " +  
+			"FROM Accounts A " + 
+			"WHERE A.aid=(SELECT O.aid FROM Owns )"
+		);
+		
+	}
 
 	public String DTER()
-        {
-                String returnValue = ("DTER ACTION COMPLETED: IDK WHAT THIS EVEN STANDS FOR");
-                return returnValue;
-        }
+	{
+		return "";
+	}
 
 	public String CloseAccount(int aid, double balance, int avg, String accType, String isClosed)
 	{
 		String returnValue = ("Opened new " + accType + " account with aid " + aid + "and a balance of" + balance);
-	        return returnValue;	
+		return returnValue;	
 	}	
 
 	public String CreateAccount(int aid, double balance, int avg, String accType, String isClosed)
