@@ -1222,11 +1222,39 @@ public class App implements Testable
 		return returnValue;	
 	}	
 
-	public String CreateAccount(int aid, double balance, int avg, String accType, String isClosed)
+	public String CreateAccount(int aid, double balance, String bname, String accType, String owners)
         {
-                String returnValue = ("Closed " + accType + " account with aid " + aid + "and a balance of" + balance);
-        	return returnValue;
+		try {
+
+			//TODO: Change this function when we can read input from the bank teller to determine the pin
+			//int random = ThreadLocalRandom.current().nextInt(1000, 9999 + 1); //Pick num between 1000 and 9999
+			//int defaultPin = 1717;
+			String encryptedPin = hashPin(defaultPin);
+
+			Statement statement = _connection.createStatement();
+			statement.executeQuery(
+				"INSERT INTO Clients " +
+				"VALUES (\'" + tin + "\', \'" + name + "\', \'" + address + "\', \'" + encryptedPin + "\')"
+			);
+
+			////// ASSUME THAT IF ACCOUNTID DOES NOT EXIST IN FOREIGN KEY CONSTRAINT WILL THROW ERROR ////// 
+			statement.executeQuery(
+				"INSERT INTO Owns " +
+				"VALUES (\'" + accountId + "\', \'" + tin + "\', " + "0" + ")" //0 is to specify we are NOT the primary owner
+			);
+
+			return "0";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "1 " + e.getMessage(); 
+	i	}
 	}
+
+
+	
+        //        String returnValue = ("Closed " + accType + " account with aid " + aid + "and a balance of" + balance);
+        //	return returnValue;
+
 
 	public String DeleteAccount(int aid, double balance, int avg, String accType, String isClosed)
         {

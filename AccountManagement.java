@@ -25,8 +25,8 @@ import javax.swing.JTextField;
 //SimpleOperation
 public class AccountManagement extends JFrame implements ActionListener{
   JPanel panel;
-  JLabel aid_label, balance_label, avg_label, accType_label, closed_label, message;
-  JTextField aid_text, balance_text ,avg_text, accType_text, closed_text;
+  JLabel aid_label, balance_label, bname_label, accType_label, owners_label, message;
+  JTextField aid_text, balance_text ,bname_text, accType_text, owners_text;
   JButton submit, cancel;
   App app;
   int selector;
@@ -45,17 +45,17 @@ public class AccountManagement extends JFrame implements ActionListener{
         balance_label.setText("Balance :");
         balance_text = new JTextField();
 
-	avg_label = new JLabel();
-        avg_label.setText("Avg :");
-        avg_text = new JTextField();
+	bname_label = new JLabel();
+        bname_label.setText("Branch Name :");
+        bname_text = new JTextField();
 
 	accType_label = new JLabel();
         accType_label.setText("Account Type :");
         accType_text = new JTextField();
 
-	closed_label = new JLabel();
-        closed_label.setText("Closed :");
-        closed_text = new JTextField();
+	owners_label = new JLabel();
+        owners_label.setText("Owners :");
+        owners_text = new JTextField();
 
         // Submit
         submit = new JButton("SUBMIT");
@@ -66,12 +66,12 @@ public class AccountManagement extends JFrame implements ActionListener{
         panel.add(aid_text);
         panel.add(balance_label);
         panel.add(balance_text);
-        panel.add(avg_label);
-        panel.add(avg_text);
+        panel.add(bname_label);
+        panel.add(bname_text);
         panel.add(accType_label);
         panel.add(accType_text);
-	panel.add(closed_label);
-        panel.add(closed_text);
+	panel.add(owners_label);
+        panel.add(owners_text);
 	
         message = new JLabel();
         panel.add(message);
@@ -94,18 +94,18 @@ public class AccountManagement extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent ae) {
         String aidValue = aid_text.getText();
 	String balanceValue = balance_text.getText();
-        String avgValue  = avg_text.getText();
+        String bnameValue  = bname_text.getText();
 	String accTypeValue = accType_text.getText();
-	String closedValue = closed_text.getText();
+	String ownersValue = owners_text.getText();
 
         aidValue = aidValue.trim();
         int aid = Integer.parseInt(aidValue);
         balanceValue = balanceValue.trim();
         double balance = Double.parseDouble(balanceValue);
-	avgValue = avgValue.trim();
-        int avg = Integer.parseInt(avgValue);
+	bnameValue = bnameValue.trim();
+        //int bname = Integer.parseInt(avgValue);
 	accTypeValue = accTypeValue.trim();
-	closedValue = closedValue.trim();
+	ownersValue = ownersValue.trim();
 
 	//BASICALLY DO SWITCH STATEMENTS WITH IF CONDITIONALS TO SEE WHAT TYPE OF TRANSACTION WE DO WHEN WE SEND IT TO APP
 	//HARD CODING DATE VARIABLES RN
@@ -118,7 +118,7 @@ public class AccountManagement extends JFrame implements ActionListener{
 	//CreateAccount TRANSACTION
 	if(this.selector == 1)
 	{
-		returnValue = app.CreateAccount(aid, balance, avg, accTypeValue, closedValue);
+		returnValue = app.CreateAccount(aid, balance, bname, accTypeValue, owners);
 		System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
@@ -128,7 +128,7 @@ public class AccountManagement extends JFrame implements ActionListener{
 	//ClosedAccount TRANSACTION
         if(this.selector == 2)
         {
-                returnValue = app.CloseAccount(aid, balance, avg, accTypeValue, closedValue);
+                returnValue = app.CloseAccount(aid, balance, bname, accTypeValue, owners);
                 System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
@@ -138,7 +138,7 @@ public class AccountManagement extends JFrame implements ActionListener{
 	//DeleteAccount FUNCTION
         if(this.selector == 3)
         {
-                returnValue = app.DeleteAccount(aid, balance, avg, accTypeValue, closedValue);
+                returnValue = app.DeleteAccount(aid, balance, bname, accTypeValue, owners);
                 System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
