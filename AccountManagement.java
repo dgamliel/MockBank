@@ -118,32 +118,32 @@ public class AccountManagement extends JFrame implements ActionListener{
 	//CreateAccount TRANSACTION
 	if(this.selector == 1)
 	{
-		returnValue = app.CreateAccount(aid, balance, bname, accTypeValue, owners);
+		app.CreateAccount(aid, balance, bnameValue, accTypeValue, ownersValue);
 		System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
-                mainFrame.repaint();
-                ClientScreen cs = new ClientScreen( this.app, mainFrame);
+		mainFrame.repaint();
+		ClientScreen cs = new ClientScreen( this.app, mainFrame);
 	}
 
 	//ClosedAccount TRANSACTION
-        if(this.selector == 2)
-        {
-                returnValue = app.CloseAccount(aid, balance, bname, accTypeValue, owners);
-                System.out.println(returnValue);
+	if(this.selector == 2)
+	{
+		app.CloseAccount(aid, balance, bnameValue, accTypeValue, ownersValue);
+		System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
-                mainFrame.repaint();
-                ClientScreen cs = new ClientScreen( this.app, mainFrame);
-        }
+		mainFrame.repaint();
+		ClientScreen cs = new ClientScreen( this.app, mainFrame);
+	}
 
 	//DeleteAccount FUNCTION
-        if(this.selector == 3)
-        {
-                returnValue = app.DeleteAccount(aid, balance, bname, accTypeValue, owners);
-                System.out.println(returnValue);
+	if(this.selector == 3)
+	{
+		app.DeleteAccount(aid, balance, bnameValue, accTypeValue, ownersValue);
+		System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
-                mainFrame.repaint();
-                ClientScreen cs = new ClientScreen(  this.app, mainFrame);
-        }
+		mainFrame.repaint();
+		ClientScreen cs = new ClientScreen(  this.app, mainFrame);
+	}
 
-}
-}
+		}
+	}

@@ -1131,69 +1131,47 @@ public class App implements Testable
 
 	//CLIENT PURCHASES FUNCTION
 	//3-5-2011 David Copperfill purchases $5 from account 53027
-	public String ClientPurchase(int month, int day, int year, String name, double amount, int account){
-		
-		return "";
+	public void ClientPurchase(int month, int day, int year, String name, double amount, int account){
+		return;
 	}
 
 	//CLIENT COLLECTS FUNCTION
 	//3-6-2011 Li Kung collects $10 from account 43947 to account 29107
-	public String ClientCollects(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){
-
-		return "";
+	public void ClientCollects(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){
+		return;
 	}
 
 	////CLIENT TRANSFERS FUNCTION
 	//3-7-2011 Ivan Lendme transfers $289 from account 43942 to account 17431
-	public String ClientTransfer(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){       
+	public void ClientTransfer(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){       
 
-		return "";
 	}
 
 	////CLIENT PAYFRIEND FUNCTION
 	//3-8-2011 Pit Wilson pay-friends $10 from account 60413 to account 67521
-	public String ClientPayfriend(int month, int day, int year, String name, double amount, int fromAccount, int toAccount)
-        {
-
-                double Danny_current_balance = 1000000;
-                if (Danny_current_balance - amount > 0)
-                {
-                        Danny_current_balance = Danny_current_balance - amount;
-                        return ("The client " + name + " has a current balance of " + Danny_current_balance + " after paying friend " + amount);
-                }
-                return ("The request for client " + name + " did not go through. Please try again");
-        }
+	public void ClientPayfriend(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){
+		return;
+	}
 
 	////CLIENT PAYFRIEND FUNCTION
         //3-9-2011 Fatal Castro wires $4,000 from account 41725 to account 32156
-        public String ClientWire(int month, int day, int year, String name, double amount, int fromAccount, int toAccount)
-        {
+	public void ClientWire(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){
+		return;
+	}
 
-                double Danny_current_balance = 1000000;
-                if (Danny_current_balance - amount > 0)
-                {
-                        Danny_current_balance = Danny_current_balance - amount;
-                        return ("The client " + name + " has a current balance of " + Danny_current_balance + " after wiring " + amount);
-                }
-                return ("The request for client " + name + " did not go through. Please try again");
-        }
-
-	public String GenerateMonthlyStatement()
-	{
-		String returnValue = ("NAME	AMOUNT      AID     TRANSACTION TYPE");
-		return returnValue;			  	
+	public void GenerateMonthlyStatement(){
+		return;
 	}
 
 	//For all open accounts, add the appropriate amount of monthly interest to the balance. 
 	//Thereshould be a record in your database that interest has been added this month. 
 	//So a repeated “Add Interest”transaction would report a warning and do nothing else.
-	public String AddInterest(){
-		String returnValue = ("Added Interests to these accounts: 12398, 298332, 20939");
-		return returnValue;
+	public void AddInterest(){
+		return;
 	}
 
 	//Generate a list of all accounts associated with a customer and indicate whether the accounts are opened or closed 
-	public String GenerateCustomerReport(String accId){
+	public void GenerateCustomerReport(String accId){
 		/*
 		String getAllAccounts = String.format(
 			"SELECT A.aid, A.type, A.balance, A.closed " +  
@@ -1208,58 +1186,28 @@ public class App implements Testable
 		}
 		*/
 
-		return "";
 	}
 
-	public String DTER()
-	{
-		return "";
+	public void DTER(){
+		return;
 	}
 
-	public String CloseAccount(int aid, double balance, int avg, String accType, String isClosed)
+	public void CloseAccount(int aid, double balance, String accType, String isClosed)
 	{
-		String returnValue = ("Opened new " + accType + " account with aid " + aid + "and a balance of" + balance);
-		return returnValue;	
+		return;
 	}	
 
-	public String CreateAccount(int aid, double balance, String bname, String accType, String owners)
-        {
+	public void CreateAccount(int aid, double balance, String bname, String accType, String owners){
 		try {
-
-			//TODO: Change this function when we can read input from the bank teller to determine the pin
-			//int random = ThreadLocalRandom.current().nextInt(1000, 9999 + 1); //Pick num between 1000 and 9999
-			//int defaultPin = 1717;
-			String encryptedPin = hashPin(defaultPin);
-
-			Statement statement = _connection.createStatement();
-			statement.executeQuery(
-				"INSERT INTO Clients " +
-				"VALUES (\'" + tin + "\', \'" + name + "\', \'" + address + "\', \'" + encryptedPin + "\')"
-			);
-
-			////// ASSUME THAT IF ACCOUNTID DOES NOT EXIST IN FOREIGN KEY CONSTRAINT WILL THROW ERROR ////// 
-			statement.executeQuery(
-				"INSERT INTO Owns " +
-				"VALUES (\'" + accountId + "\', \'" + tin + "\', " + "0" + ")" //0 is to specify we are NOT the primary owner
-			);
-
-			return "0";
+			return;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "1 " + e.getMessage(); 
-	i	}
+			return;
+		}
 	}
 
-
-	
-        //        String returnValue = ("Closed " + accType + " account with aid " + aid + "and a balance of" + balance);
-        //	return returnValue;
-
-
-	public String DeleteAccount(int aid, double balance, int avg, String accType, String isClosed)
-        {
-                String returnValue = ("Deleted " + accType + " account with aid " + aid + "and a balance of" + balance);
-        	return returnValue;
+	public void DeleteAccount(int aid, double balance, int avg, String accType, String isClosed){
+		return;
 	}
 }
 
