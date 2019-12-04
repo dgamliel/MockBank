@@ -76,9 +76,12 @@ class BankTellerScreen {
         customerreportButton.addActionListener((ActionListener) new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e){
+
+						String accId = "";
+
             mainFrame.getContentPane().removeAll();
             mainFrame.repaint();
-	    String returnValue = app.GenerateCustomerReport();
+	    			String returnValue = app.GenerateCustomerReport(accId);
             System.out.println(returnValue);
             BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
           }

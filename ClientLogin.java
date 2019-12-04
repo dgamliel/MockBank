@@ -85,7 +85,7 @@ class ClientLogin extends JFrame implements ActionListener{
         int pin = Integer.parseInt(password);
 
 
-	boolean isVerify = app.VerifyPin(tid, pin);
+				boolean isVerify = app.VerifyPin(tid, pin);
         //GOING TO KEEP THIS UNTIL DB CAN VERIFY PIN ITSELF
         if (isVerify == true)
         {

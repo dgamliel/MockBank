@@ -943,14 +943,31 @@ public class App implements Testable
 	}
 
 	//CLIENT VERIFYPIN FUNCTION
-	public boolean VerifyPin(int tid, int pin)
-	{
-		if(tid == 12345 && pin == 12345)
-		{
-			return true;
+	public boolean VerifyPin(int tid, int pin){
+
+		String hashedPin = hashPin(pin);
+
+		String inputPin = String.format(
+					"SELECT pin FROM Clients WHERE cid=\'%s\' AND pin=\'%s\'",
+					tid,
+					hashedPin
+				);
+
+
+		try{
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(inputPin);
+
+			//Will return true if something is fetched from the DB otherwise false
+			return res.next();
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return false;
 		}
-		return false;
-	
+
 	}
 
 	//CLIENT DEPOSIT FUNCTION
@@ -1018,7 +1035,6 @@ public class App implements Testable
 			e.printStackTrace();
 			return "Error! " + e.getMessage();
 		}
-		return "The request for client " + name + " did not go through. Please try again";
 	}
 
 	//CLIENT TOP UP FUNCTION
@@ -1092,6 +1108,8 @@ public class App implements Testable
 			if (fetchedAmount < amount)
 				return "Funds low, unable to fetch this amount of money";
 
+			newAmount = fetchedAmount - amount;
+
 			String updateAmount = String.format(
 				"UPDATE Accounts SET amount=%2.f WHERE aid=\'%s\'", 
 				accId,
@@ -1129,7 +1147,7 @@ public class App implements Testable
 	//3-7-2011 Ivan Lendme transfers $289 from account 43942 to account 17431
 	public String ClientTransfer(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){       
 
-
+		return "";
 	}
 
 	////CLIENT PAYFRIEND FUNCTION
@@ -1176,12 +1194,21 @@ public class App implements Testable
 
 	//Generate a list of all accounts associated with a customer and indicate whether the accounts are opened or closed 
 	public String GenerateCustomerReport(String accId){
+		/*
 		String getAllAccounts = String.format(
 			"SELECT A.aid, A.type, A.balance, A.closed " +  
 			"FROM Accounts A " + 
 			"WHERE A.aid=(SELECT O.aid FROM Owns )"
 		);
-		
+	
+		try{
+			Statement statement = _connection.executeQuery(getAllAccounts);
+		}catch(Exception e){
+			
+		}
+		*/
+
+		return "";
 	}
 
 	public String DTER()
