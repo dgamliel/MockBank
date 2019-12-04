@@ -973,7 +973,7 @@ public class App implements Testable
 	//CLIENT DEPOSIT FUNCTION
 	//3-1-2011 Joe Pepsi deposits $1,200 to account 17431
 	//TODO: CHECK IF OUR ACCOUNT IS A CHECKINGS OR SAVINGS
-	public String ClientDeposit(int month, int day, int year, String name, double amount, int account)
+	public void ClientDeposit(int month, int day, int year, String name, double amount, int account)
 	{
 		//Well probably want to return his total balance maybe - this is why i said int CD
 		//If we dont care, well make it boolean
@@ -1007,13 +1007,17 @@ public class App implements Testable
 
 			//Check owner and see errors
 			ResultSet res = statement.executeQuery(checkOwner);
-			if(!(res.next() && res.getInt(1) == 1))
-				return "Customer " + name + " does not own account " + accId;
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println("Customer " + name + " does not own account " + accId);
+				return;
+			}
 
 			//Get old balance and see errors
 			res = statement.executeQuery(getOldBalance);
-			if (!res.next())
-				return "Unable to find balance of account " + accId;
+			if (!res.next()){
+				System.out.println( "Unable to find balance of account " + accId);
+				return;
+			}
 			else{
 				fetchedAmount = res.getDouble(1);	
 			}
@@ -1030,23 +1034,25 @@ public class App implements Testable
 			statement.executeQuery(updateAmount);
 			statement.executeQuery(withdrawTransactions);
 
-			return "Owner " + name + " deposited amount " + amount + ". New Amount: " + updateAmount;
+			System.out.println( "Owner " + name + " deposited amount " + amount + ". New Amount: " + updateAmount);
+			return;
 		}catch(Exception e){
 			e.printStackTrace();
-			return "Error! " + e.getMessage();
+			System.out.println( "Error! " + e.getMessage());
+			return;
 		}
 	}
 
 	//CLIENT TOP UP FUNCTION
 	//3-1-2011 Pit Wilson tops-ups $20 to account 60413 from account 43942
-	public String ClientTopup(int month, int day, int year, String name, double amount, int FromAccount, int toAccount){
+	public void ClientTopup(int month, int day, int year, String name, double amount, int FromAccount, int toAccount){
 
-		return "";
+		return;
 	}
 
 	//CLIENT WITHDRAWS FUNCTION
 	//3-3-2011 Elizabeth Sailor withdraws $3,000 from account 54321
-	public String ClientWithdraw(int month, int day, int year, String name, double amount, int account){
+	public void ClientWithdraw(int month, int day, int year, String name, double amount, int account){
 
 		/*
 		 *	Algorithm
@@ -1093,20 +1099,25 @@ public class App implements Testable
 
 			//Check that we own the account
 			if(!(res.next() && res.getInt(1) == 1)){
-				return "Customer " + name + " does not own account " + accId;
+				System.out.println( "Customer " + name + " does not own account " + accId);
+				return;
 			}
 
 			res = statement.executeQuery(getOldBalance);
 				
-			if (!res.next())
-				return "Unable to find balance of account " + accId;
+			if (!res.next()){
+				System.out.println( "Unable to find balance of account " + accId);
+				return;
+			}
 			else{
 				fetchedAmount = res.getDouble(1);	
 			}
 
 			//Customer attemps to withdraw more money than is in their account	
-			if (fetchedAmount < amount)
-				return "Funds low, unable to fetch this amount of money";
+			if (fetchedAmount < amount){
+				System.out.println( "Funds low, unable to fetch this amount of money");
+				return;
+			}
 
 			newAmount = fetchedAmount - amount;
 
@@ -1122,10 +1133,11 @@ public class App implements Testable
 
 		}catch(Exception e){
 			e.printStackTrace();
-			return "Error! " + e.getMessage();
+			System.out.println( "Error! " + e.getMessage());
+			return;
 		}
 
-		return "";
+		return;
 	}
 		
 
@@ -1144,7 +1156,7 @@ public class App implements Testable
 	////CLIENT TRANSFERS FUNCTION
 	//3-7-2011 Ivan Lendme transfers $289 from account 43942 to account 17431
 	public void ClientTransfer(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){       
-
+		return;
 	}
 
 	////CLIENT PAYFRIEND FUNCTION
@@ -1185,6 +1197,7 @@ public class App implements Testable
 			
 		}
 		*/
+		return;
 
 	}
 
@@ -1192,7 +1205,7 @@ public class App implements Testable
 		return;
 	}
 
-	public void CloseAccount(int aid, double balance, String accType, String isClosed)
+	public void CloseAccount(int aid, double balance, String bname, String accType, String owners)
 	{
 		return;
 	}	
@@ -1206,7 +1219,7 @@ public class App implements Testable
 		}
 	}
 
-	public void DeleteAccount(int aid, double balance, int avg, String accType, String isClosed){
+	public void DeleteAccount(int aid, double balance, String bname, String accType, String owners){
 		return;
 	}
 }

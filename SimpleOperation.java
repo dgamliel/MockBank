@@ -103,13 +103,13 @@ public class SimpleOperation extends JFrame implements ActionListener{
 	int day = 1;
 	int month = 1;
 	int year = 2020;
-	String returnValue;
+	// String returnValue;
 
 	//DEPOSIT TRANSACTION
 	if(this.selector == 1)
 	{
-		returnValue = app.ClientDeposit(month, day, year, CustomerNameValue, amount, account);
-		System.out.println(returnValue);
+		app.ClientDeposit(month, day, year, CustomerNameValue, amount, account);
+		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
                 ClientScreen cs = new ClientScreen(this.app, mainFrame);
@@ -118,8 +118,8 @@ public class SimpleOperation extends JFrame implements ActionListener{
 	//PURCHASE TRANSACTION
         if(this.selector == 2)
         {
-                returnValue = app.ClientPurchase(month, day, year, CustomerNameValue, amount, account);
-                System.out.println(returnValue);
+                app.ClientPurchase(month, day, year, CustomerNameValue, amount, account);
+                //System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
                 ClientScreen cs = new ClientScreen( this.app, mainFrame);
@@ -128,8 +128,8 @@ public class SimpleOperation extends JFrame implements ActionListener{
 	//WITHDRAW FUNCTION
         if(this.selector == 3)
         {
-                returnValue = app.ClientWithdraw(month, day, year, CustomerNameValue, amount, account);
-    		System.out.println(returnValue);
+                app.ClientWithdraw(month, day, year, CustomerNameValue, amount, account);
+    		//System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
                 ClientScreen cs = new ClientScreen(this.app, mainFrame);

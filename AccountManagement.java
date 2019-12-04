@@ -113,13 +113,13 @@ public class AccountManagement extends JFrame implements ActionListener{
 	int day = 1;
 	int month = 1;
 	int year = 2020;
-	String returnValue;
+	// String returnValue;
 
 	//CreateAccount TRANSACTION
 	if(this.selector == 1)
 	{
 		app.CreateAccount(aid, balance, bnameValue, accTypeValue, ownersValue);
-		System.out.println(returnValue);
+		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
 		mainFrame.repaint();
 		ClientScreen cs = new ClientScreen( this.app, mainFrame);
@@ -129,7 +129,7 @@ public class AccountManagement extends JFrame implements ActionListener{
 	if(this.selector == 2)
 	{
 		app.CloseAccount(aid, balance, bnameValue, accTypeValue, ownersValue);
-		System.out.println(returnValue);
+		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
 		mainFrame.repaint();
 		ClientScreen cs = new ClientScreen( this.app, mainFrame);
@@ -139,7 +139,7 @@ public class AccountManagement extends JFrame implements ActionListener{
 	if(this.selector == 3)
 	{
 		app.DeleteAccount(aid, balance, bnameValue, accTypeValue, ownersValue);
-		System.out.println(returnValue);
+		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
 		mainFrame.repaint();
 		ClientScreen cs = new ClientScreen(  this.app, mainFrame);
