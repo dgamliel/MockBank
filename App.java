@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Arrays;
 
 import oracle.jdbc.pool.OracleDataSource;
 import oracle.jdbc.OracleConnection;
@@ -1205,13 +1206,69 @@ public class App implements Testable
 		return;
 	}
 
-	public void CloseAccount(int aid, double balance, String bname, String accType, String owners)
+	public void CloseAccount(String aid, double balance, String bname, String accType, String owners)
 	{
 		return;
 	}	
 
-	public void CreateAccount(int aid, double balance, String bname, String accType, String owners){
+	public void CreateAccount(String aid, double balance, String bname, String accType, String owners){
 		try {
+
+			//TODO: 
+			//1. Split Owners into substrings
+			//2. Insert account details into account table
+			//3. For loop through Owns table to insert account with each owner
+			
+			//TEMPLATE FOR EXECUTE QUERIES	
+			/* ACCOUNTS TABLE */
+			// statement.executeQuery(
+			// 	"create table Accounts(" +
+			// 				"aid varchar(20)," + 
+			// 				"type varchar(20)," + 
+			// 				"bname varchar(32)," + // primary = 1 if owner is primary else: primary = 0
+			// 				"balance real," + 
+			// 				"closed integer, " + //closed = 1 if account closed else: primary = 0
+			// 				"primary key (aid)" + 
+			// 				")" 
+			//  ); 
+
+			// 			/* OWNS TABLE */
+			// statement.executeQuery(
+			// 	"create table Owns(" +
+			// 				"aid varchar(20)," + 
+			// 				"cid varchar(20)," + 
+			// 				"primary_owner integer," + // primary = 1 if owner is primary else: primary = 0
+			// 				"foreign key (cid) references Clients," + 
+			// 				"foreign key (aid) references Accounts," + 
+			// 				"primary key (cid, aid)" + 
+			// 				")" 
+
+			// ); 
+
+			// int isclosed = 0;
+			// String[] ownerCSV = owners.split(",");
+
+			// Statement statement = _connection.createStatement();
+			// statement.executeQuery(
+			// 	"INSERT INTO Accounts (aid, type, bname, balance, closed) VALUES (\'%s\', \'%s\', \'%s\', %.2f, \'%s\')",
+			// 	aid,
+			// 	accType,
+			// 	bname,
+			// 	accType,
+			// 	isclosed
+			// );
+
+			// for (int i =0; i < ownerCSV.length; i++)
+			// {
+			// 	statement.executeQuery(
+			// 		"INSERT INTO Owns (aid, cid) VALUES (\'%s\', \'%s\')",
+			// 		aid,
+			// 		ownerCSV[i]
+			// 	);
+			// }
+
+
+
 			return;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1219,7 +1276,7 @@ public class App implements Testable
 		}
 	}
 
-	public void DeleteAccount(int aid, double balance, String bname, String accType, String owners){
+	public void DeleteAccount(String aid, double balance, String bname, String accType, String owners){
 		return;
 	}
 }

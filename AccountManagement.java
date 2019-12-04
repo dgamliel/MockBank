@@ -98,8 +98,8 @@ public class AccountManagement extends JFrame implements ActionListener{
 	String accTypeValue = accType_text.getText();
 	String ownersValue = owners_text.getText();
 
-        aidValue = aidValue.trim();
-        int aid = Integer.parseInt(aidValue);
+        String aid = aidValue.trim();
+        //int aid = Integer.parseInt(aidValue);
         balanceValue = balanceValue.trim();
         double balance = Double.parseDouble(balanceValue);
 	bnameValue = bnameValue.trim();
