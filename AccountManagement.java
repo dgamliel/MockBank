@@ -30,10 +30,12 @@ public class AccountManagement extends JFrame implements ActionListener{
   JButton submit, cancel;
   App app;
   int selector;
+  JFrame mainFrame;
 
-    AccountManagement(App app, int selector) {
+    AccountManagement(App app, int selector, JFrame mainFrame) {
 	this.app = app;
 	this.selector = selector;
+        this.mainFrame = mainFrame;
 
         aid_label = new JLabel();
         aid_label.setText("Account ID :");
@@ -82,7 +84,9 @@ public class AccountManagement extends JFrame implements ActionListener{
         add(panel, BorderLayout.CENTER);
         setTitle("Select desired values !");
         setSize(500, 200);
-        setVisible(true);
+        // setVisible(true);
+        mainFrame.add(panel);
+	mainFrame.show();
 
     }
 
@@ -116,7 +120,9 @@ public class AccountManagement extends JFrame implements ActionListener{
 	{
 		returnValue = app.CreateAccount(aid, balance, avg, accTypeValue, closedValue);
 		System.out.println(returnValue);
-                ClientScreen cs = new ClientScreen(this.app);
+		mainFrame.getContentPane().removeAll();
+                mainFrame.repaint();
+                ClientScreen cs = new ClientScreen( this.app, mainFrame);
 	}
 
 	//ClosedAccount TRANSACTION
@@ -124,7 +130,9 @@ public class AccountManagement extends JFrame implements ActionListener{
         {
                 returnValue = app.CloseAccount(aid, balance, avg, accTypeValue, closedValue);
                 System.out.println(returnValue);
-                ClientScreen cs = new ClientScreen(this.app);
+		mainFrame.getContentPane().removeAll();
+                mainFrame.repaint();
+                ClientScreen cs = new ClientScreen( this.app, mainFrame);
         }
 
 	//DeleteAccount FUNCTION
@@ -132,7 +140,9 @@ public class AccountManagement extends JFrame implements ActionListener{
         {
                 returnValue = app.DeleteAccount(aid, balance, avg, accTypeValue, closedValue);
                 System.out.println(returnValue);
-                ClientScreen cs = new ClientScreen(this.app);
+		mainFrame.getContentPane().removeAll();
+                mainFrame.repaint();
+                ClientScreen cs = new ClientScreen(  this.app, mainFrame);
         }
 
 }
