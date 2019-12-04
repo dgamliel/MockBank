@@ -114,11 +114,11 @@ public class Main
 			r = app.listClosedAccounts();
 			System.out.println("LISTING CLOSED ACCOUNTS - " + r );
 
+
+			StartScreen s = new StartScreen(app);
+			
 			r = app.dropTables();
 			System.out.println("DROP TABLES " + r);
-
-			//StartScreen s = new StartScreen(app);
-			
 
 		}
 	}
