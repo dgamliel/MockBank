@@ -26,11 +26,13 @@ class ClientLogin extends JFrame implements ActionListener{
   JLabel user_label, password_label, message;
   JTextField userName_text;
   JPasswordField password_text;
-  JButton submit, cancel;
+  JButton submit, goBack;
   App app;
+  JFrame mainFrame;
 
-    ClientLogin(App app) {
+    ClientLogin(JFrame mainFrame, App app) {
 	this.app = app;
+    this.mainFrame = mainFrame;
         // User Label
         user_label = new JLabel();
         user_label.setText("User Name :");
@@ -44,6 +46,7 @@ class ClientLogin extends JFrame implements ActionListener{
 
         // Submit
 
+	//goBack = new JButton("Go Back");
         submit = new JButton("SUBMIT");
 
         panel = new JPanel(new GridLayout(3, 1));
@@ -56,6 +59,7 @@ class ClientLogin extends JFrame implements ActionListener{
         message = new JLabel();
         panel.add(message);
         panel.add(submit);
+	//panel.add(goBack);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -64,7 +68,9 @@ class ClientLogin extends JFrame implements ActionListener{
         add(panel, BorderLayout.CENTER);
         setTitle("Please Login Here !");
         setSize(300, 100);
-        setVisible(true);
+        // setVisible(true);
+        mainFrame.add(panel);
+        mainFrame.show();
 
     }
 
@@ -85,7 +91,9 @@ class ClientLogin extends JFrame implements ActionListener{
         {
             message.setText(" Hello " + userName + "");
             System.out.println("Conditional checking pin");
-            ClientScreen cs = new ClientScreen(this.app);
+            mainFrame.getContentPane().removeAll();
+            mainFrame.repaint();
+            ClientScreen cs = new ClientScreen(this.app, mainFrame);
         }
         else
         {

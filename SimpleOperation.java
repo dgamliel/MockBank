@@ -30,10 +30,12 @@ public class SimpleOperation extends JFrame implements ActionListener{
   JButton submit, cancel;
   App app;
   int selector;
+  JFrame mainFrame;
 
-    SimpleOperation(App app, int selector) {
+    SimpleOperation(App app, int selector, JFrame mainFrame) {
 	this.app = app;
 	this.selector = selector;
+        this.mainFrame = mainFrame;
         // User Label
         amount_label = new JLabel();
         amount_label.setText("Ammount :");
@@ -76,7 +78,10 @@ public class SimpleOperation extends JFrame implements ActionListener{
         add(panel, BorderLayout.CENTER);
         setTitle("Select desired values !");
         setSize(300, 100);
-        setVisible(true);
+        // setVisible(true);
+
+        mainFrame.add(panel);
+        mainFrame.show();
 
     }
 
@@ -105,7 +110,9 @@ public class SimpleOperation extends JFrame implements ActionListener{
 	{
 		returnValue = app.ClientDeposit(month, day, year, CustomerNameValue, amount, account);
 		System.out.println(returnValue);
-                ClientScreen cs = new ClientScreen(this.app);
+		mainFrame.getContentPane().removeAll();
+                mainFrame.repaint();
+                ClientScreen cs = new ClientScreen(this.app, mainFrame);
 	}
 
 	//PURCHASE TRANSACTION
@@ -113,7 +120,9 @@ public class SimpleOperation extends JFrame implements ActionListener{
         {
                 returnValue = app.ClientPurchase(month, day, year, CustomerNameValue, amount, account);
                 System.out.println(returnValue);
-                ClientScreen cs = new ClientScreen(this.app);
+		mainFrame.getContentPane().removeAll();
+                mainFrame.repaint();
+                ClientScreen cs = new ClientScreen( this.app, mainFrame);
         }
 
 	//WITHDRAW FUNCTION
@@ -121,7 +130,9 @@ public class SimpleOperation extends JFrame implements ActionListener{
         {
                 returnValue = app.ClientWithdraw(month, day, year, CustomerNameValue, amount, account);
     		System.out.println(returnValue);
-                ClientScreen cs = new ClientScreen(this.app);
+		mainFrame.getContentPane().removeAll();
+                mainFrame.repaint();
+                ClientScreen cs = new ClientScreen(this.app, mainFrame);
                 //message.setText(" Invalid input.. ");
         }
 

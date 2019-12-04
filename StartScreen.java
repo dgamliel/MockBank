@@ -11,9 +11,10 @@ import java.awt.event.ActionEvent;
 class StartScreen {
     StartScreen(App app) {
         // Create Frame
-        JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1024, 720);
+        JFrame mainFrame = new JFrame();
+        JPanel panel = new JPanel();
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setSize(1024, 720);
 
         // Define new buttons
         JButton tellerButton = new JButton("Teller");
@@ -35,12 +36,12 @@ class StartScreen {
         clientButton.setBounds(middle_x, height, 200, 200);
         exitButton.setBounds(right_x, height, 200, 200);
 
-				tellerButton.addActionListener((ActionListener) new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e){
-						frame.getContentPane().removeAll();
-						frame.repaint();
-            BankTellerScreen BT = new BankTellerScreen(app);
+		tellerButton.addActionListener((ActionListener) new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e){
+				mainFrame.getContentPane().removeAll();
+				mainFrame.repaint();
+                BankTellerScreen BT = new BankTellerScreen(mainFrame, app);
             // cs.setVisible(true);
 					}
 				});
@@ -49,8 +50,9 @@ class StartScreen {
         clientButton.addActionListener((ActionListener) new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getContentPane().removeAll();
-                ClientLogin CL = new ClientLogin(app);
+                mainFrame.getContentPane().removeAll();
+                mainFrame.repaint();
+                ClientLogin CL = new ClientLogin(mainFrame, app);
 							  // ClientScreen CS = new ClientScreen();
 
             }
@@ -59,7 +61,7 @@ class StartScreen {
         exitButton.addActionListener((ActionListener) new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.getContentPane().removeAll();
+                mainFrame.getContentPane().removeAll();
                 System.out.println("Ending program");
                 System.exit(0);
 
@@ -67,12 +69,18 @@ class StartScreen {
         });
 
         //Add buttons to the GUI
-        frame.add(tellerButton);
-        frame.add(clientButton);
-        frame.add(exitButton);
+        // frame.add(tellerButton);
+        // frame.add(clientButton);
+        // frame.add(exitButton);
 
-        frame.setLayout(null);
-        frame.setVisible(true);
+        panel.add(tellerButton);
+        panel.add(clientButton);
+        panel.add(exitButton);
+        mainFrame.add(panel);
+        mainFrame.show();
+
+        // frame.setLayout(null);
+        // frame.setVisible(true);
 
     }
 

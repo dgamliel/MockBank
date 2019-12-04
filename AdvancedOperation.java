@@ -33,10 +33,12 @@ public class AdvancedOperation extends JFrame implements ActionListener{
   JButton submit, cancel;
   App app;
   int selector;
+  JFrame mainFrame;
 
-    AdvancedOperation(App app, int selector) {
+    AdvancedOperation(App app, int selector, JFrame mainFrame) {
 	this.app = app;
 	this.selector = selector;
+        this.mainFrame = mainFrame;
         // User Label
         amount_label = new JLabel();
         amount_label.setText("Ammount :");
@@ -85,7 +87,10 @@ public class AdvancedOperation extends JFrame implements ActionListener{
         add(panel, BorderLayout.CENTER);
         setTitle("Select desired values !");
         setSize(300, 100);
-        setVisible(true);
+        // setVisible(true);
+
+        mainFrame.add(panel);
+        mainFrame.show();
 
     }
 
@@ -117,7 +122,9 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 	{
 		returnValue = app.ClientTopup(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
 		System.out.println(returnValue);
-                ClientScreen cs = new ClientScreen(this.app);
+		mainFrame.getContentPane().removeAll();
+                mainFrame.repaint();
+                ClientScreen cs = new ClientScreen(this.app,  mainFrame);
 	}
 
 	//COLLECTS TRANSACTION
@@ -125,7 +132,9 @@ public class AdvancedOperation extends JFrame implements ActionListener{
         {
                 returnValue = app.ClientCollects(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
                 System.out.println(returnValue);
-                ClientScreen cs = new ClientScreen(this.app);
+		mainFrame.getContentPane().removeAll();
+                mainFrame.repaint();
+                ClientScreen cs = new ClientScreen(this.app,  mainFrame);
         }
 
 	//ClientTransfer FUNCTION
@@ -133,7 +142,9 @@ public class AdvancedOperation extends JFrame implements ActionListener{
         {
                 returnValue = app.ClientTransfer(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
                 System.out.println(returnValue);
-                ClientScreen cs = new ClientScreen(this.app);
+		mainFrame.getContentPane().removeAll();
+                mainFrame.repaint();
+                ClientScreen cs = new ClientScreen(this.app,  mainFrame);
         }
 
 	//ClientPayfriend FUNCTION
@@ -141,7 +152,9 @@ public class AdvancedOperation extends JFrame implements ActionListener{
         {
                 returnValue = app.ClientPayfriend(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
                 System.out.println(returnValue);
-                ClientScreen cs = new ClientScreen(this.app);
+		mainFrame.getContentPane().removeAll();
+                mainFrame.repaint();
+                ClientScreen cs = new ClientScreen(this.app,  mainFrame);
         }
 
 	//WIRE FUNCTION
@@ -149,10 +162,10 @@ public class AdvancedOperation extends JFrame implements ActionListener{
         {
                 returnValue = app.ClientWire(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
                 System.out.println(returnValue);
-                ClientScreen cs = new ClientScreen(this.app);
+		mainFrame.getContentPane().removeAll();
+                mainFrame.repaint();
+                ClientScreen cs = new ClientScreen(this.app,  mainFrame);
         }
-
-
 
 }
 }
