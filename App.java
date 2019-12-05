@@ -1359,6 +1359,42 @@ public class App implements Testable
 		// 	return;
 		// }
 	}
+
+	public void createDummyValues(){
+		try{
+
+			String cid, name, addr, pin;
+
+			Statement statement = _connection.createStatement();
+
+			/// Customer 1 ///
+			pin = hashPin(/*INSERT PIN HERE */ 0);
+
+			String insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+
+
+			/// Customer 2 ///
+			pin = hashPin(/*INSERT PIN HERE */ 0);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
+	}
 }
 
 
