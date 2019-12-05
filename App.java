@@ -1245,7 +1245,7 @@ public class App implements Testable
 					ownerCids.add(res.getString(1));
 				}
 			}
-			
+
 			String insertAccounts = String.format(
 				"INSERT INTO Accounts (aid, type, bname, balance, closed) VALUES (\'%s\', \'%s\', \'%s\', %.2f, %d)",
 				aid,
@@ -1281,6 +1281,14 @@ public class App implements Testable
 				String insertPocket = String.format(
 				"INSERT INTO Pocket (aid) VALUES (\'%s\')",
 				aid);
+				statement.executeQuery(insertPocket);
+
+				String insertPocketLinks = String.format(
+				"INSERT INTO Links (mainAid, linkedAid, isPocket) VALUES (\'%s\', \'%s\', %d)",
+				aid,
+				linked,
+				1
+				);
 				statement.executeQuery(insertPocket);
 			}
 
