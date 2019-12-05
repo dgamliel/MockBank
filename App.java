@@ -1209,85 +1209,112 @@ public class App implements Testable
 		return;
 	}
 
-	public void CloseAccount(String aid, double balance, String bname, String accType, String owners)
+	public void CloseAccount(String aid, double balance, String bname, String accType, String owners, String linked)
 	{
 		return;
 	}	
 
-	public void CreateAccount(String aid, double balance, String bname, String accType, String owners){
-		// try {
+	public void CreateAccount(String aid, double balance, String bname, String accType, String owners, String linked){
+		 try {
 
 		// 	//TODO: 
 		// 	//1. Split Owners into substrings
 		// 	//2. Insert account details into account table
 		// 	//3. For loop through Owns table to insert account with each owner
 
-		// 	int isclosed = 0;
-		// 	String[] ownerCSV = owners.split(",");
+			int isclosed = 0;
+			String[] ownerCSV = owners.split(",");
 
-		// 	Statement statement = _connection.createStatement();
-		// 	String insertAccounts = String.format(
-		// 		"INSERT INTO Accounts (aid, type, bname, balance, closed) VALUES (\'%s\', \'%s\', \'%s\', %.2f, %d)",
-		// 		aid,
-		// 		accType,
-		// 		bname,
-		// 		balance,
-		// 		0
-		// 	);
-		// 	statement.executeQuery(insertAccounts);
+			for(int i = 0 ; i < ownerCSV.length; i++){
+				ownerCSV[i] = ownerCSV[i].strip();
+			}
 
 
-		// 	for (int i =0; i < ownerCSV.length; i++)
-		// 	{
-		// 		String insertOwns = String.format(
-		// 			"INSERT INTO Owns (aid, cid) VALUES (\'%s\', \'%s\')",
-		// 				aid,
-		// 				ownerCSV[i]
-		// 		);
+			ArrayList<String> ownerCids = new ArrayList<String>();
 
-		// 		System.out.println(ownerCSV[i]);
-		// 		statement.executeQuery(insertOwns);
-		// 	}
+			Statement statement = _connection.createStatement();
+			ResultSet res;
 
-		// 	if (accType.equals("Pocket"))
-		// 	{
-		// 		String insertPocket = String.format(
-		// 		"INSERT INTO Pocket (aid) VALUES (\'%s\')",
-		// 		aid);
-		// 		statement.executeQuery(insertPocket);
-		// 	}
 
-		// 	if(accType.equals("Savings"))
-		// 	{
-		// 		String insertSavings = String.format(
-		// 		"INSERT INTO Savings (aid) VALUES (\'%s\')",
-		// 		aid);
-		// 		statement.executeQuery(insertSavings);
-		// 	}
+			/* Get all CIDS from owner names */
+			for (int i = 0; i < ownerCSV.length; i++){
+				String formatstring = String.format("SELECT C.cid FROM Clients C WHERE C.name=\'%s\'", ownerCSV[i]);
+				res = statement.executeQuery(formatstring);
+				
+				while(res.next()){
+					ownerCids.add(res.getString(1));
+				}
+			}
+			
+			String insertAccounts = String.format(
+				"INSERT INTO Accounts (aid, type, bname, balance, closed) VALUES (\'%s\', \'%s\', \'%s\', %.2f, %d)",
+				aid,
+				accType,
+				bname,
+				balance,
+				0
+			);
+			statement.executeQuery(insertAccounts);
 
-		// 	if (accType.equals("Student-Checking")){
-		// 		String insertStudentChecking = String.format(
-		// 		"INSERT INTO Checking (aid) VALUES (\'%s\')",
-		// 		aid);
-		// 		statement.executeQuery(insertStudentChecking);
-		// 	}
+			int isPrimary;
+			for (int i =0; i < ownerCids.size(); i++)
+			{
+				if (i == 0){
+					isPrimary = 1;
+				}
+				else {
+					isPrimary = 0;
+				}
+				String insertOwns = String.format(
+					"INSERT INTO Owns (aid, cid, primary_owner) VALUES (\'%s\', \'%s\', %d)",
+						aid,
+						ownerCids.get(i),
+						isPrimary
+				);
 
-		// 	if (accType.equals("Interest-Checking"))
-		// 	{
-		// 		String insertInterestCheckingg = String.format(
-		// 		"INSERT INTO Checking (aid) VALUES (\'%s\')",
-		// 		aid);
-		// 		statement.executeQuery(insertInterestCheckingg);
-		// 	}
 
-		// 	return;
-		// } catch (Exception e) {
-		// 	e.printStackTrace();
-		// 	return;
-		// }
+				statement.executeQuery(insertOwns);
+			}
+
+			if (accType.equals("Pocket"))
+			{
+				String insertPocket = String.format(
+				"INSERT INTO Pocket (aid) VALUES (\'%s\')",
+				aid);
+				statement.executeQuery(insertPocket);
+			}
+
+			if(accType.equals("Savings"))
+			{
+				String insertSavings = String.format(
+				"INSERT INTO Savings (aid) VALUES (\'%s\')",
+				aid);
+				statement.executeQuery(insertSavings);
+			}
+
+			if (accType.equals("Student-Checking")){
+				String insertStudentChecking = String.format(
+				"INSERT INTO Checkings (aid) VALUES (\'%s\')",
+				aid);
+				statement.executeQuery(insertStudentChecking);
+			}
+
+			if (accType.equals("Interest-Checking"))
+			{
+				String insertInterestChecking = String.format(
+				"INSERT INTO Checkings (aid) VALUES (\'%s\')",
+				aid);
+				statement.executeQuery(insertInterestChecking);
+			}
+
+			return;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 
-	public void DeleteAccount(String aid, double balance, String bname, String accType, String owners){
+	public void DeleteAccount(String aid, double balance, String bname, String accType, String owners, String linked){
 		// try {
 
 		// 	//TODO: 
@@ -1367,8 +1394,11 @@ public class App implements Testable
 
 			Statement statement = _connection.createStatement();
 
-			/// Customer 1 ///
-			pin = hashPin(/*INSERT PIN HERE */ 0);
+			/// Customer 1: 361721022 Alfred Hitchcock 6667 El Colegio #40 1234 ///
+			cid = "361721022";
+			name = "Alfred Hitchcock";
+			addr = "6667 El Colegio #40";
+			pin = hashPin(1234);
 
 			String insert = String.format(
 				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
@@ -1377,10 +1407,14 @@ public class App implements Testable
 				addr,
 				pin
 			);
+			statement.executeQuery(insert);
 
 
-			/// Customer 2 ///
-			pin = hashPin(/*INSERT PIN HERE */ 0);
+			/// Customer 2: 231403227 Billy Clinton 5777 Hollister 1468 ///
+			cid = "231403227";
+			name = "Billy Clinton";
+			addr = "5777 Hollister";
+			pin = hashPin(1468);
 
 			insert = String.format(
 				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
@@ -1389,6 +1423,377 @@ public class App implements Testable
 				addr,
 				pin
 			);
+			statement.executeQuery(insert);
+
+
+			/// Customer 3: 412231856 Cindy Laugher 7000 Hollister 3764 ///
+			cid = "412231856";
+			name = "Cindy Laugher";
+			addr = "7000 Hollister";
+			pin = hashPin(3764);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+			/// Customer 4: 207843218 David Copperfill 1357 State St 8582 ///
+			cid = "207843218";
+			name = "David Copperfill";
+			addr = "1357 State St";
+			pin = hashPin(8582);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+			/// Customer 5: 122219876 Elizabeth Sailor 4321 State St 3856///
+			cid = "122219876";
+			name = "Elizabeth Sailor";
+			addr = "4321 State St";
+			pin = hashPin(3856);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+			/// Customer 6: 401605312 Fatal Castro 3756 La Cumbre Plaza 8193 ///
+			cid = "401605312";
+			name = "Fatal Castro";
+			addr = "3756 La Cumbre Plaza";
+			pin = hashPin(8193);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+				/// Customer 7: 201674933 George Brush 5346 Foothill Av 9824 ///
+			cid = "201674933";
+			name = "George Brush";
+			addr = "5346 Foothill Av";
+			pin = hashPin(9824);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+
+			/// Customer 8:  212431965 Hurryson Ford 678 State St 3532///
+			cid = "212431965";
+			name = "Hurryson Ford";
+			addr = "678 State St";
+			pin = hashPin(3532);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+			/// Customer 9:  322175130 Ivan Lendme 1235 Johnson Dr 8471///
+			cid = "322175130";
+			name = "Ivan Lendme";
+			addr = "1235 Johnson Dr";
+			pin = hashPin(8471);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+				/// Customer 10:  344151573 Joe Pepsi 3210 State St 3692///
+			cid = "344151573";
+			name = "Joe Pepsi";
+			addr = "3210 State St";
+			pin = hashPin(3692);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+			/// Customer 11:  209378521 Kelvin Costner Santa Cruz #3579 4659///
+			cid = "209378521";
+			name = "Kelvin Costner";
+			addr = "Santa Cruz #3579";
+			pin = hashPin(4659);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+					/// Customer 12:  212116070 Li Kung 2 People's Rd Beijing 9173///
+			cid = "212116070";
+			name = "Li Kung";
+			addr = "2 Peoples Rd Beijing";
+			pin = hashPin(9173);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+			/// Customer 13:  188212217 Magic Jordon 3852 Court Rd 7351///
+			cid = "188212217";
+			name = "Magic Jordon";
+			addr = "3852 Court Rd";
+			pin = hashPin(7351);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+				/// Customer 14:  203491209 Nam-Hoi Chung 1997 People's St HK 5340///
+			cid = "203491209";
+			name = "Nam-Hoi Chung";
+			addr = "1997 Peoples St HK";
+			pin = hashPin(5340);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+				/// Customer 15: 210389768 Olive Stoner 6689 El Colegio #151 8452 ///
+			cid = "210389768";
+			name = "Olive Stoner";
+			addr = "6689 El Colegio #151";
+			pin = hashPin(8452);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+
+				/// Customer 16: 400651982 Pit Wilson 911 State St 1821 ///
+			cid = "400651982";
+			name = "Pit Wilson";
+			addr = "911 State St";
+			pin = hashPin(1821);
+
+			insert = String.format(
+				"INSERT INTO Clients (cid, name, addr, pin) VALUES (\'%s\', \'%s\', \'%s\',\'%s\')",
+				cid,
+				name,
+				addr,
+				pin
+			);
+			statement.executeQuery(insert);
+			//
+			//END OF CUSTOMER INSERTION
+			//
+
+
+			//
+			//BEGIN ACCOUNT INSERTION
+			//
+			String aid = "";
+			String AccType = "";
+			String bname = "";
+			double balance = 1000.00;
+			String owners = "";
+			String linked = "";
+
+				/// Account 1:  17431 Student-Checking San Francisco Joe Pepsi
+															// Cindy Laugher
+															// Ivan Lendme///
+			aid = "17431";
+			AccType = "Student-Checking";
+			bname = "San Francisco";
+			owners = "Joe Pepsi, Cindy Laugher, Ivan Lendme";
+			CreateAccount( aid,  balance,  bname,  AccType,  owners, linked);
+
+
+				/// Account 2:  54321 Student-Checking Los Angeles Hurryson Ford
+																	// Cindy Laugher
+																	// Elizabeth Sailor
+																	// Nam-Hoi Chung
+			aid = "54321";
+			AccType = "Student-Checking";
+			bname = "Los Angeles";
+			owners = "Hurryson Ford, Cindy Laugher, Elizabeth Sailor, Nam-Hoi Chung";
+			CreateAccount( aid,  balance,  bname,  AccType,  owners, linked);
+
+				/// Account 3: 12121 Student-Checking Goleta David Copperfill
+			aid = "12121";
+			AccType = "Student-Checking";
+			bname = "Goleta";
+			owners = "David Copperfill";
+			CreateAccount( aid,  balance,  bname,  AccType,  owners, linked);
+
+							/// Account 4: 41725 Interest-Checking Los Angeles George Brush
+																			// Fatal Castro
+																			// Billy Clinton
+			aid = "41725";
+			AccType = "Interest-Checking";
+			bname = "Los Angeles";
+			owners = "George Brush, Fatal Castro, Billy Clinton";
+			CreateAccount( aid,  balance,  bname,  AccType,  owners, linked);
+
+							/// Account 5: 76543 Interest-Checking Santa Barbara Li Kung
+																			// Magic Jordon
+			aid = "76543";
+			AccType = "Interest-Checking";
+			bname = "Santa Barbara";
+			owners = "Li Kung, Magic Jordon";
+			CreateAccount( aid,  balance,  bname,  AccType,  owners, linked);
+
+										/// Account 6: 93156 Interest-Checking Goleta Kelvin Costner
+																						// Magic Jordon
+																						// Olive Stoner
+																						// Elizabeth Sailor
+																						// Nam-Hoi Chung
+			aid = "93156";
+			AccType = "Interest-Checking";
+			bname = "Goleta";
+			owners = "Kelvin Costner, Magic Jordon, Olive Stoner, Elizabeth Sailor, Nam-Hoi Chung";
+			CreateAccount( aid,  balance,  bname,  AccType,  owners, linked);
+
+										/// Account 7: 43942 Savings Santa Barbara Alfred Hitchcock
+																						// Pit Wilson
+																						// Hurryson Ford
+																						// Ivan Lendme
+			aid = "43942";
+			AccType = "Savings";
+			bname = "Santa Barbara";
+			owners = "Alfred Hitchcock, Pit Wilson, Hurryson Ford, Ivan Lendme";
+			CreateAccount( aid,  balance,  bname,  AccType,  owners, linked);
+
+									/// Account 8: 29107 Savings Los Angeles Kelvin Costner
+																					// Li Kung
+																					// Olive Stoner
+			aid = "29107";
+			AccType = "Savings";
+			bname = "Los Angeles";
+			owners = "Kelvin Costner, Li Kung, Olive Stoner";
+			CreateAccount( aid,  balance,  bname,  AccType,  owners, linked);
+
+
+												/// Account 9: 19023 Savings San Francisco Cindy Laugher
+																							// George Brush
+																							// Fatal Castro
+			aid = "19023";
+			AccType = "Savings";
+			bname = "San Francisco";
+			owners = "Cindy Laugher, George Brush, Fatal Castro";
+			CreateAccount( aid,  balance,  bname,  AccType,  owners, linked);	
+
+
+												/// Account 10: 32156 Savings Goleta Magic Jordon
+																					// David Copperfill
+																					// Elizabeth Sailor
+																					// Joe Pepsi
+																					// Nam-Hoi Chung
+																					// Olive Stoner
+			aid = "32156";
+			AccType = "Savings";
+			bname = "Goleta";
+			owners = "Magic Jordon, David Copperfill, Elizabeth Sailor, Joe Pepsi, Nam-Hoi Chung, Olive Stoner";
+			CreateAccount( aid,  balance,  bname,  AccType,  owners, linked);
+
+												/// Account 11: 53027 Pocket (12121) Goleta David Copperfill
+			// aid = "53027"
+			// AccType = "Pocket";
+			// bname = "Goleta";
+			// owners = "Magic Jordon, David Copperfill, Elizabeth Sailor, Joe Pepsi, Nam-Hoi Chung, Olive Stoner";
+			// CreateAccount( aid,  balance,  bname,  accType,  owners);
+				
+				
+				
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		}catch(Exception e){
 			e.printStackTrace();

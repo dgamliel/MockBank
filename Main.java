@@ -34,6 +34,10 @@ public class Main
 			// Create tables
 			r = app.createTables();
 			System.out.println("CREATE TABLES " + r);
+
+			System.out.println("RIGHT BEFORE DUMMY VARS");
+			app.createDummyValues();
+			System.out.println("RIGHT AFTER DUMMY VARS");
 			
 			//Create dummy checkings Savings Accounts
 			r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "acc1", 1000.00, "1", "Im YoungMing", "Known" );
