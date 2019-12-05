@@ -25,8 +25,8 @@ import javax.swing.JTextField;
 //SimpleOperation
 public class AccountManagement extends JFrame implements ActionListener{
   JPanel panel;
-  JLabel aid_label, balance_label, bname_label, accType_label, owners_label, message;
-  JTextField aid_text, balance_text ,bname_text, accType_text, owners_text;
+  JLabel aid_label, balance_label, bname_label, accType_label, owners_label, message, linked_label;
+  JTextField aid_text, balance_text ,bname_text, accType_text, owners_text, linked_text;
   JButton submit, cancel;
   App app;
   int selector;
@@ -57,10 +57,15 @@ public class AccountManagement extends JFrame implements ActionListener{
         owners_label.setText("Owners :");
         owners_text = new JTextField();
 
+        linked_label = new JLabel();
+        linked_label.setText("LInked Account :");
+        linked_text = new JTextField();
+
+
         // Submit
         submit = new JButton("SUBMIT");
 
-        panel = new JPanel(new GridLayout(7, 1));
+        panel = new JPanel(new GridLayout(8, 1));
 
 	panel.add(aid_label);
         panel.add(aid_text);
@@ -72,6 +77,8 @@ public class AccountManagement extends JFrame implements ActionListener{
         panel.add(accType_text);
 	panel.add(owners_label);
         panel.add(owners_text);
+        panel.add(linked_label);
+        panel.add(linked_text);
 	
         message = new JLabel();
         panel.add(message);
@@ -97,8 +104,10 @@ public class AccountManagement extends JFrame implements ActionListener{
         String bnameValue  = bname_text.getText();
 	String accTypeValue = accType_text.getText();
 	String ownersValue = owners_text.getText();
+        String linkedValue = linked_text.getText();
 
         String aid = aidValue.trim();
+        String linked = linkedValue.trim();
         //int aid = Integer.parseInt(aidValue);
         balanceValue = balanceValue.trim();
         double balance = Double.parseDouble(balanceValue);
@@ -118,7 +127,7 @@ public class AccountManagement extends JFrame implements ActionListener{
 	//CreateAccount TRANSACTION
 	if(this.selector == 1)
 	{
-		app.CreateAccount(aid, balance, bnameValue, accTypeValue, ownersValue);
+		app.CreateAccount(aid, balance, bnameValue, accTypeValue, ownersValue, linked);
 		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
 		mainFrame.repaint();
@@ -128,7 +137,7 @@ public class AccountManagement extends JFrame implements ActionListener{
 	//ClosedAccount TRANSACTION
 	if(this.selector == 2)
 	{
-		app.CloseAccount(aid, balance, bnameValue, accTypeValue, ownersValue);
+		app.CloseAccount(aid, balance, bnameValue, accTypeValue, ownersValue, linked);
 		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
 		mainFrame.repaint();
@@ -138,7 +147,7 @@ public class AccountManagement extends JFrame implements ActionListener{
 	//DeleteAccount FUNCTION
 	if(this.selector == 3)
 	{
-		app.DeleteAccount(aid, balance, bnameValue, accTypeValue, ownersValue);
+		app.DeleteAccount(aid, balance, bnameValue, accTypeValue, ownersValue, linked);
 		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
 		mainFrame.repaint();
