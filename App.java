@@ -1245,27 +1245,68 @@ public class App implements Testable
 
 			// ); 
 
-			// int isclosed = 0;
-			// String[] ownerCSV = owners.split(",");
+			int isclosed = 0;
+			String[] ownerCSV = owners.split(",");
 
-			// Statement statement = _connection.createStatement();
-			// statement.executeQuery(
-			// 	"INSERT INTO Accounts (aid, type, bname, balance, closed) VALUES (\'%s\', \'%s\', \'%s\', %.2f, \'%s\')",
-			// 	aid,
-			// 	accType,
-			// 	bname,
-			// 	accType,
-			// 	isclosed
-			// );
+			Statement statement = _connection.createStatement();
+			String insertAccounts = String.format(
+				"INSERT INTO Accounts (aid, type, bname, balance, closed) VALUES (\'%s\', \'%s\', \'%s\', %.2f, %d)",
+				aid,
+				accType,
+				bname,
+				balance,
+				0
+			);
+			statement.executeQuery(insertAccounts);
 
-			// for (int i =0; i < ownerCSV.length; i++)
-			// {
-			// 	statement.executeQuery(
-			// 		"INSERT INTO Owns (aid, cid) VALUES (\'%s\', \'%s\')",
-			// 		aid,
-			// 		ownerCSV[i]
-			// 	);
-			// }
+
+
+			for (int i =0; i < ownerCSV.length; i++)
+			{
+				String insertOwns = String.format(
+					"INSERT INTO Owns (aid, cid) VALUES (\'%s\', \'%s\')",
+						aid,
+						ownerCSV[i]
+				);
+
+				System.out.println(ownerCSV[i]);
+				statement.executeQuery(insertOwns);
+			}
+
+			if (accType.equals("Pocket"))
+			{
+				String insertPocket = String.format(
+				"INSERT INTO Pocket (aid) VALUES (\'%s\')",
+				aid);
+				statement.executeQuery(insertPocket);
+
+			}
+
+			if(accType.equals("Savings"))
+			{
+				String insertSavings = String.format(
+				"INSERT INTO Savings (aid) VALUES (\'%s\')",
+				aid);
+				statement.executeQuery(insertSavings);
+
+			}
+
+			if (accType.equals("Student-Checking")){
+				String insertStudentChecking = String.format(
+				"INSERT INTO Savings (aid) VALUES (\'%s\')",
+				aid);
+				statement.executeQuery(insertStudentChecking);
+			}
+
+			if (accType.equals("Interest-Checking"))
+			{
+				String insertInterestCheckingg = String.format(
+				"INSERT INTO Savings (aid) VALUES (\'%s\')",
+				aid);
+				statement.executeQuery(insertInterestCheckingg);
+			}
+
+			
 
 
 
