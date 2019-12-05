@@ -25,8 +25,8 @@ import javax.swing.JTextField;
 //SimpleOperation
 public class AccountManagement extends JFrame implements ActionListener{
   JPanel panel;
-  JLabel aid_label, balance_label, bname_label, accType_label, owners_label, message, linked_label;
-  JTextField aid_text, balance_text ,bname_text, accType_text, owners_text, linked_text;
+  JLabel aid_label, balance_label, bname_label, accType_label, owners_label, message, linked_label, cid_label;
+  JTextField aid_text, balance_text ,bname_text, accType_text, owners_text, linked_text, cid_text;
   JButton submit, cancel;
   App app;
   int selector;

@@ -1225,7 +1225,27 @@ public class App implements Testable
 			int isclosed = 0;
 			String[] ownerCSV = owners.split(",");
 
+			for(int i = 0 ; i < ownerCSV.length; i++){
+				ownerCSV[i] = ownerCSV[i].strip();
+			}
+
+
+			ArrayList<String> ownerCids = new ArrayList<String>();
+
 			Statement statement = _connection.createStatement();
+			ResultSet res;
+
+
+			/* Get all CIDS from owner names */
+			for (int i = 0; i < ownerCSV.length; i++){
+				String formatstring = String.format("SELECT C.cid FROM Clients C WHERE C.name=\'%s\'", ownerCSV[i]);
+				res = statement.executeQuery(formatstring);
+				
+				while(res.next()){
+					ownerCids.add(res.getString(1));
+				}
+			}
+			
 			String insertAccounts = String.format(
 				"INSERT INTO Accounts (aid, type, bname, balance, closed) VALUES (\'%s\', \'%s\', \'%s\', %.2f, %d)",
 				aid,
@@ -1236,8 +1256,8 @@ public class App implements Testable
 			);
 			statement.executeQuery(insertAccounts);
 
-		int isPrimary;
-			for (int i =0; i < ownerCSV.length; i++)
+			int isPrimary;
+			for (int i =0; i < ownerCids.size(); i++)
 			{
 				if (i == 0){
 					isPrimary = 1;
@@ -1246,13 +1266,13 @@ public class App implements Testable
 					isPrimary = 0;
 				}
 				String insertOwns = String.format(
-					"INSERT INTO Owns (cid, aid, primary_owner) VALUES (\'%s\', \'%s\', %d)",
+					"INSERT INTO Owns (aid, cid, primary_owner) VALUES (\'%s\', \'%s\', %d)",
 						aid,
-						ownerCSV[i],
+						ownerCids.get(i),
 						isPrimary
 				);
 
-				System.out.println(ownerCSV[i]);
+
 				statement.executeQuery(insertOwns);
 			}
 
@@ -1274,7 +1294,7 @@ public class App implements Testable
 
 			if (accType.equals("Student-Checking")){
 				String insertStudentChecking = String.format(
-				"INSERT INTO Checking (aid) VALUES (\'%s\')",
+				"INSERT INTO Checkings (aid) VALUES (\'%s\')",
 				aid);
 				statement.executeQuery(insertStudentChecking);
 			}
@@ -1282,7 +1302,7 @@ public class App implements Testable
 			if (accType.equals("Interest-Checking"))
 			{
 				String insertInterestChecking = String.format(
-				"INSERT INTO Checking (aid) VALUES (\'%s\')",
+				"INSERT INTO Checkings (aid) VALUES (\'%s\')",
 				aid);
 				statement.executeQuery(insertInterestChecking);
 			}
