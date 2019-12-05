@@ -237,7 +237,7 @@ public class App implements Testable
 			statement.executeQuery("drop table Owns cascade constraints");
 			statement.executeQuery("drop table Accounts cascade constraints");
 			statement.executeQuery("drop table Transactions cascade constraints");
-			statement.executeQuery("drop table Has_Interest cascade constraints");
+			// statement.executeQuery("drop table Has_Interest cascade constraints");
 			statement.executeQuery("drop table Interest cascade constraints");
 			statement.executeQuery("drop table Links cascade constraints");
 			statement.executeQuery("drop table Checkings cascade constraints");
@@ -325,16 +325,16 @@ public class App implements Testable
 			); 
 
 			/* HAS_INTEREST TABLE */
-			statement.executeQuery(
-				"create table Has_Interest(" +
-							"aid varchar(20)," + 
-							"type varchar(20)," + 
-							"foreign key (aid) references Accounts," + 
-							"foreign key (type) references Interest," + 
-							"primary key (aid)" + //Only need the aid to correctly identify a row 
-							")" 
+			// statement.executeQuery(
+			// 	"create table Has_Interest(" +
+			// 				"aid varchar(20)," + 
+			// 				"type varchar(20)," + 
+			// 				"foreign key (aid) references Accounts," + 
+			// 				"foreign key (type) references Interest," + 
+			// 				"primary key (aid)" + //Only need the aid to correctly identify a row 
+			// 				")" 
 
-			); 
+			// ); 
 
 			/* LINKS TABLE */
 			statement.executeQuery(
@@ -1212,113 +1212,149 @@ public class App implements Testable
 	}	
 
 	public void CreateAccount(String aid, double balance, String bname, String accType, String owners){
-		try {
+		// try {
 
-			//TODO: 
-			//1. Split Owners into substrings
-			//2. Insert account details into account table
-			//3. For loop through Owns table to insert account with each owner
-			
-			//TEMPLATE FOR EXECUTE QUERIES	
-			/* ACCOUNTS TABLE */
-			// statement.executeQuery(
-			// 	"create table Accounts(" +
-			// 				"aid varchar(20)," + 
-			// 				"type varchar(20)," + 
-			// 				"bname varchar(32)," + // primary = 1 if owner is primary else: primary = 0
-			// 				"balance real," + 
-			// 				"closed integer, " + //closed = 1 if account closed else: primary = 0
-			// 				"primary key (aid)" + 
-			// 				")" 
-			//  ); 
+		// 	//TODO: 
+		// 	//1. Split Owners into substrings
+		// 	//2. Insert account details into account table
+		// 	//3. For loop through Owns table to insert account with each owner
 
-			// 			/* OWNS TABLE */
-			// statement.executeQuery(
-			// 	"create table Owns(" +
-			// 				"aid varchar(20)," + 
-			// 				"cid varchar(20)," + 
-			// 				"primary_owner integer," + // primary = 1 if owner is primary else: primary = 0
-			// 				"foreign key (cid) references Clients," + 
-			// 				"foreign key (aid) references Accounts," + 
-			// 				"primary key (cid, aid)" + 
-			// 				")" 
+		// 	int isclosed = 0;
+		// 	String[] ownerCSV = owners.split(",");
 
-			// ); 
-
-			int isclosed = 0;
-			String[] ownerCSV = owners.split(",");
-
-			Statement statement = _connection.createStatement();
-			String insertAccounts = String.format(
-				"INSERT INTO Accounts (aid, type, bname, balance, closed) VALUES (\'%s\', \'%s\', \'%s\', %.2f, %d)",
-				aid,
-				accType,
-				bname,
-				balance,
-				0
-			);
-			statement.executeQuery(insertAccounts);
+		// 	Statement statement = _connection.createStatement();
+		// 	String insertAccounts = String.format(
+		// 		"INSERT INTO Accounts (aid, type, bname, balance, closed) VALUES (\'%s\', \'%s\', \'%s\', %.2f, %d)",
+		// 		aid,
+		// 		accType,
+		// 		bname,
+		// 		balance,
+		// 		0
+		// 	);
+		// 	statement.executeQuery(insertAccounts);
 
 
+		// 	for (int i =0; i < ownerCSV.length; i++)
+		// 	{
+		// 		String insertOwns = String.format(
+		// 			"INSERT INTO Owns (aid, cid) VALUES (\'%s\', \'%s\')",
+		// 				aid,
+		// 				ownerCSV[i]
+		// 		);
 
-			for (int i =0; i < ownerCSV.length; i++)
-			{
-				String insertOwns = String.format(
-					"INSERT INTO Owns (aid, cid) VALUES (\'%s\', \'%s\')",
-						aid,
-						ownerCSV[i]
-				);
+		// 		System.out.println(ownerCSV[i]);
+		// 		statement.executeQuery(insertOwns);
+		// 	}
 
-				System.out.println(ownerCSV[i]);
-				statement.executeQuery(insertOwns);
-			}
+		// 	if (accType.equals("Pocket"))
+		// 	{
+		// 		String insertPocket = String.format(
+		// 		"INSERT INTO Pocket (aid) VALUES (\'%s\')",
+		// 		aid);
+		// 		statement.executeQuery(insertPocket);
+		// 	}
 
-			if (accType.equals("Pocket"))
-			{
-				String insertPocket = String.format(
-				"INSERT INTO Pocket (aid) VALUES (\'%s\')",
-				aid);
-				statement.executeQuery(insertPocket);
+		// 	if(accType.equals("Savings"))
+		// 	{
+		// 		String insertSavings = String.format(
+		// 		"INSERT INTO Savings (aid) VALUES (\'%s\')",
+		// 		aid);
+		// 		statement.executeQuery(insertSavings);
+		// 	}
 
-			}
+		// 	if (accType.equals("Student-Checking")){
+		// 		String insertStudentChecking = String.format(
+		// 		"INSERT INTO Checking (aid) VALUES (\'%s\')",
+		// 		aid);
+		// 		statement.executeQuery(insertStudentChecking);
+		// 	}
 
-			if(accType.equals("Savings"))
-			{
-				String insertSavings = String.format(
-				"INSERT INTO Savings (aid) VALUES (\'%s\')",
-				aid);
-				statement.executeQuery(insertSavings);
+		// 	if (accType.equals("Interest-Checking"))
+		// 	{
+		// 		String insertInterestCheckingg = String.format(
+		// 		"INSERT INTO Checking (aid) VALUES (\'%s\')",
+		// 		aid);
+		// 		statement.executeQuery(insertInterestCheckingg);
+		// 	}
 
-			}
-
-			if (accType.equals("Student-Checking")){
-				String insertStudentChecking = String.format(
-				"INSERT INTO Savings (aid) VALUES (\'%s\')",
-				aid);
-				statement.executeQuery(insertStudentChecking);
-			}
-
-			if (accType.equals("Interest-Checking"))
-			{
-				String insertInterestCheckingg = String.format(
-				"INSERT INTO Savings (aid) VALUES (\'%s\')",
-				aid);
-				statement.executeQuery(insertInterestCheckingg);
-			}
-
-			
-
-
-
-			return;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		}
+		// 	return;
+		// } catch (Exception e) {
+		// 	e.printStackTrace();
+		// 	return;
+		// }
 	}
 
 	public void DeleteAccount(String aid, double balance, String bname, String accType, String owners){
-		return;
+		// try {
+
+		// 	//TODO: 
+		// 	//1. Split Owners into substrings
+		// 	//2. Insert account details into account table
+		// 	//3. For loop through Owns table to insert account with each owner
+
+		// 	int isclosed = 0;
+		// 	String[] ownerCSV = owners.split(",");
+
+		// 	// "SELECT COUNT(*) FROM Owns O WHERE O.cid=\'(SELECT C.cid FROM Clients C WHERE C.name=\'%s\')\' AND O.aid=\'%s\'", 
+		// 	// name,
+		// 	// accId
+
+		// 	Statement statement = _connection.createStatement();
+		// 	String DeleteAccounts = String.format(
+		// 		"DELETE * FROM Accounts A WHERE A.aid=\'%s\'",
+		// 		aid
+		// 	);
+		// 	statement.executeQuery(DeleteAccounts);
+
+
+		// 	for (int i =0; i < ownerCSV.length; i++)
+		// 	{
+		// 		String DeleteOwns = String.format(
+		// 			"DELETE * FROM Owns O WHERE O.aid=\'%s\' AND O.cid=\'%s\'",
+		// 				aid,
+		// 				ownerCSV[i]
+		// 		);
+
+		// 		System.out.println(ownerCSV[i]);
+		// 		statement.executeQuery(DeleteOwns);
+		// 	}
+
+		// 	if (accType.equals("Pocket"))
+		// 	{
+		// 		String DeletePocket = String.format(
+		// 		"DELETE * FROM Pocket A WHERE A.aid=\'%s\'",
+		// 		aid);
+		// 		statement.executeQuery(DeletePocket);
+		// 	}
+
+		// 	if(accType.equals("Savings"))
+		// 	{
+		// 		String DeleteSavings = String.format(
+		// 		"DELETE * FROM Savings A WHERE A.aid=\'%s\'",
+		// 		aid);
+		// 		statement.executeQuery(DeleteSavings);
+		// 	}
+
+		// 	if (accType.equals("Student-Checking")){
+		// 		String DeleteStudentChecking = String.format(
+		// 		"DELETE * FROM Checking A WHERE A.aid=\'%s\'",
+		// 		aid);
+		// 		statement.executeQuery(DeleteStudentChecking);
+		// 	}
+
+		// 	if (accType.equals("Interest-Checking"))
+		// 	{
+		// 		String DeleteInterestChecking = String.format(
+		// 		"DELETE * FROM Checking A WHERE A.aid=\'%s\'",
+		// 		aid);
+		// 		statement.executeQuery(DeleteInterestChecking);
+		// 	}
+
+		// 	return;
+		// } catch (Exception e) {
+		// 	e.printStackTrace();
+		// 	return;
+		// }
 	}
 }
 

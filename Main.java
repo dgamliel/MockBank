@@ -119,10 +119,10 @@ public class Main
 
 
 
-			StartScreen s = new StartScreen(app);
+			// StartScreen s = new StartScreen(app);
 			
-			// r = app.dropTables();
-			// System.out.println("DROP TABLES " + r);
+			r = app.dropTables();
+			System.out.println("DROP TABLES " + r);
 
 		}
 	}
