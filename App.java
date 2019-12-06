@@ -1358,7 +1358,6 @@ public class App implements Testable
 			}
 
 
-
 			/* Check if the balance of all accounts that I am the primary owner of is over 100,000 */
 			String queryTotalBalance = String.format(
 				"SELECT SUM(A.balance) FROM Accounts A WHERE A.aid IN (SELECT O.aid FROM Owns O WHERE O.primary_owner=1 AND O.cid=\'%s\')",
@@ -1431,8 +1430,80 @@ public class App implements Testable
 	public void DTER(){
 		try{
 			Statement statement = _connection.createStatement();
+	
+
+			Set<String> DTERCids = new HashSet<String>();
+			Set<String> allCids = new HashSet<String>();
 
 
+			/* Get all customers */
+			String allCustomersCid = "SELECT C.cid FROM Clients C";
+			ResultSet res = statement.executeQuery(allCustomersCid);
+			while(res.next()){
+				allCids.add(res.getString(1));
+			}
+			
+
+			/* Calculate DTER */
+			for (String cid: allCids){
+				Set<String> ownedAids = new HashSet<String>();
+
+				String getAllOwnedAccounts = String.format("SELECT O.aid FROM Owns O WHERE O.cid=\'%s\'", cid);
+				res = statement.executeQuery(getAllOwnedAccounts);
+				while(res.next()){
+					ownedAids.add(res.getString(1));
+				}
+				
+				double depositAmount = 0.0;
+
+				/* For each aid owned, we get the total amount transfer, wired, deposited */
+				for (String aid : ownedAids){
+
+					
+
+					/* GET THE DATE */
+					ArrayList<Integer> date = getDate();
+
+					int day, currMonth, prevMonth;
+					day = date.get(1); /* month index 0, day index 1, year index 2 */
+					currMonth = date.get(0);
+					prevMonth = currMonth - 1;
+
+					/* Intersect the actions of interest with all transactions over the past month */
+					String getAllTransactions = String.format(
+						"SELECT amount FROM Transactions WHERE aid2=\'%s\' AND month=%d AND day >= %d AND (transType=\'TRANSFER\' OR transType=\'DEPOSIT\' OR transType=\'WIRE\')" + 
+						"UNION " + 
+						"SELECT amount FROM Transactions WHERE aid2=\'%s\' AND month=%d AND day <= %d AND (transType=\'TRANSFER\' OR transType=\'DEPOSIT\' OR transType=\'WIRE\')" ,
+						aid, /*aid1 */
+						prevMonth,
+						day,
+						aid,
+						currMonth,
+						day
+					);
+
+					res = statement.executeQuery(getAllTransactions);
+
+					while(res.next()){
+						depositAmount += res.getDouble(1);
+					}
+
+
+
+				}
+
+				if (depositAmount > 10000){
+					DTERCids.add(cid);
+				}
+
+
+			}
+
+			System.out.println("\n###### DTER ######");
+			for (String cid : DTERCids){
+				System.out.println(" CID: " + cid);
+			}
+			System.out.println("");
 
 
 		}catch(Exception e){
