@@ -31,99 +31,19 @@ public class Main
 			// Example tests.  We'll overwrite your Main.main() function with our final tests.
 
 			System.out.println("\n\n///////////// MY TESTS /////////////\n");
-			// Create tables
+			//Create tables
 			r = app.createTables();
 			System.out.println("CREATE TABLES " + r);
 
 			System.out.println("RIGHT BEFORE DUMMY VARS");
 			app.createDummyValues();
 			System.out.println("RIGHT AFTER DUMMY VARS");
+		
+
 			
-			//Create dummy checkings Savings Accounts
-			r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "acc1", 1000.00, "1", "Im YoungMing", "Known" );
-			System.out.println( "CREATE ACCOUNT ACC1 - " + r );
-			
-			//Create new seperate checking account
-			r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "acc2", 1000.00, "2", "Danny Dave", "Gangy Wangy Lane" );
-			System.out.println( "CREATE ACCOUNT ACC2 - " + r );
-
-			// Test create pocket account to link to acc1
-			r = app.createPocketAccount("pocket1", "acc1", 1000.00, "1");
-			System.out.println("CREATE POCKET ACCOUNT pocket1 - " + r );
-			
-			r = app.createPocketAccount("pocket2", "acc2", 1000.00, "2");
-			System.out.println("CREATE POCKET ACCOUNT pocket2 - " + r );
-
-			// Test Create customer to co-own account "acc1"
-			r = app.createCustomer("acc1", "customer1", "Chumbo Wumbo", "1919 Gang Lane");
-			System.out.println("CREATING NEW CUSTOMER TO CO-OWN ACCOUNT \"acc1\" - " + r);
-
-
-			// Test Show balance before deposit
-			r = app.showBalance("acc1");
-			System.out.println( "SHOW BALANCE ACC1 - " + r );
-
-
-			r = app.showBalance("acc2");
-			System.out.println( "SHOW BALANCE ACC2 - " + r );
-
-			// Test deposit
-			//System.out.println("DEPOSITING ADDITIONAL 200 INTO ACC1");
-			r = app.deposit("acc1", 200.00);
-			System.out.println( "DEPOSITING ADDITIONAL 200 INTO ACC1 - " + r );
-
-			// Test top up on account 1
-			r = app.topUp("pocket1", 500.00);
-			System.out.println("Testing top up on acc1 -" + r );
-
-			// Test top up on account 2 
-			r = app.topUp("pocket2", 500.00);
-			System.out.println("Testing top up on acc2 -" + r );
-			
-			// Test Show balance before deposit
-			r = app.showBalance("acc1");
-			System.out.println("Balance MAIN 1 - " + r );
-
-			r = app.showBalance("pocket1");
-			System.out.println("Balance POCKET 1 - " + r );
-
-
-			// Test Show balance before deposit
-			r = app.showBalance("acc2");
-			System.out.println("Balance MAIN 2 - " + r );
-
-			r = app.showBalance("pocket2");
-			System.out.println("Balance POCKET 2 - " + r );
-
-
-			//Test payFriend
-			r = app.payFriend("pocket1", "pocket2", 1000.00);
-			System.out.println("PAY FRIEND FROM POCK 1 TO POCK 2 - " + r);
-
-			r = app.showBalance("acc1");
-			System.out.println("Balance MAIN 1 - " + r );
-
-			r = app.showBalance("pocket1");
-			System.out.println("Balance POCKET 1 - " + r );
-
-
-			// Test Show balance before deposit
-			r = app.showBalance("acc2");
-			System.out.println("Balance MAIN 2 - " + r );
-
-			r = app.showBalance("pocket2");
-			System.out.println("Balance POCKET 2 - " + r );
-
-			//Should return null but who knows
-			r = app.listClosedAccounts();
-			System.out.println("LISTING CLOSED ACCOUNTS - " + r );
-
-			app.GenerateCustomerReport("209378521");
-
-			//app.CreateAccount("acc1", 123.0, "Goleta", "Savings", "David");
-			// System.out.println("LISTING CREATED ACCOUNTS - " + r );
 
 			StartScreen s = new StartScreen(app);
+			app.GenerateMonthlyStatement("212431965");
 			
 			r = app.dropTables();
 			System.out.println("DROP TABLES " + r);

@@ -103,6 +103,8 @@ public class App implements Testable
 			System.out.println( "Database Username is: " + _connection.getUserName() );
 			System.out.println();
 
+
+
 			return "0";
 		}
 		catch( SQLException e )
@@ -398,6 +400,9 @@ public class App implements Testable
 			);
 			*/
 
+
+			setDate(2019, 3, 14);
+
 			return "0";
 		}
 		catch(Exception e){
@@ -436,7 +441,7 @@ public class App implements Testable
 			if (ResSize(resultSet) == 0)
 			{
 				statement.executeQuery("INSERT INTO SysMetaData " +
-															 "VALUES (1, 15, 2019, 0)"
+															 "VALUES (3, 14, 2019, 0)"
 				);
 
 				return "0 2019-1-15";
@@ -1178,8 +1183,150 @@ public class App implements Testable
 		return;
 	}
 
-	public void GenerateMonthlyStatement(){
-		return;
+	/*Given a customer, do the following for each account she owns (including accounts which have closed but have not been deleted): 
+	 * 1) generate a list of all transactions which have occurred in the last month.  
+	 * 2) This statement should list the names and addresses of all owners of the account.
+	 * 3) The  initial  and  final  account  balance  is  to  be  included.   
+	 * 4) If  the  sum  of  the  balances  of  theaccounts of which the customer is the primary owner exceeds $100,000, a message should be includedin the statement to warn the customer that the limit of the insurance has been reached.
+	 */
+	public void GenerateMonthlyStatement(String cid){
+		try{
+			Statement statement = _connection.createStatement();
+
+			ArrayList<String> aidsOwned = new ArrayList<String>();
+			Set<String> commonOwners = new HashSet<String>();
+
+			/* Current date */
+			String craftCurrDate = "SELECT (year, month, day) FROM SysMetaData";
+
+
+			/* Craft query to get all aids of accounts we own */
+			String getAidsOwned = String.format(
+				"SELECT aid from Owns WHERE cid=\'%s\'",
+				cid
+			);
+
+			/* put all AIDS into our arrayList */
+			ResultSet res = statement.executeQuery(getAidsOwned);
+			while(res.next()){
+				aidsOwned.add(res.getString(1));
+			}
+
+			/* Get all owners from people who own the accounts */
+			for (String aid : aidsOwned){
+				String getCommonOwners = String.format(
+						"SELECT DISTINCT C.name, C.addr " + 
+						"FROM Clients C " +
+						"WHERE C.cid IN (SELECT DISTINCT O.cid FROM Owns O WHERE O.aid=\'%s\')",
+						aid
+				);
+
+				/* Get the common owners of the account */
+				res = statement.executeQuery(getCommonOwners);
+				while(res.next()){
+					String toAdd = res.getString(1) + " " + res.getString(2);
+					commonOwners.add(toAdd);
+				}
+
+
+				System.out.println("****** Account " + aid + " ******");
+
+				/* Print out common owners */
+				for (String s : commonOwners){
+					System.out.println(" Owner : " + s);
+				}
+				System.out.println("\n");
+
+
+				/* GET THE DATE */
+				ArrayList<Integer> date = getDate();
+
+				int day, currMonth, prevMonth;
+				day = date.get(1); /* month index 0, day index 1, year index 2 */
+				currMonth = date.get(0);
+				prevMonth = currMonth - 1;
+
+
+
+				/*TODO: FIX THIS TO ONLY GRAB FROM THE CURRENT MONTH */
+				String getAllTransactions = String.format(
+					"SELECT * FROM Transactions WHERE aid1=\'%s\' OR aid2=\'%s\' AND month=%d AND day >= %d " + 
+					"UNION " + 
+					"SELECT * FROM Transactions WHERE aid1=\'%s\' OR aid2=\'%s\' AND month=%d AND day <= %d" ,
+					aid, /*aid1 */
+					aid, /*adi2 */
+					prevMonth,
+					day,
+					aid,
+					aid,
+					currMonth,
+					day
+				);
+
+				//System.out.println("SYSDATE " + getAllTransactions);
+
+				/* GET ALL TRANSACTIONS - NEEDS TO BE TWEAKED FOR THE PREVIOUS MONTH */
+				res = statement.executeQuery(getAllTransactions);
+				while(res.next()){
+					String to     = res.getString(1);
+					String from   = res.getString(2);
+					String check  = res.getString(3); 
+					String amt    = res.getString(4);
+					String year   = res.getString(5);
+					String month  = res.getString(6);
+					String dayStr = res.getString(7); /*Already defined when we call date */
+ 
+					if(check.equals("0"))
+						check = "NULL";
+
+					String printStr = year + "-" + month + "-" + dayStr + " " + to + " " + from + " " + amt + " " + check;
+
+					System.out.println(printStr);
+
+				}
+
+				commonOwners.clear();
+			}
+
+
+			/* GET PREVIOUS MONTH */
+			int year, month, day;
+			String getCurrentDate = "SELECT year, month, day FROM SysMetaData";
+			res = statement.executeQuery(getCurrentDate);
+
+			if(res.next()){
+				year  = res.getInt(1);
+				month = res.getInt(2);
+				day   = res.getInt(3);
+			}
+			else{
+				System.out.println("GenerateMonthlyStatement()::1272 - Unable to get current date!");
+				return;
+			}
+
+			/* date logic */
+			Calendar c = Calendar.getInstance();
+
+
+
+
+			/* Check if the balance of all accounts that I am the primary owner of is over 100,000 */
+			String queryTotalBalance = String.format(
+				"SELECT SUM(A.balance) FROM Accounts A WHERE A.aid IN (SELECT O.aid FROM Owns O WHERE O.primary_owner=1 AND O.cid=\'%s\')",
+				cid
+			);
+
+
+			res = statement.executeQuery(queryTotalBalance);
+
+			if(res.next() && res.getDouble(1) > 100000)
+				System.out.println("############# WARNING: NO LONGER INSURED PASSED $100,000 ############# ");
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	//For all open accounts, add the appropriate amount of monthly interest to the balance. 
@@ -2003,6 +2150,29 @@ public class App implements Testable
 			return;
 		}
 	}
+
+	public ArrayList<Integer> getDate(){
+		try{
+			Statement statement = _connection.createStatement();
+			ResultSet res = statement.executeQuery("SELECT year, month, day FROM SysMetaData");
+
+			ArrayList<Integer> retList = new ArrayList<Integer>();
+
+			if(res.next()){
+				retList.add(res.getInt(1));
+				retList.add(res.getInt(2));
+				retList.add(res.getInt(3));
+
+				return retList;
+			}
+
+			return new ArrayList<Integer>();
+
+		}catch(Exception e){
+			return new ArrayList<Integer>();
+		}
+	}
+
 }
 
 

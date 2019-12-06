@@ -49,7 +49,7 @@ class BankTellerScreen {
 		public void actionPerformed(ActionEvent e){
 			mainFrame.getContentPane().removeAll();
 			mainFrame.repaint();
-			app.GenerateMonthlyStatement();
+			//app.GenerateMonthlyStatement();
       // System.out.println(returnValue);
       BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
 		}
