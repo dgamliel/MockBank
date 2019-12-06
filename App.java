@@ -403,7 +403,7 @@ public class App implements Testable
 
 			/*Insert the initial interest rates */
 			statement.executeQuery(
-				"INSERT INTO Interest (intr, type) VALUES (0.0, \'STUDENTCHECKING\')"
+				"INSERT INTO Interest (intr, type) VALUES (0.0, \'STUDENT_CHECKING\')"
 			);
 
 			/* Pocket */
@@ -413,17 +413,17 @@ public class App implements Testable
 
 			/* Saving */
 			statement.executeQuery(
-				"INSERT INTO Interest (intr, type) VALUES (4.8, \'SAVING\')"
+				"INSERT INTO Interest (intr, type) VALUES (4.8, \'SAVINGS\')"
 			);
 
 			/* Checking */
 			statement.executeQuery(
-				"INSERT INTO Interest (intr, type) VALUES (3.0, \'CHECKING\')"
+				"INSERT INTO Interest (intr, type) VALUES (3.0, \'INTEREST_CHECKINGS\')"
 			);
 
 
 			/* Set date on bootup */
-			setDate(2019, 3, 14);
+			setDate(2011, 3, 14);
 
 			return "0";
 		}
@@ -454,30 +454,29 @@ public class App implements Testable
 
 			Statement statement = _connection.createStatement();
 
-			ResultSet resultSet = statement.executeQuery(
-				"select interestAccrued from SysMetaData"
-			);
-
 			//If the date has yet to be set then we set the default to Jan 15th, 2019
 			//Also state that we have yet to accrue interest 
-			if (ResSize(resultSet) == 0)
-			{
-				statement.executeQuery("INSERT INTO SysMetaData " +
-															 "VALUES (3, 14, 2019, 0)"
-				);
 
-				return "0 2019-1-15";
-			}
+		
+				ResultSet res = statement.executeQuery("SELECT * FROM SysMetaData");
 
-			else {	
+				if (ResSize(res) == 0){
+					
+					String s = String.format("INSERT INTO SysMetaData (year, month, day, interestAccrued) VALUES (%d,%d,%d,0)", year, month, day);
+
+					statement.executeQuery(s);
+					return "0 " + strDate;
+				}
+
 				statement.executeQuery("update SysMetaData  " +
 															 "set year = " + year + ", " +
 															 		"month = " + month + ", " +
 																	  "day = " + day +
 																"where year = " + year
 				);
+
 				return "0 " + strDate;
-			}
+			
 
 
 		}catch(Exception e){
@@ -1508,16 +1507,11 @@ public class App implements Testable
 					while(res.next()){
 						depositAmount += res.getDouble(1);
 					}
-
-
-
 				}
 
 				if (depositAmount > 10000){
 					DTERCids.add(cid);
 				}
-
-
 			}
 
 			System.out.println("\n###### DTER ######");
@@ -1525,7 +1519,6 @@ public class App implements Testable
 				System.out.println(" CID: " + cid);
 			}
 			System.out.println("");
-
 
 		}catch(Exception e){
 			e.printStackTrace();
@@ -1775,6 +1768,18 @@ public class App implements Testable
 	{
 		System.out.println("ENTERED INTEREST RATE FUNCTION");
 		System.out.println("ACCOUNT TYPE IS: " + AccType +" AND INTEEST RATE IS: " + InterestRate);
+
+		try{
+			Statement statement = _connection.createStatement();
+
+			String setInterestRate = String.format("UPDATE Interest I SET I.intr=%.2f WHERE I.type=\'%s\'",
+				InterestRate,
+				AccType);
+
+			statement.executeQuery(setInterestRate);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	public void createDummyValues(){
@@ -2359,6 +2364,52 @@ public class App implements Testable
 			return new ArrayList<Integer>();
 		}
 	}
+
+	public void AccrueInterest(){
+		/* Ensure no interest accrues and we're on the last day */
+
+	
+		ArrayList<Integer> date = getDate();
+
+		int day, month;
+		day = date.get(1); /* month index 0, day index 1, year index 2 */
+		month = date.get(0);
+
+		System.out.println(day + " " + month);
+
+		if (!isEndDay(day, month)){
+			System.out.println("\n!!!!!!!!!!! CANNOT ACCRUE INTEREST - NOT END DAY !!!!!!!!!!");
+			return;
+		}
+
+		if (alreadyAccruedInterest()){
+			System.out.println("\n!!!!!!!!!!! CANNOT ACCRUE INTEREST - ALREADY ACCRUED !!!!!!!!!!");
+			return;
+		}
+
+
+	}
+
+	public boolean isEndDay(int day, int month){
+		int[] endDay = {31, 28, 31, 30, 31, 30, 31, 30, 31, 30, 31, 30, 31};
+		int monthInd = month-1;
+		return day == endDay[monthInd];
+
+	}
+
+	public boolean alreadyAccruedInterest(){
+		try{
+			Statement statement = _connection.createStatement();
+			ResultSet res = statement.executeQuery("SELECT interestAccrued FROM SysMetaData");
+
+			if (res.next() && res.getInt(1) == 1){
+				return true;
+			}
+			return false;
+
+		}catch(Exception e){e.printStackTrace(); return false;}
+	}
+
 
 }
 
