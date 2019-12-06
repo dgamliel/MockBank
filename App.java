@@ -312,6 +312,7 @@ public class App implements Testable
 							"year integer, " +
 							"month integer, " +
 							"day integer, " +
+							"transType varchar(32)," +
 							"foreign key (aid1) references Accounts," + 
 							"foreign key (aid2) references Accounts," + 
 							"primary key (aid1, aid2, amount)" + 
@@ -627,7 +628,7 @@ public class App implements Testable
 				statement.executeQuery(updateNewAmount);
 
 				////// Input into transactions /////
-				String insertTransaction = String.format("INSERT INTO Transactions (aid1, aid2, amount) VALUES (\'%s\', \'%s\', %f)", accountId, accountId, amount);
+				String insertTransaction = String.format("INSERT INTO Transactions (aid1, aid2, amount, transType) VALUES (\'%s\', \'%s\', %f, \'DEPOSIT\')", accountId, accountId, amount);
 				statement.executeQuery(insertTransaction); 
 
 				return "0 " + oldAmt + " " + newAmount;
@@ -775,7 +776,7 @@ public class App implements Testable
 
 			////// ADD WITHDRAWL AND DEPOSIT TO TRANSACTION LIST //////
 			String addTransaction = String.format(
-				"INSERT INTO Transactions (aid1, aid2, amount) VALUES (\'%s\', \'%s\', %.2f)",
+				"INSERT INTO Transactions (aid1, aid2, amount, transType) VALUES (\'%s\', \'%s\', %.2f, \'TOPUP\')",
 				mainAid,
 				accountId,
 				amount
@@ -897,7 +898,7 @@ public class App implements Testable
 			statement.executeQuery(updateTo);
 
 			String insertTransaction = String.format(
-				"INSERT INTO Transactions (aid1, aid2, amount) VALUES (\'%s\', \'%s\', %.2f)",
+				"INSERT INTO Transactions (aid1, aid2, amount, transType) VALUES (\'%s\', \'%s\', %.2f, \'PAYFRIEND\')",
 				from,
 				to,
 				amount
@@ -993,7 +994,7 @@ public class App implements Testable
 		String accId = account;
 		
 		String withdrawTransactions = String.format(
-			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d)",
+			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'DEPOSIT\')",
 			accId,
 			accId,
 			amount,
@@ -1086,7 +1087,7 @@ public class App implements Testable
 		String accId = account;
 		
 		String withdrawTransactions = String.format(
-			"INSERT INTO Transactions (aid1, aid2, amount) VALUES (\'%s\', \'%s\', %.2f)",
+			"INSERT INTO Transactions (aid1, aid2, amount, transType) VALUES (\'%s\', \'%s\', %.2f, \'WITHDRAWL\')",
 			accId,
 			accId,
 			-amount
@@ -1276,7 +1277,7 @@ public class App implements Testable
 					String month  = res.getString(6);
 					String dayStr = res.getString(7); /*Already defined when we call date */
  
-					if(check.equals("0"))
+					if(check == null)
 						check = "NULL";
 
 					String printStr = year + "-" + month + "-" + dayStr + " " + to + " " + from + " " + amt + " " + check;
@@ -1304,9 +1305,57 @@ public class App implements Testable
 				return;
 			}
 
-			/* date logic */
-			Calendar c = Calendar.getInstance();
 
+			/* Get the current and start balance */
+			for(String aid : aidsOwned){
+				double oldBalance = 0.0;
+
+				/* Call show balance and parse from string to double */
+				String stringBalance = showBalance(aid);
+				String[] doubleList = stringBalance.split("\\s+");
+
+				/* Current balance */
+				String currBalance    = doubleList[doubleList.length-1];
+				double valCurrBalance = Double.valueOf(currBalance); 
+
+				/* Old balance */
+				String getAllLosses = String.format(
+					"SELECT SUM(T.amount) FROM Transactions T WHERE T.aid1=\'%s\' AND T.aid2 <> \'%s\'",
+					aid,
+					aid
+				);
+
+				String getAllGains = String.format(
+					"SELECT SUM(T.amount) FROM Transactions T WHERE T.aid1 <> \'%s\' AND T.aid2=\'%s\'",
+					aid, 
+					aid
+				);
+
+				String getAllSelfTransfers = String.format(
+					"SELECT SUM(T.amount) FROM Transactions T WHERE T.aid1=\'%s\' AND T.aid2=\'%s\'",
+					aid, 
+					aid
+				);
+
+
+
+				res = statement.executeQuery(getAllLosses);
+				if (res.next()){
+					oldBalance -= res.getDouble(1);
+				}
+				res = statement.executeQuery(getAllGains);
+				if (res.next()){
+					oldBalance += res.getDouble(1);
+				}
+				res = statement.executeQuery(getAllSelfTransfers);
+				if (res.next()){
+					oldBalance += res.getDouble(1);
+				}
+
+				oldBalance = valCurrBalance - oldBalance;
+
+				System.out.println("Account: " + aid + " ... current balance: " + currBalance + " ... old balance: " + oldBalance);
+			}
 
 
 
@@ -1318,6 +1367,7 @@ public class App implements Testable
 
 
 			res = statement.executeQuery(queryTotalBalance);
+
 
 			if(res.next() && res.getDouble(1) > 100000)
 				System.out.println("############# WARNING: NO LONGER INSURED PASSED $100,000 ############# ");
@@ -1366,27 +1416,6 @@ public class App implements Testable
 
 			}
 
-			/*
-			System.out.println("The value of CID: " + cid);
-
-			Statement statement = _connection.createStatement();
-			ArrayList<String> CustomerAids = new ArrayList<String>();
-			ArrayList<Integer> CustomerClosed = new ArrayList<Integer>();
-	
-			String getCustomerAID = String.format(
-				"SELECT O.aid FROM Owns O WHERE O.cid=\'%s\'",
-				cid
-			);
-	
-			ResultSet res = statement.executeQuery(getCustomerAID);
-
-			while(res.next())
-			{
-				res.getString(1)
-			}
-			*/
-
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1394,8 +1423,22 @@ public class App implements Testable
 		return;
 	}
 
+
+	/* By federal law, deposits over $10,000 for a single customer in all (owned or jointly owned) accounts within one month must be reported to the government. 
+	 * Generate a list of all customers which have a sum of deposits, transfers and wires duringthe current month, over all owned accounts (active or closed), of over $10,000. 
+	 * (How to handle joint accounts?)
+	 */
 	public void DTER(){
-		return;
+		try{
+			Statement statement = _connection.createStatement();
+
+
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	public void CloseAccount(String aid, double balance, String bname, String accType, String owners, String linked)
