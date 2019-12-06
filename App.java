@@ -1540,7 +1540,34 @@ public class App implements Testable
 	
 	public void DeleteTransaction()
 	{
-		System.out.println("DROPPING TABLES");
+
+		try{
+			Statement statement = _connection.createStatement();
+			statement.executeQuery("drop table Transactions cascade constraints");
+
+			statement.executeQuery(
+				"create table Transactions(" +
+							"aid1 varchar(20)," + 
+							"aid2 varchar(20)," + 
+							"check_num integer," + // primary = 1 if owner is primary else: primary = 0
+							"amount real, " + 
+							"year integer, " +
+							"month integer, " +
+							"day integer, " +
+							"transType varchar(32)," +
+							"foreign key (aid1) references Accounts," + 
+							"foreign key (aid2) references Accounts," + 
+							"primary key (aid1, aid2, amount, year, month, day, transType)" + 
+							")" 
+
+			); 
+			System.out.println("EMPTIED TRANSACTION TABLES");
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
+
 		return;
 	}	
 
