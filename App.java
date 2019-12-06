@@ -315,7 +315,7 @@ public class App implements Testable
 							"transType varchar(32)," +
 							"foreign key (aid1) references Accounts," + 
 							"foreign key (aid2) references Accounts," + 
-							"primary key (aid1, aid2, amount)" + 
+							"primary key (aid1, aid2, amount, year, month, day, transType)" + 
 							")" 
 
 			); 
@@ -1514,6 +1514,7 @@ public class App implements Testable
 				statement.executeQuery(insertOwns);
 			}
 
+
 			if (accType.equals("Pocket"))
 			{
 				String insertPocket = String.format(
@@ -1552,6 +1553,24 @@ public class App implements Testable
 				aid);
 				statement.executeQuery(insertInterestChecking);
 			}
+
+			ArrayList<Integer> date = getDate();
+
+			int day, month, year;
+			day   = date.get(1); /* month index 0, day index 1, year index 2 */
+			month = date.get(0);
+			year  = date.get(2);
+
+			String InitialDeposit = String.format(
+				"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'DEPOSIT\')",
+				aid,
+				aid,
+				balance,
+				year,
+				month,
+				day
+			);
+			statement.executeQuery(InitialDeposit);
 
 			return;
 		} catch (Exception e) {
