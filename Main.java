@@ -41,10 +41,9 @@ public class Main
 		
 
 			
+
+			StartScreen s = new StartScreen(app);
 			app.GenerateMonthlyStatement("212431965");
-
-
-
 			
 			r = app.dropTables();
 			System.out.println("DROP TABLES " + r);
