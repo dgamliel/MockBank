@@ -131,7 +131,7 @@ public class AccountManagement extends JFrame implements ActionListener{
 		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
 		mainFrame.repaint();
-		ClientScreen cs = new ClientScreen( this.app, mainFrame);
+		BankTellerScreen bts = new BankTellerScreen(mainFrame, this.app);
 	}
 
 	//ClosedAccount TRANSACTION
@@ -141,7 +141,7 @@ public class AccountManagement extends JFrame implements ActionListener{
 		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
 		mainFrame.repaint();
-		ClientScreen cs = new ClientScreen( this.app, mainFrame);
+		BankTellerScreen bts = new BankTellerScreen(mainFrame, this.app);
 	}
 
 	//DeleteAccount FUNCTION
@@ -151,7 +151,7 @@ public class AccountManagement extends JFrame implements ActionListener{
 		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
 		mainFrame.repaint();
-		ClientScreen cs = new ClientScreen(  this.app, mainFrame);
+		BankTellerScreen bts = new BankTellerScreen(mainFrame, this.app);
 	}
 
 		}

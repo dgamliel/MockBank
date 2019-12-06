@@ -25,7 +25,8 @@ class BankTellerScreen {
         JButton deletetransactionButton = new JButton("Delete Transaction");
         JButton setInterestRateButton = new JButton("Set Interest Rate");
         JButton setDate = new JButton("Set Date");
-	JButton goBackButton = new JButton("Go Back");
+        JButton goBackButton = new JButton("Go Back");
+        JButton AccessClientScreen = new JButton("Access Client Screen");
 
 
         int height = 720 / 8;
@@ -44,23 +45,21 @@ class BankTellerScreen {
         deleteaccountButton.setBounds(right_x, height + padding*2, 200, 100);
         deletetransactionButton.setBounds(right_x, height + padding*3, 200, 100);
 
-	monthlystatementButton.addActionListener((ActionListener) new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e){
-			mainFrame.getContentPane().removeAll();
-			mainFrame.repaint();
-			//app.GenerateMonthlyStatement();
-      // System.out.println(returnValue);
-      BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
-		}
-	});
+      monthlystatementButton.addActionListener((ActionListener) new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e){
+          mainFrame.getContentPane().removeAll();
+          mainFrame.repaint();
+          GeneralReport gr = new GeneralReport(mainFrame, app, 1);
+        }
+      });
 
         closedaccountButton.addActionListener((ActionListener) new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainFrame.getContentPane().removeAll();
-    		mainFrame.repaint();
-		AccountManagement am = new AccountManagement(app, 2, mainFrame);
+            mainFrame.getContentPane().removeAll();
+    		    mainFrame.repaint();
+		        AccountManagement am = new AccountManagement(app, 2, mainFrame);
             }
         });
 
@@ -70,8 +69,7 @@ class BankTellerScreen {
             mainFrame.getContentPane().removeAll();
             mainFrame.repaint();
 	          app.DTER();
-	    // System.out.println(returnValue);
-	    BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
+	          BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
           }
         });
 
@@ -83,21 +81,20 @@ class BankTellerScreen {
 
             mainFrame.getContentPane().removeAll();
             mainFrame.repaint();
-            // System.out.println(returnValue);
-            CustomerReport cs = new CustomerReport(mainFrame, app);
+            GeneralReport cs = new GeneralReport(mainFrame, app, 2);
           }
         });
 
-        addinterestButton.addActionListener((ActionListener) new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e){
-            mainFrame.getContentPane().removeAll();
-            mainFrame.repaint();
-	          app.AddInterest();
-            // System.out.println(returnValue);
-            BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
-          }
-        });
+        // // addinterestButton.addActionListener((ActionListener) new ActionListener() {
+        //   @Override
+        //   public void actionPerformed(ActionEvent e){
+        //     mainFrame.getContentPane().removeAll();
+        //     mainFrame.repaint();
+	      //     app.AddInterest();
+        //     // System.out.println(returnValue);
+        //     BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
+        //   }
+        // });
 
         createaccountButton.addActionListener((ActionListener) new ActionListener() {
           @Override
@@ -122,6 +119,9 @@ class BankTellerScreen {
           public void actionPerformed(ActionEvent e){
             mainFrame.getContentPane().removeAll();
             mainFrame.repaint();
+            app.DeleteTransaction();
+            BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
+
           }
         });
 
@@ -152,6 +152,16 @@ class BankTellerScreen {
           }
         });
 
+        AccessClientScreen.addActionListener((ActionListener) new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e){
+            mainFrame.getContentPane().removeAll();
+            mainFrame.repaint();
+	          ClientScreen cs = new ClientScreen(app, mainFrame);
+          }
+        });
+
+
         //Add buttons to the GUI
         // frame.add(monthlystatementButton);
         // frame.add(closedaccountButton);
@@ -165,13 +175,14 @@ class BankTellerScreen {
         panel.add(closedaccountButton);
         panel.add(dterButton);
         panel.add(customerreportButton);
-        panel.add(addinterestButton);
+        // panel.add(addinterestButton);
         panel.add(createaccountButton);
         panel.add(deleteaccountButton);
         panel.add(deletetransactionButton);
         panel.add(goBackButton);
         panel.add(setInterestRateButton);
         panel.add(setDate);
+        panel.add(AccessClientScreen);
 
         mainFrame.add(panel);
         mainFrame.show();

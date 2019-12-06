@@ -1444,6 +1444,12 @@ public class App implements Testable
 	public void CloseAccount(String aid, double balance, String bname, String accType, String owners, String linked)
 	{
 		return;
+	}
+	
+	public void DeleteTransaction()
+	{
+		System.out.println("DROPPING TABLES");
+		return;
 	}	
 
 	public void CreateAccount(String aid, double balance, String bname, String accType, String owners, String linked){
