@@ -462,7 +462,7 @@ public class App implements Testable
 
 				if (ResSize(res) == 0){
 					
-					String s = String.format("INSERT INTO SysMetaData (year, month, day, interestAccrued) VALUES (%d,%d,%d,0)", year, month, day);
+					String s = String.format("INSERT INTO SysMetaData  VALUES (%d,%d,%d,0)", month, day, year);
 
 					statement.executeQuery(s);
 					return "0 " + strDate;
@@ -1465,7 +1465,7 @@ public class App implements Testable
 		);
 
 		String checkCommonOwner = String.format(
-			"SELECT O.cid FROM Owns O WHERE O.aid=\'%s\' INTERSECT SELECT O1.cid FROM Owns O1 WHERE O1.aid=\'%s\'", 
+			"SELECT O.cid FROM Owns O WHERE O.aid=\'%s\' AND O.cid IN (SELECT O2.cid FROM Owns O2 WHERE O2.aid=\'%s\')", 
 			name,
 			fromAccount,
 			toAccount
@@ -1473,7 +1473,7 @@ public class App implements Testable
 
 
 		String getOldBalance = String.format(
-			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\' AND A.aid", 
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\'", 
 			fromAccount
 		);
 
@@ -1483,6 +1483,7 @@ public class App implements Testable
 
 			Statement statement = _connection.createStatement();
 
+			/*
 			ResultSet res = statement.executeQuery(checkCommonOwner);
 
 			//Check that we own the account
@@ -1490,8 +1491,9 @@ public class App implements Testable
 				System.out.println( "Customer " + name + " does not own account " + fromAccount + " or " + toAccount);
 				return;
 			}
+			*/
 
-			res = statement.executeQuery(getOldBalance);
+			ResultSet res = statement.executeQuery(getOldBalance);
 				
 			if (!res.next()){
 				System.out.println( "Unable to find balance of account " + fromAccount);
@@ -1652,7 +1654,7 @@ public class App implements Testable
 		int check_num = new Random().nextInt(10000000);
 
 		String withdrawTransactions = String.format(
-			"INSERT INTO Transactions (aid1, aid2, amount, check_num year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, %d, \'PAYFRIEND\')",
+			"INSERT INTO Transactions (aid1, aid2, amount, check_num year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, %d, \'WIRE\')",
 			fromAccount,
 			toAccount,
 			-amount,
@@ -1663,19 +1665,19 @@ public class App implements Testable
 		);
 
 		String checkOwnerFrom = String.format(
-			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\' AND O.aid IN (SELECT P.aid FROM Pockets P)", 
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\'", 
 			name,
 			fromAccount
 		);
 
 		String checkOwnerTo = String.format(
-			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\' AND O.aid IN (SELECT P.aid FROM Pockets P)", 
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\'", 
 			name,
 			toAccount
 		);
 
 		String getOldBalance = String.format(
-			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\' AND A.aid IN (SELECT P.aid FROM Pockets P)", 
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\'", 
 			fromAccount
 		);
 
@@ -1986,6 +1988,11 @@ public class App implements Testable
 	public void DTER(){
 		try{
 			Statement statement = _connection.createStatement();
+
+
+			Set<String> DTERCids = new HashSet<String>();
+			Set<String> allCids = new HashSet<String>();
+	
 
 			/* Get all customers */
 			String allCustomersCid = "SELECT C.cid FROM Clients C";
@@ -3148,27 +3155,11 @@ public class App implements Testable
 		}
 	}
 
+
 	public void AccrueInterest(){
 		/* Ensure no interest accrues and we're on the last day */
 
-	
-		ArrayList<Integer> date = getDate();
-
-		int day, month;
-		day = date.get(1); /* month index 0, day index 1, year index 2 */
-		month = date.get(0);
-
-		System.out.println(day + " " + month);
-
-		if (!isEndDay(day, month)){
-			System.out.println("\n!!!!!!!!!!! CANNOT ACCRUE INTEREST - NOT END DAY !!!!!!!!!!");
-			return;
-		}
-
-		if (alreadyAccruedInterest()){
-			System.out.println("\n!!!!!!!!!!! CANNOT ACCRUE INTEREST - ALREADY ACCRUED !!!!!!!!!!");
-			return;
-		}
+		return;
 
 
 	}
