@@ -400,7 +400,6 @@ public class App implements Testable
 				")"
 			);
 			*/
-
 			/*Insert the initial interest rates */
 			statement.executeQuery(
 				"INSERT INTO Interest (intr, type) VALUES (0.0, \'STUDENTCHECKING\')"
@@ -423,6 +422,7 @@ public class App implements Testable
 
 
 			/* Set date on bootup */
+
 			setDate(2019, 3, 14);
 
 			return "0";
@@ -1079,8 +1079,79 @@ public class App implements Testable
 	//CLIENT TOP UP FUNCTION
 	//3-1-2011 Pit Wilson tops-ups $20 to account 60413 from account 43942
 	public void ClientTopup(int month, int day, int year, String name, double amount, String FromAccount, String toAccount){
+		double newAmount, fetchedAmount;
 
-		return;
+		//Should be a string?
+		// String accId = Integer.toString(account);
+
+		ArrayList<Integer> date = getDate();
+
+		int _day, _month, _year;
+		_day   = date.get(1); /* month index 0, day index 1, year index 2 */
+		_month = date.get(0);
+		_year  = date.get(2);
+
+
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'PURCHASE\')",
+			FromAccount,
+			toAccount,
+			amount,
+			_year,
+			_month,
+			_day
+		);
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\'", 
+			FromAccount
+		);
+
+
+		try{
+
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(getOldBalance);
+				
+			if (!res.next()){
+				System.out.println("Unable to find balance of account " + FromAccount);
+				return;
+			}
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			//Customer attemps to withdraw more money than is in their account	
+			if (fetchedAmount < amount){
+				System.out.println( "Funds low, unable to fetch this amount of money");
+				return;
+			}
+
+			newAmount = fetchedAmount - amount;
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				FromAccount
+			);
+
+			newAmount = fetchedAmount - amount;
+
+			String updateMyAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				fetchedAmount - newAmount,
+				toAccount
+			);
+
+			statement.executeQuery(updateAmount);
+			statement.executeQuery(updateMyAmount);
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	//CLIENT WITHDRAWS FUNCTION
@@ -1209,7 +1280,7 @@ public class App implements Testable
 			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'PURCHASE\')",
 			accId,
 			accId,
-			-amount,
+			amount,
 			_year,
 			_month,
 			_day
@@ -1262,6 +1333,8 @@ public class App implements Testable
 				newAmount,
 				accId
 			);
+			statement.executeQuery(updateAmount);
+
 		}catch(Exception e){
 			e.printStackTrace();
 			return;
@@ -1271,26 +1344,400 @@ public class App implements Testable
 	//CLIENT COLLECTS FUNCTION
 	//3-6-2011 Li Kung collects $10 from account 43947 to account 29107
 	public void ClientCollects(int month, int day, int year, String name, double amount, String fromAccount, String toAccount){
-		return;
+		double newAmount, fetchedAmount;
+
+		//Should be a string?
+		// String accId = Integer.toString(account);
+
+		ArrayList<Integer> date = getDate();
+
+		int _day, _month, _year;
+		_day   = date.get(1); /* month index 0, day index 1, year index 2 */
+		_month = date.get(0);
+		_year  = date.get(2);
+
+
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'COLLECT\')",
+			fromAccount,
+			toAccount,
+			amount,
+			_year,
+			_month,
+			_day
+		);
+
+		String checkOwnerFrom = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\'", 
+			name,
+			fromAccount
+		);
+
+		String checkOwnerTo = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\'", 
+			name,
+			toAccount
+		);
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\' AND A.aid IN (SELECT P.aid FROM Pockets P)", 
+			fromAccount
+		);
+
+
+		try{
+
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(checkOwnerFrom);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + fromAccount);
+				return;
+			}
+
+			res = statement.executeQuery(checkOwnerTo);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + toAccount);
+				return;
+			}
+
+			res = statement.executeQuery(getOldBalance);
+				
+			if (!res.next()){
+				System.out.println( "Unable to find balance of account " + fromAccount);
+				return;
+			}
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			//Customer attemps to withdraw more money than is in their account	
+			if (fetchedAmount < amount){
+				System.out.println( "Funds low, unable to fetch this amount of money");
+				return;
+			}
+
+			newAmount = fetchedAmount + amount;
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				toAccount
+			);
+
+			String updateMyAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				fetchedAmount - (amount * 1.03),
+				fromAccount
+			);
+
+			statement.executeQuery(updateAmount);
+			statement.executeQuery(updateMyAmount);
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	////CLIENT TRANSFERS FUNCTION
 	//3-7-2011 Ivan Lendme transfers $289 from account 43942 to account 17431
 	public void ClientTransfer(int month, int day, int year, String name, double amount, String fromAccount, String toAccount){       
-		return;
+		ArrayList<Integer> date = getDate();
+
+		int _day, _month, _year;
+		_day   = date.get(1); /* month index 0, day index 1, year index 2 */
+		_month = date.get(0);
+		_year  = date.get(2);
+
+
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'TRANSFER\')",
+			fromAccount,
+			toAccount,
+			amount,
+			_year,
+			_month,
+			_day
+		);
+
+		String checkCommonOwner = String.format(
+			"SELECT O.cid FROM Owns O WHERE O.aid=\'%s\' INTERSECT SELECT O1.cid FROM Owns O1 WHERE O1.aid=\'%s\'", 
+			name,
+			fromAccount,
+			toAccount
+		);
+
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\' AND A.aid", 
+			fromAccount
+		);
+
+
+		try{
+			double fetchedAmount, newAmount;
+
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(checkCommonOwner);
+
+			//Check that we own the account
+			if(!(res.next())){
+				System.out.println( "Customer " + name + " does not own account " + fromAccount + " or " + toAccount);
+				return;
+			}
+
+			res = statement.executeQuery(getOldBalance);
+				
+			if (!res.next()){
+				System.out.println( "Unable to find balance of account " + fromAccount);
+				return;
+			}
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			//Customer attemps to withdraw more money than is in their account	
+			if (fetchedAmount < amount){
+				System.out.println( "Funds low, unable to fetch this amount of money");
+				return;
+			}
+
+			newAmount = fetchedAmount + amount;
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				toAccount
+			);
+
+			String updateMyAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				fetchedAmount - amount,
+				fromAccount
+			);
+
+			statement.executeQuery(updateAmount);
+			statement.executeQuery(updateMyAmount);
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}	
 	}
 
 	////CLIENT PAYFRIEND FUNCTION
 	//3-8-2011 Pit Wilson pay-friends $10 from account 60413 to account 67521
 	public void ClientPayfriend(int month, int day, int year, String name, double amount, String fromAccount, String toAccount){
-		return;
+		double newAmount, fetchedAmount;
+
+		//Should be a string?
+		// String accId = Integer.toString(account);
+
+		ArrayList<Integer> date = getDate();
+
+		int _day, _month, _year;
+		_day   = date.get(1); /* month index 0, day index 1, year index 2 */
+		_month = date.get(0);
+		_year  = date.get(2);
+
+
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'PAYFRIEND\')",
+			fromAccount,
+			toAccount,
+			amount,
+			_year,
+			_month,
+			_day
+		);
+
+		String checkOwnerFrom = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\' AND O.aid IN (SELECT P.aid FROM Pockets P)", 
+			name,
+			fromAccount
+		);
+
+		String checkOwnerTo = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\' AND O.aid IN (SELECT P.aid FROM Pockets P)", 
+			name,
+			toAccount
+		);
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\' AND A.aid IN (SELECT P.aid FROM Pockets P)", 
+			fromAccount
+		);
+
+
+		try{
+
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(checkOwnerFrom);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + fromAccount);
+				return;
+			}
+
+			res = statement.executeQuery(checkOwnerTo);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + toAccount);
+				return;
+			}
+
+			res = statement.executeQuery(getOldBalance);
+				
+			if (!res.next()){
+				System.out.println( "Unable to find balance of account " + fromAccount);
+				return;
+			}
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			//Customer attemps to withdraw more money than is in their account	
+			if (fetchedAmount < amount){
+				System.out.println( "Funds low, unable to fetch this amount of money");
+				return;
+			}
+
+			newAmount = fetchedAmount + amount;
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				toAccount
+			);
+
+			String updateMyAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				fetchedAmount - amount,
+				fromAccount
+			);
+
+			statement.executeQuery(updateAmount);
+			statement.executeQuery(updateMyAmount);
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	////CLIENT PAYFRIEND FUNCTION
         //3-9-2011 Fatal Castro wires $4,000 from account 41725 to account 32156
 	public void ClientWire(int month, int day, int year, String name, double amount, String fromAccount, String toAccount){
+		double newAmount, fetchedAmount;
+
+		//Should be a string?
+		// String accId = Integer.toString(account);
+
+		ArrayList<Integer> date = getDate();
+
+		int _day, _month, _year;
+		_day   = date.get(1); /* month index 0, day index 1, year index 2 */
+		_month = date.get(0);
+		_year  = date.get(2);
+
+		int check_num = new Random().nextInt(10000000);
+
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount, check_num year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, %d, \'PAYFRIEND\')",
+			fromAccount,
+			toAccount,
+			-amount,
+			check_num,
+			_year,
+			_month,
+			_day
+		);
+
+		String checkOwnerFrom = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\' AND O.aid IN (SELECT P.aid FROM Pockets P)", 
+			name,
+			fromAccount
+		);
+
+		String checkOwnerTo = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\' AND O.aid IN (SELECT P.aid FROM Pockets P)", 
+			name,
+			toAccount
+		);
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\' AND A.aid IN (SELECT P.aid FROM Pockets P)", 
+			fromAccount
+		);
 
 
+		try{
+
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(checkOwnerFrom);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + fromAccount);
+				return;
+			}
+
+			res = statement.executeQuery(checkOwnerTo);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + toAccount);
+				return;
+			}
+
+			res = statement.executeQuery(getOldBalance);
+				
+			if (!res.next()){
+				System.out.println( "Unable to find balance of account " + fromAccount);
+				return;
+			}
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			//Customer attemps to withdraw more money than is in their account	
+			if (fetchedAmount < amount){
+				System.out.println( "Funds low, unable to fetch this amount of money");
+				return;
+			}
+
+			newAmount = fetchedAmount + amount;
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				toAccount
+			);
+
+			String updateMyAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				fetchedAmount - amount,
+				fromAccount
+			);
+
+			statement.executeQuery(updateAmount);
+			statement.executeQuery(updateMyAmount);
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	/*Given a customer, do the following for each account she owns (including accounts which have closed but have not been deleted): 
@@ -1467,6 +1914,7 @@ public class App implements Testable
 			}
 
 
+
 			/* Check if the balance of all accounts that I am the primary owner of is over 100,000 */
 			String queryTotalBalance = String.format(
 				"SELECT SUM(A.balance) FROM Accounts A WHERE A.aid IN (SELECT O.aid FROM Owns O WHERE O.primary_owner=1 AND O.cid=\'%s\')",
@@ -1539,80 +1987,8 @@ public class App implements Testable
 	public void DTER(){
 		try{
 			Statement statement = _connection.createStatement();
-	
-
-			Set<String> DTERCids = new HashSet<String>();
-			Set<String> allCids = new HashSet<String>();
 
 
-			/* Get all customers */
-			String allCustomersCid = "SELECT C.cid FROM Clients C";
-			ResultSet res = statement.executeQuery(allCustomersCid);
-			while(res.next()){
-				allCids.add(res.getString(1));
-			}
-			
-
-			/* Calculate DTER */
-			for (String cid: allCids){
-				Set<String> ownedAids = new HashSet<String>();
-
-				String getAllOwnedAccounts = String.format("SELECT O.aid FROM Owns O WHERE O.cid=\'%s\'", cid);
-				res = statement.executeQuery(getAllOwnedAccounts);
-				while(res.next()){
-					ownedAids.add(res.getString(1));
-				}
-				
-				double depositAmount = 0.0;
-
-				/* For each aid owned, we get the total amount transfer, wired, deposited */
-				for (String aid : ownedAids){
-
-					
-
-					/* GET THE DATE */
-					ArrayList<Integer> date = getDate();
-
-					int day, currMonth, prevMonth;
-					day = date.get(1); /* month index 0, day index 1, year index 2 */
-					currMonth = date.get(0);
-					prevMonth = currMonth - 1;
-
-					/* Intersect the actions of interest with all transactions over the past month */
-					String getAllTransactions = String.format(
-						"SELECT amount FROM Transactions WHERE aid2=\'%s\' AND month=%d AND day >= %d AND (transType=\'TRANSFER\' OR transType=\'DEPOSIT\' OR transType=\'WIRE\')" + 
-						"UNION " + 
-						"SELECT amount FROM Transactions WHERE aid2=\'%s\' AND month=%d AND day <= %d AND (transType=\'TRANSFER\' OR transType=\'DEPOSIT\' OR transType=\'WIRE\')" ,
-						aid, /*aid1 */
-						prevMonth,
-						day,
-						aid,
-						currMonth,
-						day
-					);
-
-					res = statement.executeQuery(getAllTransactions);
-
-					while(res.next()){
-						depositAmount += res.getDouble(1);
-					}
-
-
-
-				}
-
-				if (depositAmount > 10000){
-					DTERCids.add(cid);
-				}
-
-
-			}
-
-			System.out.println("\n###### DTER ######");
-			for (String cid : DTERCids){
-				System.out.println(" CID: " + cid);
-			}
-			System.out.println("");
 
 
 		}catch(Exception e){
@@ -1628,34 +2004,7 @@ public class App implements Testable
 	
 	public void DeleteTransaction()
 	{
-
-		try{
-			Statement statement = _connection.createStatement();
-			statement.executeQuery("drop table Transactions cascade constraints");
-
-			statement.executeQuery(
-				"create table Transactions(" +
-							"aid1 varchar(20)," + 
-							"aid2 varchar(20)," + 
-							"check_num integer," + // primary = 1 if owner is primary else: primary = 0
-							"amount real, " + 
-							"year integer, " +
-							"month integer, " +
-							"day integer, " +
-							"transType varchar(32)," +
-							"foreign key (aid1) references Accounts," + 
-							"foreign key (aid2) references Accounts," + 
-							"primary key (aid1, aid2, amount, year, month, day, transType)" + 
-							")" 
-
-			); 
-			System.out.println("EMPTIED TRANSACTION TABLES");
-
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-
-
+		System.out.println("DROPPING TABLES");
 		return;
 	}	
 
