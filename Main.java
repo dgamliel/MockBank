@@ -36,7 +36,7 @@ public class Main
 			System.out.println("CREATE TABLES " + r);
 
 			System.out.println("RIGHT BEFORE DUMMY VARS");
-			app.createDummyValues();
+			//app.createDummyValues();
 			System.out.println("RIGHT AFTER DUMMY VARS");
 			
 			//Create dummy checkings Savings Accounts
@@ -121,9 +121,7 @@ public class Main
 			//app.CreateAccount("acc1", 123.0, "Goleta", "Savings", "David");
 			// System.out.println("LISTING CREATED ACCOUNTS - " + r );
 
-
-
-			// StartScreen s = new StartScreen(app);
+			StartScreen s = new StartScreen(app);
 			
 			r = app.dropTables();
 			System.out.println("DROP TABLES " + r);

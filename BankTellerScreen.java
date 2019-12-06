@@ -23,6 +23,8 @@ class BankTellerScreen {
         JButton createaccountButton = new JButton("Create Account");
         JButton deleteaccountButton = new JButton("Delete Account");
         JButton deletetransactionButton = new JButton("Delete Transaction");
+        JButton setInterestRateButton = new JButton("Set Interest Rate");
+        JButton setDate = new JButton("Set Date");
 	JButton goBackButton = new JButton("Go Back");
 
 
@@ -133,6 +135,24 @@ class BankTellerScreen {
           }
         });
 
+        setInterestRateButton.addActionListener((ActionListener) new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e){
+            mainFrame.getContentPane().removeAll();
+            mainFrame.repaint();
+	          SetInterestRate sir = new SetInterestRate(mainFrame, app);
+          }
+        });
+
+        setDate.addActionListener((ActionListener) new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e){
+            mainFrame.getContentPane().removeAll();
+            mainFrame.repaint();
+	          SetDate sd = new SetDate(mainFrame, app);
+          }
+        });
+
         //Add buttons to the GUI
         // frame.add(monthlystatementButton);
         // frame.add(closedaccountButton);
@@ -150,7 +170,9 @@ class BankTellerScreen {
         panel.add(createaccountButton);
         panel.add(deleteaccountButton);
         panel.add(deletetransactionButton);
-	panel.add(goBackButton);
+        panel.add(goBackButton);
+        panel.add(setInterestRateButton);
+        panel.add(setDate);
 
         mainFrame.add(panel);
         mainFrame.show();
