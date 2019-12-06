@@ -401,7 +401,28 @@ public class App implements Testable
 			);
 			*/
 
+			/*Insert the initial interest rates */
+			statement.executeQuery(
+				"INSERT INTO Interest (intr, type) VALUES (0.0, \'STUDENTCHECKING\')"
+			);
 
+			/* Pocket */
+			statement.executeQuery(
+				"INSERT INTO Interest (intr, type) VALUES (0.0,\'POCKET\')"
+			);
+
+			/* Saving */
+			statement.executeQuery(
+				"INSERT INTO Interest (intr, type) VALUES (4.8, \'SAVING\')"
+			);
+
+			/* Checking */
+			statement.executeQuery(
+				"INSERT INTO Interest (intr, type) VALUES (3.0, \'CHECKING\')"
+			);
+
+
+			/* Set date on bootup */
 			setDate(2019, 3, 14);
 
 			return "0";
