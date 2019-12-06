@@ -94,7 +94,7 @@ public class SimpleOperation extends JFrame implements ActionListener{
         amountValue = amountValue.trim();
         double amount = Double.parseDouble(amountValue);
         accountValue = accountValue.trim();
-        int account = Integer.parseInt(accountValue);
+        // int account = Integer.parseInt(accountValue);
 	CustomerNameValue = CustomerNameValue.trim();
 
 	//BASICALLY DO SWITCH STATEMENTS WITH IF CONDITIONALS TO SEE WHAT TYPE OF TRANSACTION WE DO WHEN WE SEND IT TO APP
@@ -108,7 +108,7 @@ public class SimpleOperation extends JFrame implements ActionListener{
 	//DEPOSIT TRANSACTION
 	if(this.selector == 1)
 	{
-		app.ClientDeposit(month, day, year, CustomerNameValue, amount, account);
+		app.ClientDeposit(month, day, year, CustomerNameValue, amount, accountValue);
 		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
@@ -118,7 +118,7 @@ public class SimpleOperation extends JFrame implements ActionListener{
 	//PURCHASE TRANSACTION
         if(this.selector == 2)
         {
-                app.ClientPurchase(month, day, year, CustomerNameValue, amount, account);
+                app.ClientPurchase(month, day, year, CustomerNameValue, amount, accountValue);
                 //System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
@@ -128,7 +128,7 @@ public class SimpleOperation extends JFrame implements ActionListener{
 	//WITHDRAW FUNCTION
         if(this.selector == 3)
         {
-                app.ClientWithdraw(month, day, year, CustomerNameValue, amount, account);
+                app.ClientWithdraw(month, day, year, CustomerNameValue, amount, accountValue);
     		//System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();

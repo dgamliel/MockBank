@@ -977,7 +977,7 @@ public class App implements Testable
 	//CLIENT DEPOSIT FUNCTION
 	//3-1-2011 Joe Pepsi deposits $1,200 to account 17431
 	//TODO: CHECK IF OUR ACCOUNT IS A CHECKINGS OR SAVINGS
-	public void ClientDeposit(int month, int day, int year, String name, double amount, int account)
+	public void ClientDeposit(int month, int day, int year, String name, double amount, String account)
 	{
 		//Well probably want to return his total balance maybe - this is why i said int CD
 		//If we dont care, well make it boolean
@@ -985,19 +985,21 @@ public class App implements Testable
 		double newAmount, fetchedAmount;
 
 		//Should be a string?
-		String accId = Integer.toString(account);
+		String accId = account;
 		
 		String withdrawTransactions = String.format(
-			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day) VALUES (\'%s\', \'%s\', %.2f)",
+			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d)",
 			accId,
 			accId,
-			amount
+			amount,
+			year,
+			month,
+			day
 		);
 
 		String checkOwner = String.format(
-			"SELECT COUNT(*) FROM Owns O WHERE O.cid=\'(SELECT C.cid FROM Clients C WHERE C.name=\'%s\')\' AND O.aid=\'%s\'", 
-			name,
-			accId
+			"SELECT * FROM Accounts A WHERE A.aid IN (SELECT O.aid from Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\'))",
+			name
 		);
 
 		String getOldBalance = String.format(
@@ -1011,7 +1013,7 @@ public class App implements Testable
 
 			//Check owner and see errors
 			ResultSet res = statement.executeQuery(checkOwner);
-			if(!(res.next() && res.getInt(1) == 1)){
+			if(!res.next()){
 				System.out.println("Customer " + name + " does not own account " + accId);
 				return;
 			}
@@ -1029,9 +1031,9 @@ public class App implements Testable
 			newAmount = fetchedAmount + amount;
 
 			String updateAmount = String.format(
-				"UPDATE Accounts SET amount=%2.f WHERE aid=\'%s\'", 
-				accId,
-				newAmount
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				accId
 			);
 
 			//Update amount and log transaction
@@ -1049,14 +1051,14 @@ public class App implements Testable
 
 	//CLIENT TOP UP FUNCTION
 	//3-1-2011 Pit Wilson tops-ups $20 to account 60413 from account 43942
-	public void ClientTopup(int month, int day, int year, String name, double amount, int FromAccount, int toAccount){
+	public void ClientTopup(int month, int day, int year, String name, double amount, String FromAccount, String toAccount){
 
 		return;
 	}
 
 	//CLIENT WITHDRAWS FUNCTION
 	//3-3-2011 Elizabeth Sailor withdraws $3,000 from account 54321
-	public void ClientWithdraw(int month, int day, int year, String name, double amount, int account){
+	public void ClientWithdraw(int month, int day, int year, String name, double amount, String account){
 
 		/*
 		 *	Algorithm
@@ -1075,7 +1077,8 @@ public class App implements Testable
 		double newAmount, fetchedAmount;
 
 		//Should be a string?
-		String accId = Integer.toString(account);
+		// String accId = Integer.toString(account);
+		String accId = account;
 		
 		String withdrawTransactions = String.format(
 			"INSERT INTO Transactions (aid1, aid2, amount) VALUES (\'%s\', \'%s\', %.2f)",
@@ -1147,31 +1150,31 @@ public class App implements Testable
 
 	//CLIENT PURCHASES FUNCTION
 	//3-5-2011 David Copperfill purchases $5 from account 53027
-	public void ClientPurchase(int month, int day, int year, String name, double amount, int account){
+	public void ClientPurchase(int month, int day, int year, String name, double amount, String account){
 		return;
 	}
 
 	//CLIENT COLLECTS FUNCTION
 	//3-6-2011 Li Kung collects $10 from account 43947 to account 29107
-	public void ClientCollects(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){
+	public void ClientCollects(int month, int day, int year, String name, double amount, String fromAccount, String toAccount){
 		return;
 	}
 
 	////CLIENT TRANSFERS FUNCTION
 	//3-7-2011 Ivan Lendme transfers $289 from account 43942 to account 17431
-	public void ClientTransfer(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){       
+	public void ClientTransfer(int month, int day, int year, String name, double amount, String fromAccount, String toAccount){       
 		return;
 	}
 
 	////CLIENT PAYFRIEND FUNCTION
 	//3-8-2011 Pit Wilson pay-friends $10 from account 60413 to account 67521
-	public void ClientPayfriend(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){
+	public void ClientPayfriend(int month, int day, int year, String name, double amount, String fromAccount, String toAccount){
 		return;
 	}
 
 	////CLIENT PAYFRIEND FUNCTION
         //3-9-2011 Fatal Castro wires $4,000 from account 41725 to account 32156
-	public void ClientWire(int month, int day, int year, String name, double amount, int fromAccount, int toAccount){
+	public void ClientWire(int month, int day, int year, String name, double amount, String fromAccount, String toAccount){
 		return;
 	}
 
@@ -1187,22 +1190,61 @@ public class App implements Testable
 	}
 
 	//Generate a list of all accounts associated with a customer and indicate whether the accounts are opened or closed 
-	public void GenerateCustomerReport(String accId){
-		/*
-		String getAllAccounts = String.format(
-			"SELECT A.aid, A.type, A.balance, A.closed " +  
-			"FROM Accounts A " + 
-			"WHERE A.aid=(SELECT O.aid FROM Owns )"
-		);
-	
-		try{
-			Statement statement = _connection.executeQuery(getAllAccounts);
-		}catch(Exception e){
+	public void GenerateCustomerReport(String cid){		
+		try {
 			
-		}
-		*/
-		return;
+			ArrayList<String> accountInfo = new ArrayList<String>();
 
+			String getAllAccounts = String.format(
+				"SELECT * FROM Accounts A WHERE A.aid IN (SELECT O.aid FROM Owns O WHERE O.cid=\'%s\')",
+				cid
+			);
+			
+			Statement statement = _connection.createStatement();
+			ResultSet res = statement.executeQuery(getAllAccounts);
+
+			System.out.println("\n###### CUSTOMER REPORT FOR " + cid + " ######");
+
+			while (res.next()){
+				String aid, type, bname;
+				double balance;
+				int closed;
+				aid = res.getString(1);
+				type = res.getString(2);
+				bname = res.getString(3);
+				balance = res.getDouble(4);
+				closed = res.getInt(5);
+
+				System.out.println(" " + aid + " " + type + " " + bname + " " + balance + " " + closed);
+
+			}
+
+			/*
+			System.out.println("The value of CID: " + cid);
+
+			Statement statement = _connection.createStatement();
+			ArrayList<String> CustomerAids = new ArrayList<String>();
+			ArrayList<Integer> CustomerClosed = new ArrayList<Integer>();
+	
+			String getCustomerAID = String.format(
+				"SELECT O.aid FROM Owns O WHERE O.cid=\'%s\'",
+				cid
+			);
+	
+			ResultSet res = statement.executeQuery(getCustomerAID);
+
+			while(res.next())
+			{
+				res.getString(1)
+			}
+			*/
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
+		return;
 	}
 
 	public void DTER(){
@@ -1289,7 +1331,7 @@ public class App implements Testable
 				linked,
 				1
 				);
-				statement.executeQuery(insertPocket);
+				statement.executeQuery(insertPocketLinks);
 			}
 
 			if(accType.equals("Savings"))
@@ -1799,15 +1841,15 @@ public class App implements Testable
 			//INSERT TRANSACTIONS NOW
 			//
 
-			int toAID;
-			int fromAID;
+			String toAID;
+			String fromAID;
 			double amount;
 			int year;
 			int month;
 			int day;
 
 			/// Transactions 1: 3-1-2011 Joe Pepsi deposits $1,200 to account 17431
-			toAID = 17431;
+			toAID = "17431";
 			amount = 1200;
 			name = "Joe Pepsi";
 			month = 3;
@@ -1817,7 +1859,7 @@ public class App implements Testable
 			ClientDeposit(month, day, year, name, amount, toAID);
 
 			/// Transactions 2: 3-1-2011 Hurryson Ford deposits $21,000 to account 54321
-			toAID = 54321;
+			toAID = "54321";
 			amount = 21000;
 			name = "Hurryson Ford";
 			month = 3;
@@ -1828,7 +1870,7 @@ public class App implements Testable
 
 
 			/// Transactions 3: 3-1-2011 David Copperfill deposits $1,200 to account 12121
-			toAID = 12121;
+			toAID = "12121";
 			amount = 1200;
 			name = "David Copperfill";
 			month = 3;
@@ -1839,7 +1881,7 @@ public class App implements Testable
 
 
 			/// Transactions 4: 3-1-2011 George Brush deposits $15,000 to account 41725
-			toAID = 41725;
+			toAID = "41725";
 			amount = 15000;
 			name = "George Brush";
 			month = 3;
@@ -1849,7 +1891,7 @@ public class App implements Testable
 			ClientDeposit(month, day, year, name, amount, toAID);
 
 						/// Transactions 5:3-1-2011 Kelvin Costner deposits $2,000,000 to account 93156
-			toAID = 93156;
+			toAID = "93156";
 			amount = 2000000;
 			name = "Kelvin Costner";
 			month = 3;
@@ -1859,8 +1901,8 @@ public class App implements Testable
 			ClientDeposit(month, day, year, name, amount, toAID);
 
 							/// Transactions 6:3-1-2011 David Copperfill top-ups $50 to account 53027 from account 12121
-			toAID = 53027;
-			fromAID = 12121;
+			toAID = "53027";
+			fromAID = "12121";
 			amount = 50;
 			name = "David Copperfill";
 			month = 3;
@@ -1870,7 +1912,7 @@ public class App implements Testable
 			ClientTopup(month, day, year, name, amount, fromAID, toAID);
 
 			/// Transactions 7:Alfred Hitchcock deposits $1,289 to account 43942
-			toAID = 43942;
+			toAID = "43942";
 			amount = 1289;
 			name = "Alfred Hitchcock";
 			month = 3;
@@ -1880,7 +1922,7 @@ public class App implements Testable
 			ClientDeposit(month, day, year, name, amount, toAID);
 
 			/// Transactions 8:  Kelvin Costner deposits $34,000 to account 29107
-			toAID = 29107;
+			toAID = "29107";
 			amount = 34000;
 			name = "Kelvin Costner";
 			month = 3;
@@ -1890,7 +1932,7 @@ public class App implements Testable
 			ClientDeposit(month, day, year, name, amount, toAID);
 
 			/// Transactions 9:  Cindy Laugher deposits $2,300 to account 19023
-			toAID = 19023;
+			toAID = "19023";
 			amount = 2300;
 			name = "Cindy Laugher";
 			month = 3;
@@ -1900,8 +1942,8 @@ public class App implements Testable
 			ClientDeposit(month, day, year, name, amount, toAID);
 
 			/// Transactions 10:  Pit Wilson tops-ups $20 to account 60413 from account 43942
-			toAID = 60413;
-			fromAID = 43942;
+			toAID = "60413";
+			fromAID = "43942";
 			amount = 20;
 			name = "Pit Wilson";
 			month = 3;
@@ -1912,7 +1954,7 @@ public class App implements Testable
 
 			/// Transactions 11:  Magic Jordon deposits $1,000 to account 32156
 
-			toAID = 32156;
+			toAID = "32156";
 			amount = 1000;
 			name = "Magic Jordon";
 			month = 3;
@@ -1924,7 +1966,7 @@ public class App implements Testable
 
 			/// Transactions 12:  Li Kung deposits $8,456 to account 76543
 
-			toAID = 76543;
+			toAID = "76543";
 			amount = 8456;
 			name = "Li Kung";
 			month = 3;
@@ -1934,8 +1976,8 @@ public class App implements Testable
 			ClientDeposit(month, day, year, name, amount, toAID);
 
 			/// Transactions 13:  Li Kung top-ups $30 to account 43947 from account 29107
-			toAID = 43947;
-			fromAID = 29107;
+			toAID = "43947";
+			fromAID = "29107";
 			amount = 30;
 			name = "Li Kung";
 			month = 3;
@@ -1945,8 +1987,8 @@ public class App implements Testable
 			ClientTopup(month, day, year, name, amount, fromAID, toAID);
 
 						/// Transactions 13:  Fatal Castro top-ups $100 to account 67521 from account 19023
-			toAID = 67521;
-			fromAID = 19023;
+			toAID = "67521";
+			fromAID = "19023";
 			amount = 100;
 			name = "Fatal Castro";
 			month = 3;

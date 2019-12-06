@@ -104,9 +104,9 @@ public class AdvancedOperation extends JFrame implements ActionListener{
         amountValue = amountValue.trim();
         double amount = Double.parseDouble(amountValue);
         ToaccountValue = ToaccountValue.trim();
-        int Toaccount = Integer.parseInt(ToaccountValue);
+        // int Toaccount = Integer.parseInt(ToaccountValue);
 	FromaccountValue = FromaccountValue.trim();
-        int Fromaccount = Integer.parseInt(FromaccountValue);
+        // int Fromaccount = Integer.parseInt(FromaccountValue);
 	CustomerNameValue = CustomerNameValue.trim();
 
 	//BASICALLY DO SWITCH STATEMENTS WITH IF CONDITIONALS TO SEE WHAT TYPE OF TRANSACTION WE DO WHEN WE SEND IT TO APP
@@ -120,7 +120,7 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 	//TOPUP TRANSACTION
 	if(this.selector == 4)
 	{
-		app.ClientTopup(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+		app.ClientTopup(month, day, year, CustomerNameValue, amount, FromaccountValue, ToaccountValue);
 		// System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
@@ -130,7 +130,7 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 	//COLLECTS TRANSACTION
         if(this.selector == 5)
         {
-                app.ClientCollects(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+                app.ClientCollects(month, day, year, CustomerNameValue, amount, FromaccountValue, ToaccountValue);
                 //System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
@@ -140,7 +140,7 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 	//ClientTransfer FUNCTION
         if(this.selector == 6)
         {
-                app.ClientTransfer(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+                app.ClientTransfer(month, day, year, CustomerNameValue, amount, FromaccountValue, ToaccountValue);
                 //System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
@@ -150,7 +150,7 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 	//ClientPayfriend FUNCTION
         if(this.selector == 7)
         {
-                app.ClientPayfriend(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+                app.ClientPayfriend(month, day, year, CustomerNameValue, amount, FromaccountValue, ToaccountValue);
                 //System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();
@@ -160,7 +160,7 @@ public class AdvancedOperation extends JFrame implements ActionListener{
 	//WIRE FUNCTION
         if(this.selector == 8)
         {
-                app.ClientWire(month, day, year, CustomerNameValue, amount, Fromaccount, Toaccount);
+                app.ClientWire(month, day, year, CustomerNameValue, amount, FromaccountValue, ToaccountValue);
                 //System.out.println(returnValue);
 		mainFrame.getContentPane().removeAll();
                 mainFrame.repaint();

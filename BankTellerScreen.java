@@ -83,9 +83,8 @@ class BankTellerScreen {
 
             mainFrame.getContentPane().removeAll();
             mainFrame.repaint();
-	    			app.GenerateCustomerReport(accId);
             // System.out.println(returnValue);
-            BankTellerScreen bts = new BankTellerScreen(mainFrame, app);
+            CustomerReport cs = new CustomerReport(mainFrame, app);
           }
         });
 

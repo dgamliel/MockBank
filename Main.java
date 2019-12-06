@@ -36,7 +36,7 @@ public class Main
 			System.out.println("CREATE TABLES " + r);
 
 			System.out.println("RIGHT BEFORE DUMMY VARS");
-			//app.createDummyValues();
+			app.createDummyValues();
 			System.out.println("RIGHT AFTER DUMMY VARS");
 			
 			//Create dummy checkings Savings Accounts
@@ -117,6 +117,8 @@ public class Main
 			//Should return null but who knows
 			r = app.listClosedAccounts();
 			System.out.println("LISTING CLOSED ACCOUNTS - " + r );
+
+			app.GenerateCustomerReport("209378521");
 
 			//app.CreateAccount("acc1", 123.0, "Goleta", "Savings", "David");
 			// System.out.println("LISTING CREATED ACCOUNTS - " + r );
