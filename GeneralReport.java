@@ -21,17 +21,19 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-class CustomerReport extends JFrame implements ActionListener{
+class GeneralReport extends JFrame implements ActionListener{
   JPanel panel;
   JLabel cid_label, message;
   JTextField cid_text;
   JButton submit, goBack;
   App app;
   JFrame mainFrame;
+  int selector;
 
-    CustomerReport(JFrame mainFrame, App app) {
+    GeneralReport(JFrame mainFrame, App app, int selector) {
 	this.app = app;
     this.mainFrame = mainFrame;
+    this.selector = selector;
         // User Label
         cid_label = new JLabel();
         cid_label.setText("Customer ID :");
@@ -67,11 +69,24 @@ class CustomerReport extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent ae) {
         String cidValue = cid_text.getText();
-
         cidValue = cidValue.trim();
-        app.GenerateCustomerReport(cidValue);
-        mainFrame.getContentPane().removeAll();
-        mainFrame.repaint();
-        BankTellerScreen bts = new BankTellerScreen(mainFrame, this.app);
+
+
+        if (selector == 1)
+        {
+            app.GenerateMonthlyStatement(cidValue);
+            mainFrame.getContentPane().removeAll();
+            mainFrame.repaint();
+            BankTellerScreen bts = new BankTellerScreen(mainFrame, this.app);
+        }
+
+        if (selector == 2)
+        {
+            app.GenerateCustomerReport(cidValue);
+            mainFrame.getContentPane().removeAll();
+            mainFrame.repaint();
+            BankTellerScreen bts = new BankTellerScreen(mainFrame, this.app);
+        }
+        
     }
 }
