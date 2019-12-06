@@ -400,7 +400,6 @@ public class App implements Testable
 				")"
 			);
 			*/
-
 			/*Insert the initial interest rates */
 			statement.executeQuery(
 				"INSERT INTO Interest (intr, type) VALUES (0.0, \'STUDENT_CHECKING\')"
@@ -424,6 +423,7 @@ public class App implements Testable
 
 			/* Set date on bootup */
 			setDate(2011, 3, 14);
+
 
 			return "0";
 		}
@@ -1078,8 +1078,79 @@ public class App implements Testable
 	//CLIENT TOP UP FUNCTION
 	//3-1-2011 Pit Wilson tops-ups $20 to account 60413 from account 43942
 	public void ClientTopup(int month, int day, int year, String name, double amount, String FromAccount, String toAccount){
+		double newAmount, fetchedAmount;
 
-		return;
+		//Should be a string?
+		// String accId = Integer.toString(account);
+
+		ArrayList<Integer> date = getDate();
+
+		int _day, _month, _year;
+		_day   = date.get(1); /* month index 0, day index 1, year index 2 */
+		_month = date.get(0);
+		_year  = date.get(2);
+
+
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'PURCHASE\')",
+			FromAccount,
+			toAccount,
+			amount,
+			_year,
+			_month,
+			_day
+		);
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\'", 
+			FromAccount
+		);
+
+
+		try{
+
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(getOldBalance);
+				
+			if (!res.next()){
+				System.out.println("Unable to find balance of account " + FromAccount);
+				return;
+			}
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			//Customer attemps to withdraw more money than is in their account	
+			if (fetchedAmount < amount){
+				System.out.println( "Funds low, unable to fetch this amount of money");
+				return;
+			}
+
+			newAmount = fetchedAmount - amount;
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				FromAccount
+			);
+
+			newAmount = fetchedAmount - amount;
+
+			String updateMyAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				fetchedAmount - newAmount,
+				toAccount
+			);
+
+			statement.executeQuery(updateAmount);
+			statement.executeQuery(updateMyAmount);
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	//CLIENT WITHDRAWS FUNCTION
@@ -1105,16 +1176,26 @@ public class App implements Testable
 		//Should be a string?
 		// String accId = Integer.toString(account);
 		String accId = account;
+
+		ArrayList<Integer> date = getDate();
+
+		int _day, _month, _year;
+		_day   = date.get(1); /* month index 0, day index 1, year index 2 */
+		_month = date.get(0);
+		_year  = date.get(2);
 		
 		String withdrawTransactions = String.format(
-			"INSERT INTO Transactions (aid1, aid2, amount, transType) VALUES (\'%s\', \'%s\', %.2f, \'WITHDRAWL\')",
+			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'WITHDRAWL\')",
 			accId,
 			accId,
-			-amount
+			-amount,
+			_year,
+			_month,
+			_day
 		);
 
 		String checkOwner = String.format(
-			"SELECT COUNT(*) FROM Owns O WHERE O.cid=\'(SELECT C.cid FROM Clients C WHERE C.name=\'%s\')\' AND O.aid=\'%s\'", 
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\'", 
 			name,
 			accId
 		);
@@ -1125,7 +1206,10 @@ public class App implements Testable
 		);
 
 
+
+
 		try{
+
 			Statement statement = _connection.createStatement();
 
 			ResultSet res = statement.executeQuery(checkOwner);
@@ -1155,9 +1239,9 @@ public class App implements Testable
 			newAmount = fetchedAmount - amount;
 
 			String updateAmount = String.format(
-				"UPDATE Accounts SET amount=%2.f WHERE aid=\'%s\'", 
-				accId,
-				newAmount
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				accId
 			);
 
 			//Update amount and log transaction
@@ -1177,31 +1261,482 @@ public class App implements Testable
 	//CLIENT PURCHASES FUNCTION
 	//3-5-2011 David Copperfill purchases $5 from account 53027
 	public void ClientPurchase(int month, int day, int year, String name, double amount, String account){
-		return;
+		double newAmount, fetchedAmount;
+
+		//Should be a string?
+		// String accId = Integer.toString(account);
+		String accId = account;
+
+		ArrayList<Integer> date = getDate();
+
+		int _day, _month, _year;
+		_day   = date.get(1); /* month index 0, day index 1, year index 2 */
+		_month = date.get(0);
+		_year  = date.get(2);
+
+
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'PURCHASE\')",
+			accId,
+			accId,
+			amount,
+			_year,
+			_month,
+			_day
+		);
+
+		String checkOwner = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\'", 
+			name,
+			accId
+		);
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\' AND A.aid IN (SELECT P.aid FROM Pockets P)", 
+			accId
+		);
+
+
+		try{
+
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(checkOwner);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + accId);
+				return;
+			}
+
+			res = statement.executeQuery(getOldBalance);
+				
+			if (!res.next()){
+				System.out.println( "Unable to find balance of account " + accId);
+				return;
+			}
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			//Customer attemps to withdraw more money than is in their account	
+			if (fetchedAmount < amount){
+				System.out.println( "Funds low, unable to fetch this amount of money");
+				return;
+			}
+
+			newAmount = fetchedAmount - amount;
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				accId
+			);
+			statement.executeQuery(updateAmount);
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	//CLIENT COLLECTS FUNCTION
 	//3-6-2011 Li Kung collects $10 from account 43947 to account 29107
 	public void ClientCollects(int month, int day, int year, String name, double amount, String fromAccount, String toAccount){
-		return;
+		double newAmount, fetchedAmount;
+
+		//Should be a string?
+		// String accId = Integer.toString(account);
+
+		ArrayList<Integer> date = getDate();
+
+		int _day, _month, _year;
+		_day   = date.get(1); /* month index 0, day index 1, year index 2 */
+		_month = date.get(0);
+		_year  = date.get(2);
+
+
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'COLLECT\')",
+			fromAccount,
+			toAccount,
+			amount,
+			_year,
+			_month,
+			_day
+		);
+
+		String checkOwnerFrom = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\'", 
+			name,
+			fromAccount
+		);
+
+		String checkOwnerTo = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\'", 
+			name,
+			toAccount
+		);
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\' AND A.aid IN (SELECT P.aid FROM Pockets P)", 
+			fromAccount
+		);
+
+
+		try{
+
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(checkOwnerFrom);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + fromAccount);
+				return;
+			}
+
+			res = statement.executeQuery(checkOwnerTo);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + toAccount);
+				return;
+			}
+
+			res = statement.executeQuery(getOldBalance);
+				
+			if (!res.next()){
+				System.out.println( "Unable to find balance of account " + fromAccount);
+				return;
+			}
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			//Customer attemps to withdraw more money than is in their account	
+			if (fetchedAmount < amount){
+				System.out.println( "Funds low, unable to fetch this amount of money");
+				return;
+			}
+
+			newAmount = fetchedAmount + amount;
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				toAccount
+			);
+
+			String updateMyAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				fetchedAmount - (amount * 1.03),
+				fromAccount
+			);
+
+			statement.executeQuery(updateAmount);
+			statement.executeQuery(updateMyAmount);
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	////CLIENT TRANSFERS FUNCTION
 	//3-7-2011 Ivan Lendme transfers $289 from account 43942 to account 17431
 	public void ClientTransfer(int month, int day, int year, String name, double amount, String fromAccount, String toAccount){       
-		return;
+		ArrayList<Integer> date = getDate();
+
+		int _day, _month, _year;
+		_day   = date.get(1); /* month index 0, day index 1, year index 2 */
+		_month = date.get(0);
+		_year  = date.get(2);
+
+
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'TRANSFER\')",
+			fromAccount,
+			toAccount,
+			amount,
+			_year,
+			_month,
+			_day
+		);
+
+		String checkCommonOwner = String.format(
+			"SELECT O.cid FROM Owns O WHERE O.aid=\'%s\' INTERSECT SELECT O1.cid FROM Owns O1 WHERE O1.aid=\'%s\'", 
+			name,
+			fromAccount,
+			toAccount
+		);
+
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\' AND A.aid", 
+			fromAccount
+		);
+
+
+		try{
+			double fetchedAmount, newAmount;
+
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(checkCommonOwner);
+
+			//Check that we own the account
+			if(!(res.next())){
+				System.out.println( "Customer " + name + " does not own account " + fromAccount + " or " + toAccount);
+				return;
+			}
+
+			res = statement.executeQuery(getOldBalance);
+				
+			if (!res.next()){
+				System.out.println( "Unable to find balance of account " + fromAccount);
+				return;
+			}
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			//Customer attemps to withdraw more money than is in their account	
+			if (fetchedAmount < amount){
+				System.out.println( "Funds low, unable to fetch this amount of money");
+				return;
+			}
+
+			newAmount = fetchedAmount + amount;
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				toAccount
+			);
+
+			String updateMyAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				fetchedAmount - amount,
+				fromAccount
+			);
+
+			statement.executeQuery(updateAmount);
+			statement.executeQuery(updateMyAmount);
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}	
 	}
 
 	////CLIENT PAYFRIEND FUNCTION
 	//3-8-2011 Pit Wilson pay-friends $10 from account 60413 to account 67521
 	public void ClientPayfriend(int month, int day, int year, String name, double amount, String fromAccount, String toAccount){
-		return;
+		double newAmount, fetchedAmount;
+
+		//Should be a string?
+		// String accId = Integer.toString(account);
+
+		ArrayList<Integer> date = getDate();
+
+		int _day, _month, _year;
+		_day   = date.get(1); /* month index 0, day index 1, year index 2 */
+		_month = date.get(0);
+		_year  = date.get(2);
+
+
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount, year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, \'PAYFRIEND\')",
+			fromAccount,
+			toAccount,
+			amount,
+			_year,
+			_month,
+			_day
+		);
+
+		String checkOwnerFrom = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\' AND O.aid IN (SELECT P.aid FROM Pockets P)", 
+			name,
+			fromAccount
+		);
+
+		String checkOwnerTo = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\' AND O.aid IN (SELECT P.aid FROM Pockets P)", 
+			name,
+			toAccount
+		);
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\' AND A.aid IN (SELECT P.aid FROM Pockets P)", 
+			fromAccount
+		);
+
+
+		try{
+
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(checkOwnerFrom);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + fromAccount);
+				return;
+			}
+
+			res = statement.executeQuery(checkOwnerTo);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + toAccount);
+				return;
+			}
+
+			res = statement.executeQuery(getOldBalance);
+				
+			if (!res.next()){
+				System.out.println( "Unable to find balance of account " + fromAccount);
+				return;
+			}
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			//Customer attemps to withdraw more money than is in their account	
+			if (fetchedAmount < amount){
+				System.out.println( "Funds low, unable to fetch this amount of money");
+				return;
+			}
+
+			newAmount = fetchedAmount + amount;
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				toAccount
+			);
+
+			String updateMyAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				fetchedAmount - amount,
+				fromAccount
+			);
+
+			statement.executeQuery(updateAmount);
+			statement.executeQuery(updateMyAmount);
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	////CLIENT PAYFRIEND FUNCTION
         //3-9-2011 Fatal Castro wires $4,000 from account 41725 to account 32156
 	public void ClientWire(int month, int day, int year, String name, double amount, String fromAccount, String toAccount){
-		return;
+		double newAmount, fetchedAmount;
+
+		//Should be a string?
+		// String accId = Integer.toString(account);
+
+		ArrayList<Integer> date = getDate();
+
+		int _day, _month, _year;
+		_day   = date.get(1); /* month index 0, day index 1, year index 2 */
+		_month = date.get(0);
+		_year  = date.get(2);
+
+		int check_num = new Random().nextInt(10000000);
+
+		String withdrawTransactions = String.format(
+			"INSERT INTO Transactions (aid1, aid2, amount, check_num year, month, day, transType) VALUES (\'%s\', \'%s\', %.2f, %d, %d, %d, %d, \'PAYFRIEND\')",
+			fromAccount,
+			toAccount,
+			-amount,
+			check_num,
+			_year,
+			_month,
+			_day
+		);
+
+		String checkOwnerFrom = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\' AND O.aid IN (SELECT P.aid FROM Pockets P)", 
+			name,
+			fromAccount
+		);
+
+		String checkOwnerTo = String.format(
+			"SELECT COUNT(*) FROM Owns O WHERE O.cid IN (SELECT C.cid FROM Clients C WHERE C.name=\'%s\') AND O.aid=\'%s\' AND O.aid IN (SELECT P.aid FROM Pockets P)", 
+			name,
+			toAccount
+		);
+
+		String getOldBalance = String.format(
+			"SELECT A.balance from Accounts A WHERE A.aid=\'%s\' AND A.aid IN (SELECT P.aid FROM Pockets P)", 
+			fromAccount
+		);
+
+
+		try{
+
+			Statement statement = _connection.createStatement();
+
+			ResultSet res = statement.executeQuery(checkOwnerFrom);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + fromAccount);
+				return;
+			}
+
+			res = statement.executeQuery(checkOwnerTo);
+
+			//Check that we own the account
+			if(!(res.next() && res.getInt(1) == 1)){
+				System.out.println( "Customer " + name + " does not own account " + toAccount);
+				return;
+			}
+
+			res = statement.executeQuery(getOldBalance);
+				
+			if (!res.next()){
+				System.out.println( "Unable to find balance of account " + fromAccount);
+				return;
+			}
+			else{
+				fetchedAmount = res.getDouble(1);	
+			}
+
+			//Customer attemps to withdraw more money than is in their account	
+			if (fetchedAmount < amount){
+				System.out.println( "Funds low, unable to fetch this amount of money");
+				return;
+			}
+
+			newAmount = fetchedAmount + amount;
+
+			String updateAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				newAmount,
+				toAccount
+			);
+
+			String updateMyAmount = String.format(
+				"UPDATE Accounts SET balance=%.2f WHERE aid=\'%s\'", 
+				fetchedAmount - amount,
+				fromAccount
+			);
+
+			statement.executeQuery(updateAmount);
+			statement.executeQuery(updateMyAmount);
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	/*Given a customer, do the following for each account she owns (including accounts which have closed but have not been deleted): 
@@ -1378,6 +1913,7 @@ public class App implements Testable
 			}
 
 
+
 			/* Check if the balance of all accounts that I am the primary owner of is over 100,000 */
 			String queryTotalBalance = String.format(
 				"SELECT SUM(A.balance) FROM Accounts A WHERE A.aid IN (SELECT O.aid FROM Owns O WHERE O.primary_owner=1 AND O.cid=\'%s\')",
@@ -1450,11 +1986,6 @@ public class App implements Testable
 	public void DTER(){
 		try{
 			Statement statement = _connection.createStatement();
-	
-
-			Set<String> DTERCids = new HashSet<String>();
-			Set<String> allCids = new HashSet<String>();
-
 
 			/* Get all customers */
 			String allCustomersCid = "SELECT C.cid FROM Clients C";
@@ -1520,6 +2051,8 @@ public class App implements Testable
 			}
 			System.out.println("");
 
+
+
 		}catch(Exception e){
 			e.printStackTrace();
 			return;
@@ -1533,34 +2066,7 @@ public class App implements Testable
 	
 	public void DeleteTransaction()
 	{
-
-		try{
-			Statement statement = _connection.createStatement();
-			statement.executeQuery("drop table Transactions cascade constraints");
-
-			statement.executeQuery(
-				"create table Transactions(" +
-							"aid1 varchar(20)," + 
-							"aid2 varchar(20)," + 
-							"check_num integer," + // primary = 1 if owner is primary else: primary = 0
-							"amount real, " + 
-							"year integer, " +
-							"month integer, " +
-							"day integer, " +
-							"transType varchar(32)," +
-							"foreign key (aid1) references Accounts," + 
-							"foreign key (aid2) references Accounts," + 
-							"primary key (aid1, aid2, amount, year, month, day, transType)" + 
-							")" 
-
-			); 
-			System.out.println("EMPTIED TRANSACTION TABLES");
-
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-
-
+		System.out.println("DROPPING TABLES");
 		return;
 	}	
 
@@ -2335,6 +2841,283 @@ public class App implements Testable
 			year = 2011;
 			
 			ClientTopup(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 12:  3-2-2011 Joe Pepsi deposits $8,800 to account 17431
+
+			toAID = "17431";
+			amount = 8800;
+			name = "Joe Pepsi";
+			month = 3;
+			day = 2;
+			year = 2011;
+			
+			ClientDeposit(month, day, year, name, amount, toAID);
+
+
+			/// Transactions 13:  3-3-2011 Elizabeth Sailor withdraws $3,000 from account 54321
+
+			toAID = "54321";
+			amount = 3000;
+			name = "Elizabeth Sailor";
+			month = 3;
+			day = 3;
+			year = 2011;
+			
+			ClientWithdraw(month, day, year, name, amount, toAID);
+
+			/// Transactions 14: 3-5-2011 Li Kung withdraws $2,000 from account 76543
+
+			toAID = "76543";
+			amount = 2000;
+			name = "Li Kung";
+			month = 3;
+			day = 5;
+			year = 2011;
+			
+			ClientWithdraw(month, day, year, name, amount, toAID);
+
+
+			/// Transactions 15: 3-5-2011 David Copperfill purchases $5 from account 53027
+
+			toAID = "53027";
+			amount = 5;
+			name = "David Copperfill";
+			month = 3;
+			day = 5;
+			year = 2011;
+			
+			ClientPurchase(month, day, year, name, amount, toAID);
+
+			/// Transactions 16: 3-6-2011 Magic Jordon withdraws $1,000,000 from account 93156
+
+			toAID = "93156";
+			amount = 1000000;
+			name = "Magic Jordon";
+			month = 3;
+			day = 6;
+			year = 2011;
+			
+			ClientPurchase(month, day, year, name, amount, toAID);
+
+
+			/// Transactions 17: 3-6-2011 Kelvin Costner writes a check in amount of $950,000 from account 93156
+
+			toAID = "93156";
+			amount = 1000000;
+			name = "Kelvin Costner";
+			month = 3;
+			day = 6;
+			year = 2011;
+			
+			ClientWire(month, day, year, name, amount, toAID, toAID);
+
+			/// Transactions 18: 3-6-2011 Li Kung withdraws $4,000 from account 29107
+
+			toAID = "29107";
+			amount = 4000;
+			name = "Li Kung";
+			month = 3;
+			day = 6;
+			year = 2011;
+			
+			ClientWithdraw(month, day, year, name, amount, toAID);
+
+			/// Transactions 19: 3-6-2011 Li Kung collects $10 from account 43947 to account 29107
+
+			toAID = "29107";
+			fromAID = "43947";
+			amount = 10;
+			name = "Li Kung";
+			month = 3;
+			day = 6;
+			year = 2011;
+			
+			ClientCollects(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 20: 3-6-2011 Li Kung top-ups $30 to account 43947 from account 29107
+
+			toAID = "43947";
+			fromAID = "29107";
+			amount = 30;
+			name = "Li Kung";
+			month = 3;
+			day = 6;
+			year = 2011;
+			
+			ClientTopup(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 21: 3-7-2011 Ivan Lendme transfers $289 from account 43942 to account 17431
+
+			toAID = "17431";
+			fromAID = "43942";
+			amount = 289;
+			name = "Ivan Lendme";
+			month = 3;
+			day = 7;
+			year = 2011;
+			
+			ClientTransfer(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 22: 3-7-2011 Pit Wilson withdraws $289 from account 43942
+			toAID = "43942";
+			fromAID = "43942";
+			amount = 289;
+			name = "Pit Wilson";
+			month = 3;
+			day = 7;
+			year = 2011;
+			
+			ClientTransfer(month, day, year, name, amount, fromAID, toAID);
+
+			ClientTransfer(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 23: 3-8-2011 Pit Wilson pay-friends $10 from account 60413 to account 67521
+			toAID = "67521";
+			fromAID = "60413";
+			amount = 10;
+			name = "Pit Wilson";
+			month = 3;
+			day = 8;
+			year = 2011;
+			
+			ClientPayfriend(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 24: 3-8-2011 Olive Stoner deposits $50,000 to account 93156
+			toAID = "93156";
+			fromAID = "93156";
+			amount = 50000;
+			name = "Olive Stoner";
+			month = 3;
+			day = 8;
+			year = 2011;
+			
+			ClientDeposit(month, day, year, name, amount, toAID);
+
+			/// Transactions 25: 3-8-2011 David Copperfill writes a check in the amount of $200 from account
+																									//12121
+			toAID = "12121";
+			fromAID = "12121";
+			amount = 200;
+			name = "David Copperfill";
+			month = 3;
+			day = 8;
+			year = 2011;
+			
+			ClientWire(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 26: 3-8-2011 George Brush transfers $1,000 from account 41725 to account 19023
+																									
+			toAID = "19023";
+			fromAID = "41725";
+			amount = 1000;
+			name = "George Brush";
+			month = 3;
+			day = 8;
+			year = 2011;
+			
+			ClientTransfer(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 27: 3-9-2011 Fatal Castro wires $4,000 from account 41725 to account 32156
+																									
+			toAID = "32156";
+			fromAID = "41725";
+			amount = 4000;
+			name = "Fatal Castro";
+			month = 3;
+			day = 9;
+			year = 2011;
+
+			ClientWire(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 28: 3-9-2011 David Copperfill pay-friends $10 from account 53027 to account 60413
+																									
+			toAID = "60413";
+			fromAID = "53027";
+			amount = 10;
+			name = "David Copperfill";
+			month = 3;
+			day = 9;
+			year = 2011;
+
+			ClientPayfriend(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 29: 3-10-2011 Pit Wilson purchases $15 from account 60413
+																									
+			toAID = "60413";
+			fromAID = "60413";
+			amount = 15;
+			name = "Pit Wilson";
+			month = 3;
+			day = 10;
+			year = 2011;
+
+			ClientPurchase(month, day, year, name, amount, fromAID);
+
+			/// Transactions 30: 3-12-2011 Nam-Hoi Chung withdraws $20,000 from account 93156
+																									
+			toAID = "93156";
+			fromAID = "93156";
+			amount = 20000;
+			name = "Nam-Hoi Chung";
+			month = 3;
+			day = 12;
+			year = 2011;
+
+			ClientWithdraw(month, day, year, name, amount, toAID);
+
+			/// Transactions 31: 3-12-2011 Magic Jordon writes a check in the amount of $456 from account 76543
+																									
+			toAID = "76543";
+			fromAID = "76543";
+			amount = 456;
+			name = "Magic Jordon";
+			month = 3;
+			day = 12;
+			year = 2011;
+
+			ClientWire(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 32: 3-12-2011 Fatal Castro top-ups $50 to account 67521 from account 19023
+																									
+			toAID = "67521";
+			fromAID = "19023";
+			amount = 50;
+			name = "Fatal Castro";
+			month = 3;
+			day = 12;
+			year = 2011;
+
+			ClientTopup(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 33: 3-14-2011 Fatal Castro pay-friends $20 from account 67521 to account 53027
+																									
+			toAID = "53027";
+			fromAID = "67521";
+			amount = 20;
+			name = "Fatal Castro";
+			month = 3;
+			day = 14;
+			year = 2011;
+
+			ClientPayfriend(month, day, year, name, amount, fromAID, toAID);
+
+			/// Transactions 34: 3-14-2011 Li Kung collects $15 from account 43947 to account 29107
+																									
+			toAID = "29107";
+			fromAID = "43947";
+			amount = 15;
+			name = "Li Kung";
+			month = 3;
+			day = 14;
+			year = 2011;
+
+			ClientCollects(month, day, year, name, amount, fromAID, toAID);
+
+
+
+
+
+
 
 
 		}catch(Exception e){
